@@ -1,0 +1,251 @@
+Programming language name : cclearly / Or cmotive
+Filename extension : ccly
+Compiled programming language
+
+
+Operators: standard c++ programming language operators including New and Delete
+All keywords start with caps.
+
+Object oriented programming language.
+With userspace thread support, network programming support, file support, io support, logging support, exception support, filesystem support, cross platform.
+Support for processors ARM, Intel x86, Intel 64 bit, Mips, Sparc, PowerPC and other processors
+
+Keywords of cclearly programming language
+
+Boolean
+Break
+Block
+Case
+Catch
+Char8
+Char16
+Char32
+Class
+Const
+Const_cast
+Continue
+Contains // x : char* = Contains { data inside this block is considered as a string including beginning and ending spaces, with escape characters '/' for '{' and '}' and '/' } 
+Default
+Delete
+Do
+Double
+Dynamic_cast
+Dynamic
+Elif
+Else
+Enum
+Extern
+False
+Float
+For
+Foreach
+Get
+Getall
+Global 
+Goto
+I8
+I16
+I32
+I64
+If 
+Inherits
+Inline 
+Ldouble
+Package
+New
+Not
+Null
+Operation
+Overridable
+Plugin
+Plugcase // Plugcase OS:WIN32,WIN98,WINXP,WINVISTA,WIN7,WIN8,WIN81,WIN10,WIN11,WIN12/LINUX/UNIX PROCESSOR:X86 ENDIAN:LITTLE/BIG DEFINED:ABC<=10 DEFINED:(X>10)&&(X<=100)
+Plugdefault
+Plugswitch
+Plugbreak
+Plugend
+Private
+Protected
+Public
+Register
+Reinterpret_cast
+Replace //
+Return
+Set 
+Setall
+Sizeof
+Static
+Static_cast
+Struct
+Switch
+Template
+This
+Tstore//thread_local Throw 
+Throws
+True
+Try
+Type
+Typecast
+U8
+U16
+U32
+U64
+Union
+Variable
+Void
+Volatile
+While
+
+
+//ClassName.HHH
+
+Class
+ClassName
+{
+	Public 
+	{
+		a: I32 = 0; Block //Block prevents set/get from happening.
+		b: I64 = 0; Block 
+		c: Ldouble = 0.0; Block
+
+		Classname()
+		{
+		}
+		
+		~Classname()
+		{
+		}
+
+		void
+		print
+		x : int
+		y : int
+		()
+		{
+			cout.expect("%d - %d \n").write(x, y);
+			cout.expect("%d - %llu - %lD \n").write( a, b, c);
+		}
+
+		Overridable
+		void
+		print2
+		x:int
+		y:int
+		()=0;  // pure virtual function 
+		
+
+		Overridable
+		void
+		print3
+		x:int = 1
+		y:int = 2
+		()
+		{
+			cout.expect("%s").write("Hello Universe from base\n");
+		}
+	}
+};
+
+//End of ClassName.HHH
+
+//Begin of EmptyClass.HHH
+Class
+EmptyClass
+{
+	Public
+	{
+		EmptyClass()
+		{
+		}
+
+		~EmptyClass()
+		{
+		}
+
+	}
+}
+//End of EmptyClass.HHH
+
+
+//Begin of ClassName2.HHH
+Class
+ClassName2
+Inherits
+ClassName1 Public
+EmptyClass Private
+{
+	Public 
+	{
+		Classname2()
+		{
+		}
+		
+		~Classname2()
+		{
+		}
+
+		overridable
+		void
+		print2
+		x:int = 1
+		y:int = 2
+		()  // pure virtual function's body 
+		{
+			cout.expect("%s").write("Hello Universe\n");
+		}	
+
+	}
+};
+//End of ClassName2.HHH
+
+
+//Begin of ClassName2.CCC
+ClassName2:
+overridable
+void
+print3
+x:int
+y:int
+()
+{
+	cout.expect("%s").write("Hello Universe from derived\n");
+}
+//End of ClassName2.CCC
+
+
+//Begin of TemplateClassName1.HHH
+
+Template
+A: Type
+B: Type
+C: Type
+Class
+TemplateClassName1
+{
+	public 
+	{
+		a: A; Block
+		b: B; Block
+		c: C; Block
+
+		TemplateClassname1()
+		{
+		}
+		
+		~TemplateClassname1()
+		{
+		}
+
+	}
+};
+
+
+//End of TemplateClassName1.HHH
+
+
+
+//Begin of Main.CCC
+
+
+Plugin ClassName1
+Plugin EmptyClass
+Plugin ClassName2
