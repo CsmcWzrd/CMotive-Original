@@ -28,12 +28,12 @@ Support for processors
 
 Keywords of cclearly/cmotive programming language
 
-Blend // Blend is a replacement of the keyword Union in C
-Boolean // Boolean datatype
-Break // Break
-Block // Prevents set/get auto function creation from being created
-Case  // Case like C programming language
-Catch // Exception catching
+Blend    // Blend is a replacement of the keyword Union in C
+Boolean  // Boolean datatype
+Break    // Break point for a switch statement or for a loop
+Block    // Prevents set/get auto function creation from being created
+Case     // Case like C programming language
+Catch    // Exception catching
 Catchall // Catch any and every exception
 Char     // Character datatype
 Char16   // Wide character 16bits
@@ -47,7 +47,7 @@ Default  // Used in Switch case statement if none of the condition matches
 Delete   // To delete a dynamically created object
 Do       // Do keyword for do...while loop
 Double   // Double datatype
-Dynamic  // Dynamic is word used to create a storage buffer for Getall function Example :-    cn3: ClassName3 = new (); Dynamic struct a = cn3.GetAll(); a : int a = (int)Get@x();
+Dynamic  // Dynamic is word used to create a storage buffer for Getall function Example :-    cn3: ClassName3 = new (); Dynamic struct a = cn3.GetAll(); xtemp : I32 = (I32)Get@x();
          // the struct a is Dynamic struct that is created with all the public members with the same name without 'Block' command and the object of that struct in the above statement is a. 
 Elif     // Elif equals else if 
 Else     // Final else
@@ -56,14 +56,14 @@ Extern   // Same as extern in C
 False    // Boolean value = 0
 Float    // Equivalent to float datatype
 For      // Equivalent to for loop 
-Fptr     // Equivalent to function pointerm, prefixed to a function declaration and it becomes a type to that function declaration.
+Fptr     // Equivalent to function pointer, prefixed to a function declaration and it becomes a type to that function declaration.
 Get      // Get functionality caller for a member of a class, followed by '@' and function paranthesis only. Will not work with Block ed members.
 Getall   // Get all functionality, Will not work with Block ed members. Has to be in order of the members defined.
 Global   // Declare a variable a Globally accesible 
 Goto     // Same as Goto in C programming language
 I16      // short signed integer 2 bytes   
-I32      // integer 4 bytes
-I64      // integer 8 bytes
+I32      // Integer 4 bytes
+I64      // Integer 8 bytes
 If       // If condition 
 Inherits // To specify if a Class inherits from another class
 Inline   // To define an inline function 
@@ -74,7 +74,7 @@ New      // To dynamically create a memory allocation of a Class/Type and call t
 Not      // Same as !
 Null     // Value of 0
 Operation   // Operation keyword for operator overloading, Same as C++ where in Operation replaces operator keyword.
-Overridable // Letting the programmer know if this function needs to be Overridden if its an interface function or can be Overridden if its needed.
+Overridable // Letting the programmer know if this function needs to be Overridden if its an Interface function or can be Overridden if its needed.
 Plugin      // Similar to Import in python / Java
 Plugcase    // Plugcase OS:WIN32,WIN98,WINXP,WINVISTA,WIN7,WIN8,WIN81,WIN10,WIN11,WIN12/LINUX/UNIX PROCESSOR:X86 ENDIAN:LITTLE/BIG DEFINED:ABC<=10 DEFINED:(X>10)&&(X<=100)
 Plugdefault // Default Plugcase value, if all else doesn't match , mandatory
@@ -122,8 +122,8 @@ Followed by } with \r\n or \n
 
 
 Class keyword has to be follwed by \r\n or \n
-Followed by <classname value> with \r\n
-Followed by optional Inherits with \r\n
+Followed by <classname value> with \r\n or \n
+Followed by optional Inherits with \r\n or \n
 Followed by if Inherits exists, Base classes with the visibility specifier with \r\n or \n.
 Followed by '{' with \r\n
 Followed by visibility specifier Public, Private or Protected followed by '{' with \r\n or \n
@@ -131,10 +131,12 @@ Followed by members and methods
 Followed by '}' visibility specifier ending with \r\n or \n
 Note: there can be n occurrences of Visibility specifiers.
 Followed by '}' with ';' and \r\n or \n
+Classes can be declared inside another class
+Each Class should be written in a separate .HMOT file like JAVA. FileName should be same as classname.HMOT
 
 
 Template keyword is followed by \r\n or \n
-TemplateClassName or TemplateFunctionName with \r\n
+TemplateClassName or TemplateFunctionName with \r\n or \n
 Parameter name followed by ':' Type keyword with \r\n or \n, there can be n number of these types.
 Followed by '{' with \r\n or \n
 Followed by code if it is a function 
@@ -142,7 +144,7 @@ Followed by Members and methods declaration just as in the case of class if its 
 Followed by '}' with  ';' and \r\n or \n
 
 
-Variable declaration and defintion is as follows
+Variable declaration and definition is as follows
 <variable name> : datatype = <initialization value> ;
 
 
@@ -161,7 +163,12 @@ If defined out side a Class, classname is prefixed with a '$'
 Constructor declaration is defined just like a method without return datatype. Can have parameters and can have default arguments similar to C and C++;
 Desstructor declaration is defined just like a method prefixed with ~ and without a return datatype.
 
-Rest of the operators are exactly same as C and C++.
+
+Typecasting is done exactly like a c typecasting using paranthesis.
+
+RTTI may come in later versions.
+
+All of the operators are exactly same as C and C++.
 Methods are called with . or, -> if its with a pointer.
 Members are accessed with a . or, -> if its with a pointer.
 << is left shift only
@@ -169,6 +176,9 @@ Members are accessed with a . or, -> if its with a pointer.
 >>> is right rotate shift only
 <<< is left rotate shift only
 
+Classnames are CamelCase, should begin with Capital Letters with or without underscores.
+Functions/Methods' name are also CamelCase should begin with Capital Letters or without underscores.
+Variables/members' name are like function names with or with out underscores. While a function name cannot start with a _ , variables/members' names can.
 
 //ClassName.HMOT
 
@@ -193,8 +203,8 @@ ClassName
 
 		void
 		print
-		x : int
-		y : int
+		x : I32
+		y : I32
 		()
 		{
 			cout.expect("%d - %d \n").write(x, y);
@@ -204,16 +214,16 @@ ClassName
 		Overridable
 		Void
 		print2
-		x:int
-		y:int
+		x:I32
+		y:I32
 		()=0;  // pure virtual function 
 		
 
 		Overridable
 		Void
 		print3
-		x:int = 1
-		y:int = 2
+		x:I32 = 1
+		y:I32 = 2
 		()
 		{
 			cout.expect("%s").write("Hello Universe from base\n");
@@ -336,8 +346,8 @@ print4
 $ClassName
 Overridable //Necessary to make it more readable, without having to switch to .HMOT file, Mandatory if the Method Declaration has it
 print3      //Method Name
-x:int       //Parameter name: type followed by \r\n or \n
-y:int       //Parameter name: type followed by \r\n or \n
+x:I32       //Parameter name: type followed by \r\n or \n
+y:I32       //Parameter name: type followed by \r\n or \n
 ()
 {
 	cout.expect("%s").write("Hello Universe from derived\n");
@@ -407,8 +417,8 @@ TemplateClassName1
 
 Blend 
 {
-	intVal  : I32;
-	intVal2 : I64;
+	Val  : I32;
+	Val2 : I64;
 	floVal  : Float;
 	ldVal   : Ldouble;
 };
