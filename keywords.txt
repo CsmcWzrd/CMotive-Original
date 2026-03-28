@@ -42,12 +42,13 @@ Class    // User defined type creation keyword like struct in C
 Const    // Setting the value as const value 
 Continue // Continues the Loop just like in C programming language 
 Contains // x : char* = Contains { data inside this block is considered as a string including beginning and ending spaces, with escape characters '/' for '{' and '}' and '/' } 
-// Contains is a alternate way to inputing text string. The other way is \" and character representation is done like c using ' 
+         // Contains is a alternate way to inputing text string. The other way is \" and character representation is done like c using ' 
 Default  // Used in Switch case statement if none of the condition matches
 Delete   // To delete a dynamically created object
 Do       // Do keyword for do...while loop
 Double   // Double datatype
 Dynamic  // Dynamic is word used to create a storage buffer for Getall function Example :-    cn3: ClassName3 = new (); Dynamic struct a = cn3.GetAll(); a : int a = (int)Get@x();
+         // the struct a is Dynamic struct that is created with all the public members with the same name without 'Block' command and the object of that struct in the above statement is a. 
 Elif     // Elif equals else if 
 Else     // Final else
 Enum     // Enumerated datatype
@@ -67,11 +68,12 @@ If       // If condition
 Inherits // To specify if a Class inherits from another class
 Inline   // To define an inline function 
 Ldouble  // Long double data type
-Package  // To define a package, equivalent to namespaces in C++, Plugin Stdio; Plugin Abc::DEFG::xyz;
+Package  // To define a package, equivalent to namespaces in C++, Plugin Stdio; Plugin Abc::DEFG::xyz; Plugin is the keyword used to import a Package or a .HMOT file.
+         // Since each class is present only in a single file, Use of "Package <packagename>;" would create a package.
 New      // To dynamically create a memory allocation of a Class/Type and call the constructor.
 Not      // Same as !
 Null     // Value of 0
-Operation   // Operation keyword for operator overloading
+Operation   // Operation keyword for operator overloading, Same as C++ where in Operation replaces operator keyword.
 Overridable // Letting the programmer know if this function needs to be Overridden if its an interface function or can be Overridden if its needed.
 Plugin      // Similar to Import in python / Java
 Plugcase    // Plugcase OS:WIN32,WIN98,WINXP,WINVISTA,WIN7,WIN8,WIN81,WIN10,WIN11,WIN12/LINUX/UNIX PROCESSOR:X86 ENDIAN:LITTLE/BIG DEFINED:ABC<=10 DEFINED:(X>10)&&(X<=100)
@@ -86,6 +88,7 @@ Replace     // Same as #define for a function or value in C
 Return      // Return statement from a function
 Set         // Set function caller for a member of a class, followed by '@' and function paranthesis with the same datatype argument. Will not work with Block ed members.
 Setall      // Set all functionality, Will not work with Block ed members. Has to be in order of the members defined.
+			// Set all doesn't take a Dynamic structure, but instead takes in arguments to set all the Public members that do not have Block appended to the Member declaration.
 Sizeof      // Sizeof compile type value of the size of the datatype or array ..etc
 Static      // Same as static in C programming language
 Struct      // Dynamic buffer creation.
@@ -93,7 +96,7 @@ Switch      // equivalent to C programming language.
 Template    // Template type specifier
 Throw       // Throw an exception from a method or function
 This        // same as this in C++ or self in Python
-Tstore      // thread_local specifier.
+Tstore      // Equivalent to thread_local specifier.
 True        // Boolean type
 Try         // Exception handling start
 Type        // Type name specifier for template Class or Functions
@@ -106,6 +109,57 @@ Volatile    // Letting the compiler know if the variable can change value and th
 While       // While loop statements.
 
 
+Coding rules
+
+Function declaration is as follows:
+Return-datatype followed by \r\n or \n
+Function name followedl by \r\n
+parameter name 1 : datatype = <default argument> followed by \r\n or \n, this repeats zero to n times.
+Followed by () with \r\n or \n
+Followed by { with \r\n or \n
+Followed by function body
+Followed by } with \r\n or \n
+
+
+Class keyword has to be follwed by \r\n or \n
+Followed by <classname value> with \r\n
+Followed by optional Inherits with \r\n
+Followed by if Inherits exists, Base classes with the visibility specifier with \r\n or \n.
+Followed by '{' with \r\n
+Followed by visibility specifier Public, Private or Protected followed by '{' with \r\n or \n
+Followed by members and methods
+Followed by '}' visibility specifier ending with \r\n or \n
+Note: there can be n occurrences of Visibility specifiers.
+Followed by '}' with ';' and \r\n or \n
+
+
+Template keyword is followed by \r\n or \n
+TemplateClassName or TemplateFunctionName with \r\n
+Parameter name followed by ':' Type keyword with \r\n or \n, there can be n number of these types.
+Followed by '{' with \r\n or \n
+Followed by code if it is a function 
+Followed by Members and methods declaration just as in the case of class if its a template class. 
+Followed by '}' with  ';' and \r\n or \n
+
+
+Variable declaration and defintion is as follows
+<variable name> : datatype = <initialization value> ;
+
+
+Member Declaration is as follows:
+Same as variable, except inside a visibility specifier(mandatory) 
+
+
+Bit member specification is as follows
+<member name> : datatype { <bitcount> : <membername1>, .... <bitcount> : <membername n> } = <initialization value> ; , it can be multiline but comma separated
+
+
+Method Declaration is as follows:
+Same as that of a function but defined inside a Class or outside the class
+If defined out side a Class, classname is prefixed with a '$'
+
+
+
 //ClassName.HMOT
 
 Class
@@ -113,7 +167,7 @@ ClassName
 {
 	Public 
 	{
-		a: I32 = 0; Block //Block prevents set/get from happening.
+		a: I32 = 0; Block //Block prevents Set/Get/Setall/Getall autofunction creation from happening.
 		b: I64 = 0; Block 
 		c: Ldouble = 0.0; Block
 
@@ -159,23 +213,40 @@ ClassName
 
 //End of ClassName.HMOT
 
+
+
+
+
+
+
+
+
 //Begin of EmptyClass.HMOT
 Class
 EmptyClass
 {
 	Public
 	{
-		EmptyClass()
+		EmptyClass
+		()
 		{
 		}
 
-		~EmptyClass()
+		~EmptyClass
+		()
 		{
 		}
 
 	}
 }
 //End of EmptyClass.HMOT
+
+
+
+
+
+
+
 
 
 //Begin of ClassName2.HMOT
@@ -221,6 +292,15 @@ EmptyClass Private
 //End of ClassName2.HMOT
 
 
+
+
+
+
+
+
+
+
+
 //Begin of ClassName2.CMOT
 
 
@@ -240,6 +320,8 @@ print4
 	Return;	
 }
 
+
+
 //Method body, where in Class-Name is Prefixed with $ to let the compiler know its Method implementation
 $ClassName
 Overridable //Necessary to make it more readable, without having to switch to .HMOT file, Mandatory if the Method Declaration has it
@@ -250,7 +332,22 @@ y:int       //Parameter name: type followed by \r\n or \n
 {
 	cout.expect("%s").write("Hello Universe from derived\n");
 }
+
+
+
+
+
+
+
+
 //End of ClassName2.CMOT
+
+
+
+
+
+
+
 
 
 //Begin of TemplateClassName1.HMOT
@@ -281,6 +378,19 @@ TemplateClassName1
 
 
 //End of TemplateClassName1.HMOT
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Begin of ClassName3.HMOT
 
@@ -323,11 +433,18 @@ ClassName3
 
 		//Start of a BitMembers
 		x : Uchar { 3:x1, 4:x2, 1:y } = 0xC5;
+		//End of BitMembers
+
+
 		y : Char[512] = Contains { This is a text string which includes leading and 
     ending spaces; from the begining of \{ and \\r\\n or \\n or \}, Most 
-people maynot like this but this will allow people to do awesome
+ people maynot like this but this will allow people to do awesome 
 
-stuff. \\r,\\t,\\n has to be explicitly put and will not be included in the string.};
+ stuff. \\r,\\t,\\n has to be explicitly put and will not be included in the string. 
+ Under this all quotes and such can be put in without escaping, so for example we need 
+ to add JSON data, we can do it easily.};
+
+
 		y : Char[32] = Contains {Hello Universe!!!} ;
 
 		
@@ -346,7 +463,34 @@ Plugin ClassName1
 Plugin EmptyClass
 Plugin ClassName2
 
+Plugswitch //OSes
+Plugcase OS:WIN32
+	Value : I32 const = 123;
+Plugcase OS:WIN64
+	Value : I32 const = 1234;
+Plugcase OS:UNIX
+	Value : I32 const = 2345; 
+Plugdefault
+	Value : I32 const = 3456;
+Plugend
 
+
+Plugswitch . //Endianness
+Plugcase ENDIAN:LITTLE
+	bl : Boolean const = False;
+Plugcase ENDIAN:BIG
+	bl : Boolean const = True;
+Plugend
+
+
+Plugswitch
+Plugcase Defined: ( X >= 10 ) && ( X <= 100 )
+	str = Char* = " Between 10 and 100 ";
+Plugcase Defined: ( X < 10 )
+	str = Char* = "Less than 10";
+Plugdefault
+	str = Char* = "      Greater than 100 ";
+Plugend
 
 I32
 main
@@ -363,6 +507,53 @@ argv: Char**
 
 
 	mc1_1 : MyClass1*  = New Classname2();
+
+
+	cout.expect("%s").write("while loop begins\n");
+	i: UC = 0;
+	While( i < 128 )
+	{
+		i++;
+		cout.expect("%d\n").write(10);
+	}
+
+	x: I32 = 0;
+	cin.expect("%d").read(&x);
+
+	cout.expect("%s").write("do while loop begins\n");
+	Do
+	{
+		i++;
+		switch(i)
+		{
+			case 1:
+				cout.expect("%s\n").write(" Its a one ");
+				break;
+			case 2:
+				break;
+			default:
+				break;
+		}
+	} Qhile( i < 128 );
+
+
+	cout.expect("%s").write("for loop begins");
+	// i must be defined before use
+	For( i = 0; i < 138; i++ )
+	{
+		Ff( i % 3 == 0 )
+			cout.expect("%d\n").write(1000);
+		Elif ( i%3 == 1 )
+			continue;
+		Elif ( i%3 == 2)
+		{
+			cout.expect("%d\n").write(1500);
+			cout.expect("%d\n").write(1500);
+		}
+		Else
+			cout.expect("%d\n").write(3000);
+		
+	}
 
 	Return 0;
 }
