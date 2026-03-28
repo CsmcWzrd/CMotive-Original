@@ -7,96 +7,106 @@ Operators: standard c++ programming language operators including New and Delete
 All keywords start with caps.
 
 Object oriented programming language.
-With userspace thread support, network programming support, file support, io support, logging support, exception support, filesystem support, cross platform.
-Support for processors ARM, Intel x86, Intel 64 bit, Mips, Sparc, PowerPC and other processors
+With userspace thread support,
+	 network programming support, 
+	 file support, 
+	 STL support,
+	 io support,
+	 logging support,
+	 exception support,
+	 filesystem support,
+	 cross platform.
 
-Keywords of cclearly programming language
+Support for processors 
+	ARM, 
+	Intel x86, 
+	Intel 64 bit, 
+	Mips, 
+	Sparc, 
+	PowerPC 
+	and other processors
 
-Boolean
-Break
-Block
-Case
-Catch
-Char8
-Char16
-Char32
-Class
-Const
-Const_cast
-Continue
+Keywords of cclearly/cmotive programming language
+
+Blend // Blend is a replacement of the keyword Union in C
+Boolean // Boolean datatype
+Break // Break
+Block // Prevents set/get auto function creation from being created
+Case  // Case like C programming language
+Catch // Exception catching
+Catchall // Catch any and every exception
+Char     // Character datatype
+Char16   // Wide character 16bits
+Char32   // Wide character 32bits
+Class    // User defined type creation keyword like struct in C
+Const    // Setting the value as const value 
+Continue // Continues the Loop just like in C programming language 
 Contains // x : char* = Contains { data inside this block is considered as a string including beginning and ending spaces, with escape characters '/' for '{' and '}' and '/' } 
-Default
-Delete
-Do
-Double
-Dynamic_cast
-Dynamic
-Elif
-Else
-Enum
-Extern
-False
-Float
-For
-Foreach
-Get
-Getall
-Global 
-Goto
-I8
-I16
-I32
-I64
-If 
-Inherits
-Inline 
-Ldouble
-Package
-New
-Not
-Null
-Operation
-Overridable
-Plugin
-Plugcase // Plugcase OS:WIN32,WIN98,WINXP,WINVISTA,WIN7,WIN8,WIN81,WIN10,WIN11,WIN12/LINUX/UNIX PROCESSOR:X86 ENDIAN:LITTLE/BIG DEFINED:ABC<=10 DEFINED:(X>10)&&(X<=100)
-Plugdefault
-Plugswitch
-Plugbreak
-Plugend
-Private
-Protected
-Public
-Register
-Reinterpret_cast
-Replace //
-Return
-Set 
-Setall
-Sizeof
-Static
-Static_cast
-Struct
-Switch
-Template
-This
-Tstore//thread_local Throw 
-Throws
-True
-Try
-Type
-Typecast
-U8
-U16
-U32
-U64
-Union
-Variable
-Void
-Volatile
-While
+// Contains is a alternate way to inputing text string. The other way is \" and character representation is done like c using ' 
+Default  // Used in Switch case statement if none of the condition matches
+Delete   // To delete a dynamically created object
+Do       // Do keyword for do...while loop
+Double   // Double datatype
+Dynamic  // Dynamic is word used to create a storage buffer for Getall function Example :-    cn3: ClassName3 = new (); Dynamic struct a = cn3.GetAll(); a : int a = (int)Get@x();
+Elif     // Elif equals else if 
+Else     // Final else
+Enum     // Enumerated datatype
+Extern   // Same as extern in C 
+False    // Boolean value = 0
+Float    // Equivalent to float datatype
+For      // Equivalent to for loop 
+Fptr     // Equivalent to function pointerm, prefixed to a function declaration and it becomes a type to that function declaration.
+Get      // Get functionality caller for a member of a class, followed by '@' and function paranthesis only. Will not work with Block ed members.
+Getall   // Get all functionality, Will not work with Block ed members. Has to be in order of the members defined.
+Global   // Declare a variable a Globally accesible 
+Goto     // Same as Goto in C programming language
+I16      // short signed integer 2 bytes   
+I32      // integer 4 bytes
+I64      // integer 8 bytes
+If       // If condition 
+Inherits // To specify if a Class inherits from another class
+Inline   // To define an inline function 
+Ldouble  // Long double data type
+Package  // To define a package, equivalent to namespaces in C++, Plugin Stdio; Plugin Abc::DEFG::xyz;
+New      // To dynamically create a memory allocation of a Class/Type and call the constructor.
+Not      // Same as !
+Null     // Value of 0
+Operation   // Operation keyword for operator overloading
+Overridable // Letting the programmer know if this function needs to be Overridden if its an interface function or can be Overridden if its needed.
+Plugin      // Similar to Import in python / Java
+Plugcase    // Plugcase OS:WIN32,WIN98,WINXP,WINVISTA,WIN7,WIN8,WIN81,WIN10,WIN11,WIN12/LINUX/UNIX PROCESSOR:X86 ENDIAN:LITTLE/BIG DEFINED:ABC<=10 DEFINED:(X>10)&&(X<=100)
+Plugdefault // Default Plugcase value, if all else doesn't match , mandatory
+Plugswitch  // Plugswitch statement, preceeding Plugcase
+Plugend     // Plugend, letting the compiler know that Plugswitch has ended
+Private     // Private visibility specifier, same as private in C++ or Java
+Protected   // Protected visibility specifier, same as protected in C++ or Java
+Public      // Public visibility specifier, same as public in C++ or Java   
+Register    // Specify the compiler to use a register variable here
+Replace     // Same as #define for a function or value in C 
+Return      // Return statement from a function
+Set         // Set function caller for a member of a class, followed by '@' and function paranthesis with the same datatype argument. Will not work with Block ed members.
+Setall      // Set all functionality, Will not work with Block ed members. Has to be in order of the members defined.
+Sizeof      // Sizeof compile type value of the size of the datatype or array ..etc
+Static      // Same as static in C programming language
+Struct      // Dynamic buffer creation.
+Switch      // equivalent to C programming language.
+Template    // Template type specifier
+Throw       // Throw an exception from a method or function
+This        // same as this in C++ or self in Python
+Tstore      // thread_local specifier.
+True        // Boolean type
+Try         // Exception handling start
+Type        // Type name specifier for template Class or Functions
+Uchar       // Unsigned char equivalent of C programming language    
+U16         // Unsigned short equivalent in C programming language
+U32         // Unsigned int equivalent in C programming language
+U64         // unsigned long long int equivalent in C programming language
+Void        // Void, same as C/C++ void
+Volatile    // Letting the compiler know if the variable can change value and the compiler shouldn't do any optimizations on it.
+While       // While loop statements.
 
 
-//ClassName.HHH
+//ClassName.HMOT
 
 Class
 ClassName
@@ -107,11 +117,13 @@ ClassName
 		b: I64 = 0; Block 
 		c: Ldouble = 0.0; Block
 
-		Classname()
+		Classname
+		()
 		{
 		}
 		
-		~Classname()
+		~Classname
+        ()
 		{
 		}
 
@@ -126,7 +138,7 @@ ClassName
 		}
 
 		Overridable
-		void
+		Void
 		print2
 		x:int
 		y:int
@@ -134,7 +146,7 @@ ClassName
 		
 
 		Overridable
-		void
+		Void
 		print3
 		x:int = 1
 		y:int = 2
@@ -145,9 +157,9 @@ ClassName
 	}
 };
 
-//End of ClassName.HHH
+//End of ClassName.HMOT
 
-//Begin of EmptyClass.HHH
+//Begin of EmptyClass.HMOT
 Class
 EmptyClass
 {
@@ -163,10 +175,10 @@ EmptyClass
 
 	}
 }
-//End of EmptyClass.HHH
+//End of EmptyClass.HMOT
 
 
-//Begin of ClassName2.HHH
+//Begin of ClassName2.HMOT
 Class
 ClassName2
 Inherits
@@ -175,19 +187,30 @@ EmptyClass Private
 {
 	Public 
 	{
-		Classname2()
-		{
-		}
-		
-		~Classname2()
+		Classname2  //Constructor
+		()
 		{
 		}
 
-		overridable
-		void
+		Classname2  //Constructor with default parameters
+		_x : I32 = 1234
+		_y: I32 = 12
+		()
+		{
+			x = _x;
+			y = _y;
+		}
+		
+		~Classname2
+		()
+		{
+		}
+
+		Overridable
+		Void
 		print2
-		x:int = 1
-		y:int = 2
+		x:I32 = 1
+		y:I32 = 2
 		()  // pure virtual function's body 
 		{
 			cout.expect("%s").write("Hello Universe\n");
@@ -195,24 +218,42 @@ EmptyClass Private
 
 	}
 };
-//End of ClassName2.HHH
+//End of ClassName2.HMOT
 
 
-//Begin of ClassName2.CCC
-ClassName2:
-overridable
+//Begin of ClassName2.CMOT
+
+
+//Method Definition written outside a class
+
+
 void
-print3
-x:int
-y:int
+print4
+()
+{
+	cout.expect("%s - %d - %# - %% - %@  ).write("Hello Universe from a random function \n", 1234 
+		//Filename
+		//Function name or Method name depending 
+		//Line number
+		//This feature may be removed
+	);
+	Return;	
+}
+
+//Method body, where in Class-Name is Prefixed with $ to let the compiler know its Method implementation
+$ClassName
+Overridable //Necessary to make it more readable, without having to switch to .HMOT file, Mandatory if the Method Declaration has it
+print3      //Method Name
+x:int       //Parameter name: type followed by \r\n or \n
+y:int       //Parameter name: type followed by \r\n or \n
 ()
 {
 	cout.expect("%s").write("Hello Universe from derived\n");
 }
-//End of ClassName2.CCC
+//End of ClassName2.CMOT
 
 
-//Begin of TemplateClassName1.HHH
+//Begin of TemplateClassName1.HMOT
 
 Template
 A: Type
@@ -223,7 +264,7 @@ TemplateClassName1
 {
 	public 
 	{
-		a: A; Block
+		a: A; Block //Block here signifies there wont be a set/get functionality
 		b: B; Block
 		c: C; Block
 
@@ -239,13 +280,91 @@ TemplateClassName1
 };
 
 
-//End of TemplateClassName1.HHH
+//End of TemplateClassName1.HMOT
+
+//Begin of ClassName3.HMOT
+
+
+Blend 
+{
+	intVal  : I32;
+	intVal2 : I64;
+	floVal  : Float;
+	ldVal   : Ldouble;
+};
+
+Class
+ClassName3
+{
+	Public
+	{
+		Class
+		ClassName4
+		{
+			Public
+			{
+				x:I32 = 0;
+				y:I32 = 123;
+				z:Float = 12.345F;
+			}
+
+			ClassName4
+			()
+			{
+			}
+
+			~ClassName4
+			()
+			{
+			}
+		};
+
+		
+
+		//Start of a BitMembers
+		x : Uchar { 3:x1, 4:x2, 1:y } = 0xC5;
+		y : Char[512] = Contains { This is a text string which includes leading and 
+    ending spaces; from the begining of \{ and \\r\\n or \\n or \}, Most 
+people maynot like this but this will allow people to do awesome
+
+stuff. \\r,\\t,\\n has to be explicitly put and will not be included in the string.};
+		y : Char[32] = Contains {Hello Universe!!!} ;
+
+		
+
+	}
+};
 
 
 
-//Begin of Main.CCC
+//End of ClassName3.CMOT
 
+//Begin of Main.CMOT
 
+Plugin Sys::Stdio
 Plugin ClassName1
 Plugin EmptyClass
 Plugin ClassName2
+
+
+
+I32
+main
+argc: I32
+argv: Char**
+()
+{
+	cout.expect("%s").("Hello Universe");
+
+	mc2_1 : Classname2 = New ();
+	mc2_2 : Classname2;
+	mc2_3 : Classname2 = New ( 1, 2 ); //Call to the create an Object of Classname2 with arguments 1 and 2, dynamically allocated
+	mc2_4 : Classname2 = New Classname2();
+
+
+	mc1_1 : MyClass1*  = New Classname2();
+
+	Return 0;
+}
+
+//End of Main.CMOT
