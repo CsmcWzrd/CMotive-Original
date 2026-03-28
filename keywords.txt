@@ -158,6 +158,16 @@ Method Declaration is as follows:
 Same as that of a function but defined inside a Class or outside the class
 If defined out side a Class, classname is prefixed with a '$'
 
+Constructor declaration is defined just like a method without return datatype. Can have parameters and can have default arguments similar to C and C++;
+Desstructor declaration is defined just like a method prefixed with ~ and without a return datatype.
+
+Rest of the operators are exactly same as C and C++.
+Methods are called with . or, -> if its with a pointer.
+Members are accessed with a . or, -> if its with a pointer.
+<< is left shift only
+>> is right shift only
+>>> is right rotate shift only
+<<< is left rotate shift only
 
 
 //ClassName.HMOT
