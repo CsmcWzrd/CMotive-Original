@@ -1,0 +1,3 @@
+package Sys.Logging;
+func info(message): Int;
+func error(message): Int;

@@ -1,0 +1,2 @@
+package Sys.Thread;
+class Thread { func start(): Int; func join(): Int; }

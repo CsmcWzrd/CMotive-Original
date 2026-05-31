@@ -1,0 +1,2 @@
+package Sys.File;
+class File { func open(path): Int; func close(): Int; }

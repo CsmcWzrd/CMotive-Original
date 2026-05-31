@@ -1,0 +1,3 @@
+package Sys.Filesystem;
+func exists(path): Int;
+func mkdir(path): Int;

@@ -1,0 +1,3 @@
+package Sys.Stdio;
+func print(value): Int;
+func println(value): Int;

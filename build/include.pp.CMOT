@@ -1,0 +1,5 @@
+// cmotivepp: begin /Users/anoopkumarnarayanan/Desktop/Projects/cmotive-source/tests/conformance/include.CMOT
+// cmotivepp: begin /Users/anoopkumarnarayanan/Desktop/Projects/cmotive-source/tests/conformance/sample.HMOT
+// cmotivepp: end /Users/anoopkumarnarayanan/Desktop/Projects/cmotive-source/tests/conformance/sample.HMOT
+func main(): Int { return 0; }
+// cmotivepp: end /Users/anoopkumarnarayanan/Desktop/Projects/cmotive-source/tests/conformance/include.CMOT
