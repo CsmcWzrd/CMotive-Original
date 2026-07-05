@@ -2,6 +2,12 @@
 
 CMotive is a production-oriented native language source tree scaffold. It includes `cmotivepp`, `cmotive`, and `cmotive++`, root-only platform Makefiles, native object/executable generation via `-c` and `-o`, platform linker routing, strip-compatible native artifacts, docs, tests, release packaging, and provenance metadata.
 
+
+# Information    
+Designed by Anoop Kumar Narayanan     
+Coded by ChatGPT 5.x        
+NOTE: Code doesn't represent the Design neither does it represent the requirements specified.    
+
 ## Extensions
 
 - Source: `.CMOT`, `.CMTV`
