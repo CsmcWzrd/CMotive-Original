@@ -24,10 +24,16 @@ See `docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md` for the detailed requirement-by-
 | Exceptions | Implemented in bootstrap compiler | `Try`/`Catch`/`Catchall`/`Throw` lower to `setjmp`/`longjmp`; protected stack objects register destructor cleanup frames that run during unwinding. |
 | Package/Plugin system | Implemented in preprocessor | `Plugin Foo::Bar` resolves and materializes `.HMOT/.HMTV/.CMOT/.CMTV` package files before parsing. |
 | Separate compilation | Implemented scaffold | `-c`, object input link path. |
-| Sys::Stdio/File/Filesystem/Logging/Thread | API scaffold | Headers under `lib/Sys`. |
-| Sys::Net | Placeholder | Reserved network namespace. |
-| Sys::Exception | API scaffold | Exception class and throwText package surface. |
+| Sys::Stdio/File/Filesystem/Logging/Thread | Expanded runtime-backed API surface | Headers under `lib/Sys`; generated C embeds helper implementations and `runtime.c` mirrors them. |
+| Sys::Net | Reserved runtime-backed placeholder | TCP/UDP/raw socket API surface exists with deterministic placeholder helpers. |
+| Sys::Exception | Expanded API surface | `Exception`, `throwText`, `throwCode`, and `lastCode`; integrates with compiler exception lowering. |
 
 | Keyword/type synonyms | Implemented | `Int16`, `Int32`, `Int`, `Uint16`, `Uint32`, and `Uint` are accepted as aliases for `I16`, `I32`, `I64`, `U16`, `U32`, and `U64`. |
+
+
+| Sys::Locks | Implemented runtime-backed surface | Mutex, recursive mutex, RW lock, spin-lock facade, condition variable, semaphore, and free wrapper APIs. |
+| Sys::Math | Implemented runtime-backed surface | Broad Linux/libm-style math package backed by generated C helpers and `-lm`. |
+| Sys::String | Implemented runtime-backed surface | String/memory/conversion/case helpers plus `str_parse` table parser. |
+| Sys::Wide | Implemented runtime-backed surface | Char16/Char32 length/compare/copy/concat/find helpers. |
 
 | Target/Hit dispatch | Implemented in bootstrap compiler | `Hit Sender:Id` registers a function/method handler and `Target Sender:Object:args:Id` lowers to deterministic direct dispatch, with unresolved routes failing through `CMotive_UnresolvedTarget`. |

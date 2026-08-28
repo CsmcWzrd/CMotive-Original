@@ -18,21 +18,62 @@ Socket
         openTcp
         ()
         {
-            Return 0;
+            fd = cmotive_sys_net_socket_tcp();
+            Return fd;
         }
 
         I32
         openUdp
         ()
         {
-            Return 0;
+            fd = cmotive_sys_net_socket_udp();
+            Return fd;
+        }
+
+        I32
+        openRaw
+        ()
+        {
+            fd = cmotive_sys_net_socket_raw();
+            Return fd;
         }
 
         I32
         close
         ()
         {
-            Return 0;
+            r : I32 = cmotive_sys_net_socket_close(fd);
+            fd = -1;
+            Return r;
         }
     }
 };
+
+I32
+socketTcp
+()
+{
+    Return cmotive_sys_net_socket_tcp();
+}
+
+I32
+socketUdp
+()
+{
+    Return cmotive_sys_net_socket_udp();
+}
+
+I32
+socketRaw
+()
+{
+    Return cmotive_sys_net_socket_raw();
+}
+
+I32
+socketClose
+fd : I32
+()
+{
+    Return cmotive_sys_net_socket_close(fd);
+}

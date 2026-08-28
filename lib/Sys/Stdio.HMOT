@@ -23,7 +23,7 @@ Cout
         value : Char*
         ()
         {
-            Return 0;
+            Return cmotive_sys_stdio_print(value);
         }
     }
 };
@@ -56,7 +56,7 @@ print
 value : Char*
 ()
 {
-    Return 0;
+    Return cmotive_sys_stdio_print(value);
 }
 
 I32
@@ -64,5 +64,29 @@ println
 value : Char*
 ()
 {
-    Return 0;
+    Return cmotive_sys_stdio_println(value);
+}
+
+
+I32
+puts
+value : Char*
+()
+{
+    Return cmotive_sys_stdio_puts(value);
+}
+
+I32
+putchar
+ch : I32
+()
+{
+    Return cmotive_sys_stdio_putchar(ch);
+}
+
+I32
+flush
+()
+{
+    Return cmotive_sys_stdio_flush();
 }

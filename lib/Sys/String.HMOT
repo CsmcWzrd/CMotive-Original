@@ -1,0 +1,354 @@
+Package Sys::String;
+Plugin Sys::STL;
+
+// Byte string and memory package.  Strings are Char* and results that allocate
+// memory must be released with freePtr or str_parse_free as documented.
+
+U64
+strlen
+s : Char*
+()
+{
+    Return cmotive_sys_string_strlen(s);
+}
+
+Char*
+strcpy
+dst : Char*
+src : Char*
+()
+{
+    Return cmotive_sys_string_strcpy(dst, src);
+}
+
+Char*
+strncpy
+dst : Char*
+src : Char*
+n : U64
+()
+{
+    Return cmotive_sys_string_strncpy(dst, src, n);
+}
+
+Char*
+strcat
+dst : Char*
+src : Char*
+()
+{
+    Return cmotive_sys_string_strcat(dst, src);
+}
+
+Char*
+strncat
+dst : Char*
+src : Char*
+n : U64
+()
+{
+    Return cmotive_sys_string_strncat(dst, src, n);
+}
+
+I32
+strcmp
+a : Char*
+b : Char*
+()
+{
+    Return cmotive_sys_string_strcmp(a, b);
+}
+
+I32
+strncmp
+a : Char*
+b : Char*
+n : U64
+()
+{
+    Return cmotive_sys_string_strncmp(a, b, n);
+}
+
+Char*
+strchr
+s : Char*
+c : I32
+()
+{
+    Return cmotive_sys_string_strchr(s, c);
+}
+
+Char*
+strrchr
+s : Char*
+c : I32
+()
+{
+    Return cmotive_sys_string_strrchr(s, c);
+}
+
+Char*
+strstr
+haystack : Char*
+needle : Char*
+()
+{
+    Return cmotive_sys_string_strstr(haystack, needle);
+}
+
+Char*
+strdup
+s : Char*
+()
+{
+    Return cmotive_sys_string_strdup(s);
+}
+
+Void*
+memset
+dst : Void*
+value : I32
+n : U64
+()
+{
+    Return cmotive_sys_string_memset(dst, value, n);
+}
+
+Void*
+memcpy
+dst : Void*
+src : Void*
+n : U64
+()
+{
+    Return cmotive_sys_string_memcpy(dst, src, n);
+}
+
+Void*
+memmove
+dst : Void*
+src : Void*
+n : U64
+()
+{
+    Return cmotive_sys_string_memmove(dst, src, n);
+}
+
+I32
+memcmp
+a : Void*
+b : Void*
+n : U64
+()
+{
+    Return cmotive_sys_string_memcmp(a, b, n);
+}
+
+I32
+toUpperChar
+c : I32
+()
+{
+    Return cmotive_sys_string_toupper(c);
+}
+
+I32
+toLowerChar
+c : I32
+()
+{
+    Return cmotive_sys_string_tolower(c);
+}
+
+I32
+isAlpha
+c : I32
+()
+{
+    Return cmotive_sys_string_isalpha(c);
+}
+
+I32
+isDigit
+c : I32
+()
+{
+    Return cmotive_sys_string_isdigit(c);
+}
+
+I32
+isSpace
+c : I32
+()
+{
+    Return cmotive_sys_string_isspace(c);
+}
+
+I32
+atoi
+s : Char*
+()
+{
+    Return cmotive_sys_string_atoi(s);
+}
+
+I64
+atoll
+s : Char*
+()
+{
+    Return cmotive_sys_string_atoll(s);
+}
+
+I64
+strtoll
+s : Char*
+base : I32
+()
+{
+    Return cmotive_sys_string_strtoll(s, base);
+}
+
+Double
+strtod
+s : Char*
+()
+{
+    Return cmotive_sys_string_strtod(s);
+}
+
+Char*
+trim
+s : Char*
+()
+{
+    Return cmotive_sys_string_trim(s);
+}
+
+Char*
+toUpper
+s : Char*
+()
+{
+    Return cmotive_sys_string_to_upper(s);
+}
+
+Char*
+toLower
+s : Char*
+()
+{
+    Return cmotive_sys_string_to_lower(s);
+}
+
+Void
+freePtr
+p : Void*
+()
+{
+    cmotive_sys_string_free(p);
+    Return;
+}
+
+// Parses text into an opaque List<List<Char*>> / Vector<Vector<Char*>> compatible
+// table handle.  Use str_parse_rows/cols/at and str_parse_free for access.
+Void*
+str_parse
+input : Char*
+record_delimiters : Char*
+field_delimiters : Char*
+escape : Char
+()
+{
+    Return cmotive_sys_string_str_parse(input, record_delimiters, field_delimiters, escape);
+}
+
+U64
+str_parse_rows
+table : Void*
+()
+{
+    Return cmotive_sys_string_str_parse_rows(table);
+}
+
+U64
+str_parse_cols
+table : Void*
+row : U64
+()
+{
+    Return cmotive_sys_string_str_parse_cols(table, row);
+}
+
+Char*
+str_parse_at
+table : Void*
+row : U64
+col : U64
+()
+{
+    Return cmotive_sys_string_str_parse_at(table, row, col);
+}
+
+Void
+str_parse_free
+table : Void*
+()
+{
+    cmotive_sys_string_str_parse_free(table);
+    Return;
+}
+
+U64
+strspn
+s : Char*
+accept : Char*
+()
+{
+    Return cmotive_sys_string_strspn(s, accept);
+}
+
+U64
+strcspn
+s : Char*
+reject : Char*
+()
+{
+    Return cmotive_sys_string_strcspn(s, reject);
+}
+
+Char*
+strpbrk
+s : Char*
+accept : Char*
+()
+{
+    Return cmotive_sys_string_strpbrk(s, accept);
+}
+
+Char*
+strerror
+errnum : I32
+()
+{
+    Return cmotive_sys_string_strerror(errnum);
+}
+
+I32
+strcasecmp
+a : Char*
+b : Char*
+()
+{
+    Return cmotive_sys_string_strcasecmp(a, b);
+}
+
+I32
+strncasecmp
+a : Char*
+b : Char*
+n : U64
+()
+{
+    Return cmotive_sys_string_strncasecmp(a, b, n);
+}

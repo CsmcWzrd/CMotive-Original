@@ -7,21 +7,58 @@ Thread
     {
         entry : Void* = Null; Block
         userdata : Void* = Null; Block
+        handle : Void* = Null; Block
+
+        Thread
+        ()
+        {
+        }
 
         I32
         start
         ()
         {
-            Return 0;
+            handle = cmotive_sys_thread_start(entry, userdata);
+            Return handle != Null;
         }
 
         I32
         join
         ()
         {
-            Return 0;
+            Return cmotive_sys_thread_join(handle);
+        }
+
+        I32
+        detach
+        ()
+        {
+            Return cmotive_sys_thread_detach(handle);
         }
     }
 };
+
+Void*
+current
+()
+{
+    Return cmotive_sys_thread_current();
+}
+
+Void
+sleepMs
+milliseconds : U32
+()
+{
+    cmotive_sys_thread_sleep_ms(milliseconds);
+    Return;
+}
+
+I32
+yield
+()
+{
+    Return cmotive_sys_thread_yield();
+}
 
 Tstore I32 cmotive_thread_local_errno : I32 = 0;

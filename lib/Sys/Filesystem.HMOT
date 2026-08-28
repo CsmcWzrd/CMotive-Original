@@ -5,7 +5,23 @@ exists
 path : Char*
 ()
 {
-    Return False;
+    Return cmotive_sys_filesystem_exists(path);
+}
+
+Boolean
+isFile
+path : Char*
+()
+{
+    Return cmotive_sys_filesystem_is_file(path);
+}
+
+Boolean
+isDirectory
+path : Char*
+()
+{
+    Return cmotive_sys_filesystem_is_directory(path);
 }
 
 I32
@@ -13,7 +29,7 @@ mkdir
 path : Char*
 ()
 {
-    Return 0;
+    Return cmotive_sys_filesystem_mkdir(path);
 }
 
 I32
@@ -21,5 +37,29 @@ remove
 path : Char*
 ()
 {
-    Return 0;
+    Return cmotive_sys_filesystem_remove(path);
+}
+
+I32
+rename
+old_path : Char*
+new_path : Char*
+()
+{
+    Return cmotive_sys_filesystem_rename(old_path, new_path);
+}
+
+I64
+size
+path : Char*
+()
+{
+    Return cmotive_sys_filesystem_size(path);
+}
+
+Char*
+currentPath
+()
+{
+    Return cmotive_sys_filesystem_current_path();
 }

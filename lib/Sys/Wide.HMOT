@@ -1,0 +1,150 @@
+Package Sys::Wide;
+
+// 16-bit and 32-bit wide-string helpers.  Char16 maps to uint16_t and Char32
+// maps to uint32_t in generated C.
+
+U64
+w16len
+s : Char16*
+()
+{
+    Return cmotive_sys_wide16_len(s);
+}
+
+I32
+w16cmp
+a : Char16*
+b : Char16*
+()
+{
+    Return cmotive_sys_wide16_cmp(a, b);
+}
+
+Char16*
+w16cpy
+dst : Char16*
+src : Char16*
+()
+{
+    Return cmotive_sys_wide16_cpy(dst, src);
+}
+
+Char16*
+w16ncpy
+dst : Char16*
+src : Char16*
+n : U64
+()
+{
+    Return cmotive_sys_wide16_ncpy(dst, src, n);
+}
+
+Char16*
+w16chr
+s : Char16*
+c : Char16
+()
+{
+    Return cmotive_sys_wide16_chr(s, c);
+}
+
+U64
+w32len
+s : Char32*
+()
+{
+    Return cmotive_sys_wide32_len(s);
+}
+
+I32
+w32cmp
+a : Char32*
+b : Char32*
+()
+{
+    Return cmotive_sys_wide32_cmp(a, b);
+}
+
+Char32*
+w32cpy
+dst : Char32*
+src : Char32*
+()
+{
+    Return cmotive_sys_wide32_cpy(dst, src);
+}
+
+Char32*
+w32ncpy
+dst : Char32*
+src : Char32*
+n : U64
+()
+{
+    Return cmotive_sys_wide32_ncpy(dst, src, n);
+}
+
+Char32*
+w32chr
+s : Char32*
+c : Char32
+()
+{
+    Return cmotive_sys_wide32_chr(s, c);
+}
+
+Char16*
+w16cat
+dst : Char16*
+src : Char16*
+()
+{
+    Return cmotive_sys_wide16_cat(dst, src);
+}
+
+I32
+w16ncmp
+a : Char16*
+b : Char16*
+n : U64
+()
+{
+    Return cmotive_sys_wide16_ncmp(a, b, n);
+}
+
+Char16*
+w16rchr
+s : Char16*
+c : Char16
+()
+{
+    Return cmotive_sys_wide16_rchr(s, c);
+}
+
+Char32*
+w32cat
+dst : Char32*
+src : Char32*
+()
+{
+    Return cmotive_sys_wide32_cat(dst, src);
+}
+
+I32
+w32ncmp
+a : Char32*
+b : Char32*
+n : U64
+()
+{
+    Return cmotive_sys_wide32_ncmp(a, b, n);
+}
+
+Char32*
+w32rchr
+s : Char32*
+c : Char32
+()
+{
+    Return cmotive_sys_wide32_rchr(s, c);
+}

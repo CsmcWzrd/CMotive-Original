@@ -115,6 +115,9 @@ def main():
     ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_target_hit_sender.CMOT', '-o', 'build/target_hit_sender' + exe_suffix])
     ok &= run_expect_code(['build/target_hit_sender' + exe_suffix], 0)
 
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_sys_packages_expanded.CMOT', '-o', 'build/sys_packages_expanded' + exe_suffix])
+    ok &= run_expect_code(['build/sys_packages_expanded' + exe_suffix], 0)
+
     ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1

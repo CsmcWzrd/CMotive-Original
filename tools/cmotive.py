@@ -75,7 +75,14 @@ def link_objects(ld, objs, out, libdirs, libs, target_arch=None):
     cmd = [ld]
     cmd += arch_flags(target_arch)
     cmd += [str(p) for p in objs]
-    cmd += ['-L' + d for d in libdirs] + ['-l' + l for l in libs] + ['-o', str(out)]
+    cmd += ['-L' + d for d in libdirs]
+    # The generated standard-library runtime includes math and concurrency helpers.
+    # Add the portable linker switches by default while still respecting explicit user libs.
+    if platform.system() != 'Windows':
+        cmd += ['-pthread']
+        if 'm' not in libs:
+            cmd += ['-lm']
+    cmd += ['-l' + l for l in libs] + ['-o', str(out)]
     return cmd
 
 def main(argv=None):

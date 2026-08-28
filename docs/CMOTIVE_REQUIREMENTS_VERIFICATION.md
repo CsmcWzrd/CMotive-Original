@@ -29,14 +29,15 @@ language requirements.
 | macOS ARM64 linker flag | Implemented | Darwin builds pass `-arch <target>` for compile and link. |
 | Strip-compatible symbols | Implemented scaffold | Native object/executable generation uses normal platform toolchain/debug symbol format. |
 | Sys::Stdio | Implemented scaffold | Fluent `cout.expect(...).write(...)` and `cin.expect(...).read(...)` lower to C stdio. |
-| Sys::File, Filesystem, Logging, Thread, Net, STL, Exception | Package surfaces updated | Headers and runtime placeholders added/updated under `lib/Sys`; `Sys::STL` template headers now exercise real template instantiation. |
+| Sys::File, Filesystem, Logging, Thread, Net, STL, Exception | Expanded package surfaces | Headers under `lib/Sys` now include broader runtime-backed APIs; `Sys::STL` template headers still exercise real template instantiation and `Sys::Net` keeps deterministic reserved placeholder behavior. |
+| Sys::Locks, Math, String, Wide | Implemented package surfaces | Added `lib/Sys/Locks.HMOT`, `Math.HMOT`, `String.HMOT`, and `Wide.HMOT`; generated C embeds portable helper implementations and `lib/Sys/runtime.c` mirrors them for explicit runtime builds. |
 | `Target`/`Hit` dispatch | Implemented in bootstrap compiler | Parser records `Target` statements and `Hit` function/method prefixes; codegen registers handlers by `(sender, id)` and lowers targets to direct static calls or guarded unresolved-route diagnostics. |
 
 ## Known limitations after this iteration
 
 - The native C++ compiler sources are still implementation scaffolds; the Python bootstrap
   compiler path is the executable implementation.
-- Userspace threads, sockets, and concrete STL container runtime behavior remain package-stable scaffolds.
+- Userspace threads, concrete socket operations, and full STL container algorithms remain package-stable scaffolds; Sys::Locks and most Sys::Math/String/Wide helpers now have runtime-backed behavior.
 - Template instantiation is implemented for concrete type-parameter class/function templates in the bootstrap compiler; advanced constraints/partial specialization are not yet implemented.
 - Exception unwinding is implemented with `setjmp`/`longjmp` in generated C; destructor cleanup is now implemented for stack objects created in generated `Try` scopes. Full automatic lifetime finalization for every block remains future work.
 - Multiple inheritance is rejected for this CMotive single-inheritance implementation; one concrete base is validated and lowered.
@@ -47,4 +48,4 @@ language requirements.
 ## Verification performed
 
 `make -f Makefile.linux test` passed after the implementation pass.  The tests now
-cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header parsing, concrete class struct lowering, package-qualified method mangling, constructor/destructor chaining, type-based constructor overload resolution, virtual dispatch through vtable slots, destructor cleanup during exception unwinding, `New`/`Delete` runtime dispatch, keyword/type synonyms, x86_64 native target output, invalid-base diagnostics, control flow, preprocessor selection, concrete template instantiation, caught exception unwinding, real Plugin package loading, object generation, executable generation, emitted C, Target/Hit direct/object/sender dispatch, and preprocessing.
+cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header parsing, concrete class struct lowering, package-qualified method mangling, constructor/destructor chaining, type-based constructor overload resolution, virtual dispatch through vtable slots, destructor cleanup during exception unwinding, `New`/`Delete` runtime dispatch, keyword/type synonyms, x86_64 native target output, invalid-base diagnostics, control flow, preprocessor selection, concrete template instantiation, caught exception unwinding, real Plugin package loading, object generation, executable generation, emitted C, Target/Hit direct/object/sender dispatch, expanded Sys package compilation/execution, `str_parse`, `Sys::Locks`, `Sys::Math`, `Sys::String`, `Sys::Wide`, and preprocessing.
