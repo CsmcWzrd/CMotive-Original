@@ -62,3 +62,7 @@ package shape.
 ## STL/Algorithms/IO/Net/Dynamic Struct implementation pass
 
 See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.md` for the expanded standard-library, native sockets, native threads, formatted IO, and Dynamic Struct update.
+
+
+## Standard library object model audit
+See `docs/STDLIB_OBJECT_MODEL_AUDIT.md`. The preferred `Sys::STL`, `Sys::IO`, and `Sys::Algorithms` surfaces are now class/object-method APIs; legacy functional helper lowering is retained only for compatibility.

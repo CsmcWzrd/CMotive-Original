@@ -424,3 +424,90 @@ int cmotive_sys_net_listen(int fd, int backlog) { return listen(fd, backlog); }
 int cmotive_sys_net_accept(int fd) { return (int)accept(fd, NULL, NULL); }
 /* ---- end expanded CMotive runtime helpers ---- */
 
+
+
+/* ---- CMotive object-model Sys::STL/Sys::Algorithms/Sys::IO helpers ---- */
+typedef struct CMotive_AnyVector { unsigned char *data; uint64_t count; uint64_t cap; size_t elem; } CMotive_AnyVector;
+static void* cmotive_stl_vector_any_create(void) { return calloc(1, sizeof(CMotive_AnyVector)); }
+static int cmotive_stl_vector_any_reserve(void *h, uint64_t cap, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; unsigned char *n; if(!v) return -1; if(!elem) elem=1; if(v->elem==0) v->elem=elem; if(cap<=v->cap) return 0; n=(unsigned char*)realloc(v->data,(size_t)cap*v->elem); if(!n) return -1; v->data=n; v->cap=cap; return 0; }
+static int cmotive_stl_vector_any_push_back(void *h, const void *value, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(!v||!value) return -1; if(!elem) elem=1; if(v->count==v->cap && cmotive_stl_vector_any_reserve(h, v->cap? v->cap*2u:8u, elem)) return -1; memcpy(v->data + (size_t)v->count*v->elem, value, v->elem); v->count++; return 0; }
+static int cmotive_stl_vector_any_assign(void *h, uint64_t count, const void *value, size_t elem) { uint64_t i; CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(!v) return -1; if(cmotive_stl_vector_any_reserve(h,count,elem)) return -1; v->count=0; for(i=0;i<count;i++) cmotive_stl_vector_any_push_back(h,value,elem); return 0; }
+static int cmotive_stl_vector_any_get(void *h, uint64_t index, void *out, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; if(!v||!out||index>=v->count) return -1; memcpy(out, v->data + (size_t)index*v->elem, v->elem); return 0; }
+static int cmotive_stl_vector_any_set(void *h, uint64_t index, const void *value, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; if(!v||!value||index>=v->count) return -1; memcpy(v->data + (size_t)index*v->elem, value, v->elem); return 0; }
+static int cmotive_stl_vector_any_front(void *h, void *out, size_t elem) { (void)elem; return cmotive_stl_vector_any_get(h,0,out,elem); }
+static int cmotive_stl_vector_any_back(void *h, void *out, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(!v||v->count==0) return -1; return cmotive_stl_vector_any_get(h,v->count-1,out,elem); }
+static void* cmotive_stl_vector_any_data(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; return v ? v->data : NULL; }
+static int cmotive_stl_vector_any_empty(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; return (!v || v->count==0); }
+static uint64_t cmotive_stl_vector_any_size(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; return v ? v->count : 0u; }
+static uint64_t cmotive_stl_vector_any_capacity(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; return v ? v->cap : 0u; }
+static uint64_t cmotive_stl_vector_any_max_size(size_t elem) { return elem ? (uint64_t)(SIZE_MAX / elem) : 0u; }
+static void cmotive_stl_vector_any_clear(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(v) v->count=0; }
+static int cmotive_stl_vector_any_resize(void *h, uint64_t count, const void *value, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(!v) return -1; if(cmotive_stl_vector_any_reserve(h,count,elem)) return -1; if(count>v->count) { uint64_t i; for(i=v->count;i<count;i++) { if(value) memcpy(v->data+(size_t)i*v->elem,value,v->elem); else memset(v->data+(size_t)i*v->elem,0,v->elem); } } v->count=count; return 0; }
+static int cmotive_stl_vector_any_shrink_to_fit(void *h, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; unsigned char *n; (void)elem; if(!v) return -1; if(v->count==v->cap) return 0; if(!v->count) { free(v->data); v->data=NULL; v->cap=0; return 0; } n=(unsigned char*)realloc(v->data,(size_t)v->count*v->elem); if(!n) return -1; v->data=n; v->cap=v->count; return 0; }
+static int cmotive_stl_vector_any_insert(void *h, uint64_t index, const void *value, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(!v||!value) return -1; if(index>v->count) index=v->count; if(v->count==v->cap && cmotive_stl_vector_any_reserve(h,v->cap?v->cap*2u:8u,elem)) return -1; memmove(v->data+(size_t)(index+1)*v->elem, v->data+(size_t)index*v->elem, (size_t)(v->count-index)*v->elem); memcpy(v->data+(size_t)index*v->elem,value,v->elem); v->count++; return 0; }
+static int cmotive_stl_vector_any_erase(void *h, uint64_t index, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; if(!v||index>=v->count) return -1; memmove(v->data+(size_t)index*v->elem, v->data+(size_t)(index+1)*v->elem, (size_t)(v->count-index-1)*v->elem); v->count--; return 0; }
+static int cmotive_stl_vector_any_pop_back(void *h, void *out, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; if(!v||v->count==0) return -1; if(out) memcpy(out, v->data+(size_t)(v->count-1)*v->elem, v->elem); v->count--; return 0; }
+static void cmotive_stl_vector_any_swap(void *a, void *b) { CMotive_AnyVector tmp; if(!a||!b) return; tmp=*(CMotive_AnyVector*)a; *(CMotive_AnyVector*)a=*(CMotive_AnyVector*)b; *(CMotive_AnyVector*)b=tmp; }
+static void* cmotive_stl_vector_any_begin(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; return v ? v->data : NULL; }
+static void* cmotive_stl_vector_any_end(void *h, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; return (v && v->data) ? (v->data + (size_t)v->count*v->elem) : NULL; }
+static void* cmotive_stl_vector_any_rbegin(void *h, size_t elem) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; (void)elem; return (v && v->count) ? (v->data + (size_t)(v->count-1)*v->elem) : NULL; }
+static void* cmotive_stl_vector_any_rend(void *h) { (void)h; return NULL; }
+static void cmotive_stl_vector_any_destroy(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(v){ free(v->data); free(v);} }
+static void cmotive_stl_vector_any_sort_i64(void *h) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; if(v&&v->data&&v->elem==sizeof(int64_t)) qsort(v->data,(size_t)v->count,sizeof(int64_t),cmotive_i64_cmp_ex); }
+static int64_t cmotive_stl_vector_any_find_i64(void *h, int64_t needle) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; uint64_t i; if(!v||!v->data||v->elem!=sizeof(int64_t)) return -1; for(i=0;i<v->count;i++) if(((int64_t*)v->data)[i]==needle) return (int64_t)i; return -1; }
+static int64_t cmotive_stl_vector_any_binary_search_i64(void *h, int64_t needle) { CMotive_AnyVector *v=(CMotive_AnyVector*)h; uint64_t lo=0,hi=v?v->count:0; if(!v||!v->data||v->elem!=sizeof(int64_t)) return -1; while(lo<hi){ uint64_t mid=lo+(hi-lo)/2u; int64_t val=((int64_t*)v->data)[mid]; if(val==needle) return (int64_t)mid; if(val<needle) lo=mid+1u; else hi=mid; } return -1; }
+
+typedef struct CMotive_AnyMapEntry { char *key; unsigned char *value; } CMotive_AnyMapEntry;
+typedef struct CMotive_AnyMap { CMotive_AnyMapEntry *entries; uint64_t count; uint64_t cap; int multi; size_t elem; } CMotive_AnyMap;
+static void* cmotive_stl_map_any_create(int multi) { CMotive_AnyMap *m=(CMotive_AnyMap*)calloc(1,sizeof(CMotive_AnyMap)); if(m) m->multi=multi; return m; }
+static int cmotive_stl_map_any_reserve(void *h, uint64_t cap, size_t elem) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; CMotive_AnyMapEntry *n; if(!m) return -1; if(!elem) elem=1; if(!m->elem) m->elem=elem; if(cap<=m->cap) return 0; n=(CMotive_AnyMapEntry*)realloc(m->entries,(size_t)cap*sizeof(CMotive_AnyMapEntry)); if(!n) return -1; memset(n+m->cap,0,(size_t)(cap-m->cap)*sizeof(CMotive_AnyMapEntry)); m->entries=n; m->cap=cap; return 0; }
+static int64_t cmotive_stl_map_any_index(CMotive_AnyMap *m, const char *key) { uint64_t i; if(!m||!key) return -1; for(i=0;i<m->count;i++) if(strcmp(m->entries[i].key,key)==0) return (int64_t)i; return -1; }
+static int cmotive_stl_map_any_put(void *h, const char *key, const void *value, size_t elem) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; int64_t idx; if(!m||!key||!value) return -1; if(!m->multi && (idx=cmotive_stl_map_any_index(m,key))>=0) { memcpy(m->entries[idx].value,value,m->elem); return 0; } if(m->count==m->cap && cmotive_stl_map_any_reserve(h,m->cap?m->cap*2u:8u,elem)) return -1; m->entries[m->count].key=cmotive_strdup_local(key); m->entries[m->count].value=(unsigned char*)malloc(m->elem); if(!m->entries[m->count].value) return -1; memcpy(m->entries[m->count].value,value,m->elem); m->count++; return 0; }
+static int cmotive_stl_map_any_get(void *h, const char *key, void *out, size_t elem) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; int64_t idx; (void)elem; if(!m||!out||(idx=cmotive_stl_map_any_index(m,key))<0) return -1; memcpy(out,m->entries[idx].value,m->elem); return 0; }
+static int cmotive_stl_map_any_get_or(void *h, const char *key, void *inout, size_t elem) { if(cmotive_stl_map_any_get(h,key,inout,elem)!=0) return 1; return 0; }
+static int cmotive_stl_map_any_contains(void *h, const char *key) { return cmotive_stl_map_any_index((CMotive_AnyMap*)h,key) >= 0; }
+static uint64_t cmotive_stl_map_any_count(void *h, const char *key) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; uint64_t i,c=0; if(!m||!key) return 0; for(i=0;i<m->count;i++) if(strcmp(m->entries[i].key,key)==0) c++; return c; }
+static int cmotive_stl_map_any_erase(void *h, const char *key) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; int64_t idx; if(!m||(idx=cmotive_stl_map_any_index(m,key))<0) return -1; free(m->entries[idx].key); free(m->entries[idx].value); memmove(&m->entries[idx],&m->entries[idx+1],(size_t)(m->count-(uint64_t)idx-1u)*sizeof(CMotive_AnyMapEntry)); m->count--; return 0; }
+static void cmotive_stl_map_any_clear(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; uint64_t i; if(!m) return; for(i=0;i<m->count;i++){ free(m->entries[i].key); free(m->entries[i].value);} m->count=0; }
+static void cmotive_stl_map_any_destroy(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; if(m){ cmotive_stl_map_any_clear(h); free(m->entries); free(m);} }
+static uint64_t cmotive_stl_map_any_size(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; return m?m->count:0u; }
+static uint64_t cmotive_stl_map_any_capacity(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; return m?m->cap:0u; }
+static int cmotive_stl_map_any_empty(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; return !m||m->count==0; }
+static void cmotive_stl_map_any_swap(void *a, void *b) { CMotive_AnyMap tmp; if(!a||!b) return; tmp=*(CMotive_AnyMap*)a; *(CMotive_AnyMap*)a=*(CMotive_AnyMap*)b; *(CMotive_AnyMap*)b=tmp; }
+static void* cmotive_stl_map_any_begin(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; return m?m->entries:NULL; }
+static void* cmotive_stl_map_any_end(void *h) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; return (m&&m->entries)?(m->entries+m->count):NULL; }
+static void* cmotive_stl_map_any_find(void *h, const char *key) { CMotive_AnyMap *m=(CMotive_AnyMap*)h; int64_t idx=cmotive_stl_map_any_index(m,key); return (m&&idx>=0)?&m->entries[idx]:NULL; }
+static void* cmotive_stl_map_any_lower_bound(void *h, const char *key) { return cmotive_stl_map_any_find(h,key); }
+static void* cmotive_stl_map_any_upper_bound(void *h, const char *key) { return cmotive_stl_map_any_find(h,key); }
+static void* cmotive_stl_map_any_equal_range(void *h, const char *key) { return cmotive_stl_map_any_find(h,key); }
+
+typedef struct CMotive_AnyTree { CMotive_AnyVector values; } CMotive_AnyTree;
+static void* cmotive_stl_tree_any_create(void) { CMotive_AnyTree *t=(CMotive_AnyTree*)calloc(1,sizeof(CMotive_AnyTree)); if(t) t->values.elem=sizeof(int64_t); return t; }
+static void cmotive_stl_tree_any_sort_unique(CMotive_AnyTree *t) { uint64_t i,w; if(!t) return; qsort(t->values.data,(size_t)t->values.count,sizeof(int64_t),cmotive_i64_cmp_ex); for(i=0,w=0;i<t->values.count;i++){ if(w==0 || ((int64_t*)t->values.data)[i]!=((int64_t*)t->values.data)[w-1]) ((int64_t*)t->values.data)[w++]=((int64_t*)t->values.data)[i]; } t->values.count=w; }
+static int cmotive_stl_tree_any_insert_i64(void *h, int64_t v) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; if(!t) return -1; cmotive_stl_vector_any_push_back(&t->values,&v,sizeof(int64_t)); cmotive_stl_tree_any_sort_unique(t); return 0; }
+static int cmotive_stl_tree_any_contains_i64(void *h, int64_t v) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; return t ? (cmotive_stl_vector_any_binary_search_i64(&t->values,v)>=0) : 0; }
+static int cmotive_stl_tree_any_erase_i64(void *h, int64_t v) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; int64_t idx; if(!t) return -1; idx=cmotive_stl_vector_any_binary_search_i64(&t->values,v); if(idx<0) return -1; return cmotive_stl_vector_any_erase(&t->values,(uint64_t)idx,sizeof(int64_t)); }
+static void cmotive_stl_tree_any_clear(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; if(t) t->values.count=0; }
+static void cmotive_stl_tree_any_destroy(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; if(t){ free(t->values.data); free(t);} }
+static int cmotive_stl_tree_any_empty(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; return !t||t->values.count==0; }
+static uint64_t cmotive_stl_tree_any_size(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; return t?t->values.count:0u; }
+static uint64_t cmotive_stl_tree_any_height(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; uint64_t n=t?t->values.count:0,hgt=0,p=1; while(p<n+1){hgt++; p<<=1;} return hgt; }
+static int cmotive_stl_tree_any_min_i64(void *h, int64_t *out) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; if(!t||!t->values.count||!out) return -1; *out=((int64_t*)t->values.data)[0]; return 0; }
+static int cmotive_stl_tree_any_max_i64(void *h, int64_t *out) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; if(!t||!t->values.count||!out) return -1; *out=((int64_t*)t->values.data)[t->values.count-1]; return 0; }
+static void* cmotive_stl_tree_any_begin(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; return t?t->values.data:NULL; }
+static void* cmotive_stl_tree_any_end(void *h) { CMotive_AnyTree *t=(CMotive_AnyTree*)h; return t?(t->values.data+(size_t)t->values.count*sizeof(int64_t)):NULL; }
+
+static int cmotive_sys_algorithms_is_sorted_i64(const int64_t *a, uint64_t n) { uint64_t i; if(!a) return 1; for(i=1;i<n;i++) if(a[i-1]>a[i]) return 0; return 1; }
+static void cmotive_sys_algorithms_reverse_i64(int64_t *a, uint64_t n) { uint64_t i; if(!a) return; for(i=0;i<n/2;i++){ int64_t t=a[i]; a[i]=a[n-1-i]; a[n-1-i]=t; } }
+static void cmotive_sys_algorithms_rotate_left_i64(int64_t *a, uint64_t n, uint64_t by) { uint64_t i; if(!a||!n) return; by%=n; for(i=0;i<by;i++){ int64_t first=a[0]; memmove(a,a+1,(size_t)(n-1)*sizeof(int64_t)); a[n-1]=first; } }
+static uint64_t cmotive_sys_algorithms_unique_i64(int64_t *a, uint64_t n) { uint64_t i,w=0; if(!a) return 0; for(i=0;i<n;i++) if(w==0||a[i]!=a[w-1]) a[w++]=a[i]; return w; }
+
+static const char *__cmotive_io_output_fmt = "%s";
+static const char *__cmotive_io_input_fmt = "%s";
+static void cmotive_sys_io_set_output_format(const char *fmt) { __cmotive_io_output_fmt = fmt ? fmt : "%s"; }
+static void cmotive_sys_io_set_input_format(const char *fmt) { __cmotive_io_input_fmt = fmt ? fmt : "%s"; }
+static int cmotive_sys_io_flush(void) { return fflush(stdout); }
+static int cmotive_sys_io_scan_int(int64_t *out) { return scanf(__cmotive_io_input_fmt ? __cmotive_io_input_fmt : "%lld", out); }
+static int cmotive_sys_io_scan_string(char *out) { return scanf(__cmotive_io_input_fmt ? __cmotive_io_input_fmt : "%s", out); }
+/* ---- end CMotive object-model helpers ---- */
+
