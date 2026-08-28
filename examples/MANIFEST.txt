@@ -148,3 +148,6 @@ examples/147_fptr_function_pointer.CMOT
 examples/148_overridable_pure_virtual.CMOT
 examples/149_threadstore_global.CMOT
 examples/150_debug_symbols_options.CMOT
+examples/151_object_stl_vector_map_tree.CMOT
+examples/152_object_algorithms.CMOT
+examples/153_object_io_streams.CMOT
