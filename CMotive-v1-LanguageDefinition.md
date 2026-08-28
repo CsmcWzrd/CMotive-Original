@@ -1,7 +1,8 @@
 # Programming language name : CMotive    
 ### Filename extension : CMOT, CMTV, HMOT, HMTV (in small or caps)     
 ### Compiled programming language    
-### Version 1.0~2026 // Version 1.0 @ <Year in which the format of programming language was defined >     
+### Version 1.0~2026 // Version 1.0 ~ Year in which the format of programming language was defined     
+Version number = Major version . Minor version ~(tilde) Language format definition year     
 
 #### Operators: standard c++ programming language operators including New and Delete
 All keywords start with caps.
