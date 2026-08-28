@@ -2,6 +2,9 @@
 
 CMotive is a production-oriented native language source tree scaffold. It includes `cmotivepp`, `cmotive`, and `cmotive++`, root-only platform Makefiles, native object/executable generation via `-c` and `-o`, platform linker routing, strip-compatible native artifacts, docs, tests, release packaging, and provenance metadata.
 
+
+### NOTE: Loads of work to be done
+
 ## Extensions
 
 - Source: `.CMOT`, `.CMTV`
