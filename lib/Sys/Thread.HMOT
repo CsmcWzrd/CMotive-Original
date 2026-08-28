@@ -1,2 +1,27 @@
-package Sys.Thread;
-class Thread { func start(): Int; func join(): Int; }
+Package Sys::Thread;
+
+Class
+Thread
+{
+    Public
+    {
+        entry : Void* = Null; Block
+        userdata : Void* = Null; Block
+
+        I32
+        start
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        join
+        ()
+        {
+            Return 0;
+        }
+    }
+};
+
+Tstore I32 cmotive_thread_local_errno : I32 = 0;

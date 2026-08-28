@@ -1,3 +1,17 @@
-package Sys.Logging;
-func info(message): Int;
-func error(message): Int;
+Package Sys::Logging;
+
+I32
+info
+message : Char*
+()
+{
+    Return 0;
+}
+
+I32
+error
+message : Char*
+()
+{
+    Return 0;
+}

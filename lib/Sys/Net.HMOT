@@ -1,2 +1,38 @@
-package Sys.Net;
-// Placeholder for sockets, TLS, and async I/O.
+Package Sys::Net;
+
+Enum SocketKind
+{
+    Tcp,
+    Udp,
+    IpRaw
+};
+
+Class
+Socket
+{
+    Public
+    {
+        fd : I32 = -1; Block
+
+        I32
+        openTcp
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        openUdp
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        close
+        ()
+        {
+            Return 0;
+        }
+    }
+};

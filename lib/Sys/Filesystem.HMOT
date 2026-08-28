@@ -1,3 +1,25 @@
-package Sys.Filesystem;
-func exists(path): Int;
-func mkdir(path): Int;
+Package Sys::Filesystem;
+
+Boolean
+exists
+path : Char*
+()
+{
+    Return False;
+}
+
+I32
+mkdir
+path : Char*
+()
+{
+    Return 0;
+}
+
+I32
+remove
+path : Char*
+()
+{
+    Return 0;
+}

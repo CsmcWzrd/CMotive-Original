@@ -1,3 +1,68 @@
-package Sys.Stdio;
-func print(value): Int;
-func println(value): Int;
+Package Sys::Stdio;
+
+Class
+Cout
+{
+    Public
+    {
+        Cout
+        ()
+        {
+        }
+
+        I32
+        expect
+        fmt : Char*
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        write
+        value : Char*
+        ()
+        {
+            Return 0;
+        }
+    }
+};
+
+Class
+Cin
+{
+    Public
+    {
+        I32
+        expect
+        fmt : Char*
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        read
+        ptr : Void*
+        ()
+        {
+            Return 0;
+        }
+    }
+};
+
+I32
+print
+value : Char*
+()
+{
+    Return 0;
+}
+
+I32
+println
+value : Char*
+()
+{
+    Return 0;
+}

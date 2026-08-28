@@ -1,2 +1,37 @@
-package Sys.File;
-class File { func open(path): Int; func close(): Int; }
+Package Sys::File;
+
+Class
+File
+{
+    Public
+    {
+        path : Char* = "";
+        handle : Void* = Null; Block
+
+        File
+        ()
+        {
+        }
+
+        ~File
+        ()
+        {
+        }
+
+        I32
+        open
+        path_value : Char*
+        mode_value : Char*
+        ()
+        {
+            Return 0;
+        }
+
+        I32
+        close
+        ()
+        {
+            Return 0;
+        }
+    }
+};

@@ -1,5 +1,9 @@
 # Feature Status
 
+See `docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md` for the detailed requirement-by-requirement verification matrix.
+
+# Feature Status
+
 | Area | Status | Notes |
 |---|---:|---|
 | Lexer | Implemented scaffold | Tokenization for language constructs. |

@@ -1,0 +1,14 @@
+Package Sys::STL;
+
+Template
+T : Type
+Class
+Vector
+{
+    Public
+    {
+        data : Void* = Null; Block
+        count : U64 = 0; Block
+        capacity : U64 = 0; Block
+    }
+};
