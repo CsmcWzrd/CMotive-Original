@@ -58,7 +58,7 @@ For      // Equivalent to for loop
 Fptr     // Equivalent to function pointer, prefixed to a function declaration and it becomes a type to that function declaration.     
 Get      // Get functionality caller for a member of a class, followed by '@' and function paranthesis only. Will not work with Block ed members.     
 Getall   // Get all functionality, Will not work with Block ed members. Has to be in order of the members defined.     
-Global   // Declare a variable a Globally accesible      
+Global   // Declare a variable a Globally accesible      
 Goto     // Same as Goto in C programming language     
 Hit      // Dispatch handling function / method , dispatch is done using the keyword Target.         
 I16      // short signed integer 2 bytes        
@@ -580,3 +580,45 @@ argv: Char**
 }     
      
 //End of Main.CMOT     
+    
+    
+    
+    
+//Start of DynamicStruct.CMOT    
+    
+    
+Dynamic Struct //Can only expand     
+MyDynStruct
+{    
+    Int16 a;    
+	Int32 b;    
+	Int c;    
+};    
+    
+    
+Int32      
+main      
+()      
+{      
+	MyDynStruct Expand {    
+		Uint16 d;   
+		Uint32 e;    
+		Uint f;    
+		Float g;    
+		Double h;    
+		Ldouble i;    
+		Char j;    
+		Uchar k;    
+	};    
+	  
+	//    
+	// Now MyDynStruct Struct is includes the additional 8 members including the earlier a, b, and c.   
+	//    
+	//    
+	     
+}      
+    
+    
+     
+     
+//End of DynamicStruct.CMOT      
