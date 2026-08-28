@@ -1,18 +1,10 @@
-# CMotive examples verification report
+# CMotive language examples verification report
 
-PASS: manifest validation found 149 examples.
+PASS for the updated debug-symbol example pass:
 
-Verification performed in this iteration:
+- Manifest check: 150 examples present.
+- New example `examples/150_debug_symbols_options.CMOT`: compile/link/run PASS.
+- `make debug-symbols` equivalent: PASS using `-g3 -O2`, generated `.cmotive.debug.json` and `_cmot_debugsymbols.syms`.
+- The generated `.syms` output contains the expected 64-bit offset column, `StartPackage__ExampleDebugSymbol__Add`, and the full CMotive prototype.
 
-- Source regression suite: `make -f Makefile.linux clean all test` passed.
-- Source full conformance suite: `python3 tests/run_tests.py --bin build/bin --full` passed.
-- New examples 146-149 compiled, linked, executed, exited with code 0, and produced no stderr:
-  - 146 Global anywhere
-  - 147 Fptr function pointer
-  - 148 Overridable pure virtual
-  - 149 ThreadStore/Tstore
-- `tools/check_manifest.py` reports `manifest ok: 149 examples`.
-
-The previous examples 138-145 remain in the manifest for Sys::IO, STL containers, Sys::Algorithms, native sockets, native threading, and Dynamic Struct Expand.
-
-Note: the full 149-example archive-wide runner is available as `tools/run_all_examples.py`. The verification above used the CMotive source conformance suite plus targeted execution of the newly added examples for this pass.
+The previous 149 examples were retained from the already verified examples archive; only the debug-symbol example and runner target were added in this pass.

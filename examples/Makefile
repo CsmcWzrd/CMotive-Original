@@ -14,7 +14,7 @@ CMOTIVE ?= $(CMOTIVE_ROOT)/tools/cmotive.py
 CMOTIVEPP ?= $(CMOTIVE_ROOT)/tools/cmotivepp.py
 TIMEOUT ?= 5
 
-.PHONY: all compile objects run check preprocess manifest clean list help vs-validate
+.PHONY: all compile objects run check preprocess manifest clean list help debug-symbols vs-validate
 
 all: compile
 
@@ -26,6 +26,7 @@ help:
 	@printf '%s\n' '  make check       Manifest + object generation + run verification'
 	@printf '%s\n' '  make preprocess  Run cmotivepp over all examples into build/pp'
 	@printf '%s\n' '  make clean       Remove Lang-Examples build outputs'
+	@printf '%s\n' '  make debug-symbols Build example 150 with -g3 -O2 and verify .syms output'
 	@printf '%s\n' '  make list        List manifest examples'
 	@printf '%s\n' '  make vs-validate Validate VS2022 package project inputs'
 
@@ -49,6 +50,9 @@ check:
 
 list:
 	@$(PYTHON) tools/example_build.py list
+
+debug-symbols:
+	@$(PYTHON) tools/example_build.py debug-symbols --compiler '$(CMOTIVE)'
 
 vs-validate:
 	@$(PYTHON) tools/vs2022_build_packages.py --mode validate --examples-root . --cmotive-root '$(CMOTIVE_ROOT)'

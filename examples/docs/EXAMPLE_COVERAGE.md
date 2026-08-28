@@ -172,4 +172,7 @@ Added examples 138-145 for Sys::IO rename, STL containers, Sys::Algorithms, nati
 Additional completed-feature examples added: 146 Global anywhere, 147 Fptr function pointer, 148 Overridable pure virtual, 149 ThreadStore/Tstore.
 
 
-Updated count: 149 examples. Examples 146-149 cover package-scope Global, Fptr function pointers, Overridable pure virtual declarations, and ThreadStore/Tstore.
+Updated count: 150 examples. Examples 146-149 cover package-scope Global, Fptr function pointers, Overridable pure virtual declarations, and ThreadStore/Tstore.
+
+
+- `examples/150_debug_symbols_options.CMOT`: exercises source-level debug symbol metadata with `-g3 -O2` through the CMotive source test suite and can be used manually with `CMotiveSymsToDebugFile`.

@@ -112,6 +112,33 @@ def preprocess_mode(root: Path, pp: str, rows):
     print(f'preprocess: {len(rows)} examples')
     return 0
 
+def debug_symbols_mode(root: Path, compiler: str, rows):
+    row = next((r for r in rows if r.get('id') == 150), None)
+    if row is None:
+        print('example 150 not present in manifest', file=sys.stderr)
+        return 1
+    build = root/'build'/'debug-symbols'
+    exe = build/'example150_debug_symbols'
+    build.mkdir(parents=True, exist_ok=True)
+    args = include_args(root) + ['-g3', '-O2', str(root/row['file']), '-o', str(exe)]
+    p = run(compiler_cmd(compiler, args))
+    if p.returncode != 0 or p.stderr:
+        print(p.stdout, end='')
+        print(p.stderr, file=sys.stderr, end='')
+        return 1
+    syms = Path(str(exe) + '_cmot_debugsymbols.syms')
+    meta = Path(str(exe) + '.cmotive.debug.json')
+    if not syms.exists() or not meta.exists():
+        print('debug symbol output missing', file=sys.stderr)
+        return 1
+    text = syms.read_text(encoding='utf-8')
+    for token in ['debug_level: 3', 'optimization: O2', 'StartPackage__ExampleDebugSymbol__Add', 'I32 StartPackage::ExampleDebugSymbol::Add(rhs: I32)']:
+        if token not in text:
+            print('debug symbol output missing token: ' + token, file=sys.stderr)
+            return 1
+    print('debug-symbols: PASS')
+    return 0
+
 def manifest_check(root: Path, rows):
     missing = [r['file'] for r in rows if not (root/r['file']).is_file()]
     if missing:
@@ -122,7 +149,7 @@ def manifest_check(root: Path, rows):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument('mode', choices=['manifest','compile','objects','preprocess','run','check','clean','list'])
+    ap.add_argument('mode', choices=['manifest','compile','objects','preprocess','run','check','clean','list','debug-symbols'])
     ap.add_argument('--compiler')
     ap.add_argument('--preprocessor')
     ap.add_argument('--timeout', type=float, default=5.0)
@@ -136,6 +163,7 @@ def main(argv=None):
     pp = ns.preprocessor or default_preprocessor(root)
     if ns.mode == 'list':
         print('\n'.join(r['file'] for r in rows)); return 0
+    if ns.mode == 'debug-symbols': return debug_symbols_mode(root, compiler, rows)
     if ns.mode == 'manifest': return manifest_check(root, rows)
     if ns.mode == 'compile': return build_mode(root, compiler, rows, 'compile')
     if ns.mode == 'objects': return build_mode(root, compiler, rows, 'objects')
