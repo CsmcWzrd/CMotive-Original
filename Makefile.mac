@@ -2,7 +2,7 @@ PYTHON ?= python3
 PREFIX ?= /usr/local
 BUILD_DIR ?= build
 BIN_DIR := $(BUILD_DIR)/bin
-TOOLS := cmotive cmotivepp cmotive++
+TOOLS := cmotive cmotivepp cmotive++ CMotiveSymsToDebugFile
 
 .PHONY: all clean install test full-test package
 all: $(TOOLS:%=$(BIN_DIR)/%)
@@ -22,6 +22,10 @@ $(BIN_DIR)/cmotive++: $(BIN_DIR)/cmotive | $(BIN_DIR)
 	cp $(BIN_DIR)/cmotive $@
 	chmod +x $@
 
+$(BIN_DIR)/CMotiveSymsToDebugFile: tools/CMotiveSymsToDebugFile.py | $(BIN_DIR)
+	cp tools/CMotiveSymsToDebugFile.py $@
+	chmod +x $@
+
 test: all
 	$(PYTHON) tests/run_tests.py --bin $(BIN_DIR)
 
@@ -36,6 +40,7 @@ install: all
 	cp $(BIN_DIR)/cmotive $(DESTDIR)$(PREFIX)/bin/cmotive
 	cp $(BIN_DIR)/cmotivepp $(DESTDIR)$(PREFIX)/bin/cmotivepp
 	cp $(BIN_DIR)/cmotive++ $(DESTDIR)$(PREFIX)/bin/cmotive++
+	cp $(BIN_DIR)/CMotiveSymsToDebugFile $(DESTDIR)$(PREFIX)/bin/CMotiveSymsToDebugFile
 
 clean:
 	rm -rf $(BUILD_DIR) dist

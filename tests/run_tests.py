@@ -58,6 +58,22 @@ def main():
     ok &= run([str(b/'cmotive'), '-c', 'tests/conformance/basic.CMOT', '-o', 'build/basic.o'])
     ok &= build_and_run(b, 'tests/conformance/basic.CMOT', 'basic', exe_suffix)
 
+    dbg_out = 'build/debug_symbols' + exe_suffix
+    ok &= run([str(b/'cmotive'), '-g3', '-O2', 'tests/conformance/cmotive_debug_symbols.CMOT', '-o', dbg_out])
+    ok &= run_expect_code([dbg_out], 0)
+    syms_path = Path(dbg_out + '_cmot_debugsymbols.syms')
+    meta_path = Path(dbg_out + '.cmotive.debug.json')
+    if ok and (not syms_path.exists() or not meta_path.exists()):
+        print('FAILED: debug symbol output files missing')
+        ok = False
+    if ok:
+        syms = syms_path.read_text(encoding='utf-8')
+        for token in ['debug_level: 3', 'optimization: O2', 'StartPackage__DebugThing__Add', 'I32 StartPackage::DebugThing::Add(y: I32)', 'StartPackage__Helper', '0x']:
+            if token not in syms:
+                print('FAILED: debug symbol file missing', token)
+                ok = False
+                break
+
     # New standard-library/native-socket/Dynamic-Struct coverage.
     ok &= build_and_run(b, 'tests/conformance/cmotive_sys_io_rename.CMOT', 'sys_io_rename', exe_suffix)
     ok &= build_and_run(b, 'tests/conformance/cmotive_stl_containers.CMOT', 'stl_containers', exe_suffix)

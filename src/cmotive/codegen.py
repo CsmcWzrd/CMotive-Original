@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 import re
 from .ast import (
@@ -11,6 +11,7 @@ from .ast import (
 class CodegenUnit:
     c_source: str
     target_arch: str
+    debug_symbols: list = field(default_factory=list)
 
 TYPE_MAP = {
     'Boolean':'int','boolean':'int','Bool':'int',
@@ -45,6 +46,7 @@ class NativeCodegen:
         self.hit_handlers = {}
         self.dynamic_structs = {}
         self.operator_symbols = {'+':'Plus','-':'Minus','*':'Multiply','/':'Divide','%':'Modulo','==':'Equal','!=':'NotEqual','<':'Less','>':'Greater','<=':'LessEqual','>=':'GreaterEqual','<<':'LeftShift','>>':'RightShift','>>>':'RightRotate','<<<':'LeftRotate','&':'BitAnd','|':'BitOr','^':'BitXor'}
+        self.debug_symbols = []
 
     def emit(self, program, sema):
         self.templates = {d.name: d for d in program.declarations if isinstance(d, TemplateDecl) and d.name}
@@ -154,7 +156,8 @@ class NativeCodegen:
             out += self.new_delete_helpers(c)
         if not any(isinstance(d, Function) and d.name == 'main' and not d.method_of for d in regular_functions):
             out += ['int main(void) { return 0; }', '']
-        return CodegenUnit('\n'.join(out) + '\n', self.target_arch)
+        debug_symbols = self.build_debug_symbols(all_functions, all_classes)
+        return CodegenUnit('\n'.join(out) + '\n', self.target_arch, debug_symbols)
 
 
     # ---------- expanded standard library runtime and dynamic structs ----------
@@ -732,6 +735,86 @@ class NativeCodegen:
         else:
             call_args = arg_values
         return [f'{self.c_name(handler)}(' + ', '.join(call_args) + ');']
+
+    # ---------- debug-symbol metadata ----------
+    def cmotive_type_text(self, type_name):
+        return self.normalize_type_string(type_name or 'Void')
+
+    def cmotive_param_text(self, params):
+        if not params:
+            return ''
+        return ', '.join(f'{self.safe_name(p.name)}: {self.cmotive_type_text(p.type_name)}' for p in params)
+
+    def cmotive_prototype(self, f):
+        pkg = self.package_name(getattr(f, 'package', DEFAULT_PACKAGE))
+        params = self.cmotive_param_text(getattr(f, 'params', []) or [])
+        if f.constructor:
+            cls = self.safe_name(f.method_of or f.name)
+            return f'{pkg}::{cls}::{cls}({params})'
+        if f.destructor:
+            cls = self.safe_name(f.method_of or f.name)
+            return f'{pkg}::{cls}::~{cls}({params})'
+        ret = self.cmotive_type_text(f.return_type)
+        if f.method_of:
+            return f'{ret} {pkg}::{self.safe_name(f.method_of)}::{self.safe_name(f.name)}({params})'
+        return f'{ret} {pkg}::{self.safe_name(f.name)}({params})'
+
+    def debug_symbol_record(self, symbol, kind, prototype, c_prototype='', package=None, class_name='', source=''):
+        return {
+            'symbol': symbol,
+            'kind': kind,
+            'package': self.package_name(package or DEFAULT_PACKAGE),
+            'class': self.safe_name(class_name) if class_name else '',
+            'prototype': prototype,
+            'c_prototype': c_prototype,
+            'source': source,
+        }
+
+    def build_debug_symbols(self, all_functions, all_classes):
+        records = []
+        seen = set()
+        def add(record):
+            key = record.get('symbol')
+            if not key or key in seen:
+                return
+            seen.add(key)
+            records.append(record)
+        for f in all_functions:
+            if getattr(f, 'pure_virtual', False) or 'Fptr' in getattr(f, 'decorators', []):
+                continue
+            kind = 'entry' if f.name == 'main' and not f.method_of else 'function'
+            add(self.debug_symbol_record(
+                self.c_name(f), kind, self.cmotive_prototype(f),
+                self.function_signature(f) + ';', getattr(f, 'package', DEFAULT_PACKAGE), '', ''))
+        for c in all_classes:
+            for m in c.methods:
+                if getattr(m, 'pure_virtual', False):
+                    continue
+                kind = 'constructor' if m.constructor else ('destructor' if m.destructor else 'method')
+                add(self.debug_symbol_record(
+                    self.c_name(m), kind, self.cmotive_prototype(m),
+                    self.function_signature(m) + ';', getattr(m, 'package', DEFAULT_PACKAGE), c.name, ''))
+            for m in [x for x in c.methods if x.constructor]:
+                types = tuple(self.canonical_type(p.type_name) for p in m.params)
+                sig = self.new_helper_signature(c, m)
+                add(self.debug_symbol_record(
+                    self.new_name_for_types(self.safe_name(c.name), types), 'new-helper',
+                    f'{self.class_package(c.name)}::{self.safe_name(c.name)} New({self.cmotive_param_text(m.params)})',
+                    sig + ';', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+            sig = self.delete_helper_signature(c)
+            add(self.debug_symbol_record(
+                self.delete_name(self.safe_name(c.name)), 'delete-helper',
+                f'Void {self.class_package(c.name)}::{self.safe_name(c.name)}::Delete(This)',
+                sig + ';', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+            for af in self.auto_fields(c):
+                getter = self.auto_get_name(c, af)
+                setter = self.auto_set_name(c, af)
+                add(self.debug_symbol_record(getter, 'auto-get', f'{self.cmotive_type_text(af.type_name)} {self.class_package(c.name)}::{self.safe_name(c.name)}::Get@{self.safe_name(af.name)}()', '', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+                add(self.debug_symbol_record(setter, 'auto-set', f'Void {self.class_package(c.name)}::{self.safe_name(c.name)}::Set@{self.safe_name(af.name)}(value: {self.cmotive_type_text(af.type_name)})', '', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+            if self.auto_fields(c):
+                add(self.debug_symbol_record(self.auto_getall_name(c), 'auto-getall', f'{self.auto_public_struct_name(c)} {self.class_package(c.name)}::{self.safe_name(c.name)}::Getall()', '', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+                add(self.debug_symbol_record(self.auto_setall_name(c), 'auto-setall', f'Void {self.class_package(c.name)}::{self.safe_name(c.name)}::Setall(...)', '', getattr(c, 'package', DEFAULT_PACKAGE), c.name, ''))
+        return records
 
     # ---------- C emission ----------
     def class_decl(self, c):

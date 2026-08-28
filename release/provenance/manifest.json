@@ -1,11 +1,19 @@
 {
   "name": "CMotive",
   "version": "0.2.2-rc1",
-  "created_utc": 1787929336,
+  "created_utc": 1787933118,
   "files": [
     {
       "path": ".gitignore",
       "sha256": "9c36661bfb9163294d8d400ff83a7fffed54ddbd071a5ec0857eb0c2e9fff487"
+    },
+    {
+      "path": "CMotive_complete_feature_pass_update.txt",
+      "sha256": "b098c8f50b9df4ec0ff40ccddd68d7250d0294a22602e4c884f79781ecc4274d"
+    },
+    {
+      "path": "CMotive_debug_symbols_optimization_update.txt",
+      "sha256": "73410cd2229e70aae270f49ea321534252b171dadcee872705fb9c4c4ef7acd1"
     },
     {
       "path": "CMotive_stdlib_stl_net_dynamic_update.txt",
@@ -21,19 +29,19 @@
     },
     {
       "path": "Makefile.linux",
-      "sha256": "b8ce6ce2eb4f502709410816c52745dbf8a33ee48182c7e7991787782bed9470"
+      "sha256": "5cd126bfdb6eca005d806894f46dd3a4440d8b67bd0bdd08906634a6a95850d9"
     },
     {
       "path": "Makefile.mac",
-      "sha256": "498213402e92be993023cd88baa2d55ae5ffb5a9ac92533d92a225b281753de3"
+      "sha256": "28ded806445b545f6eedf36a848db54624b307ff3c0de3d62d6cf1baddaea04e"
     },
     {
       "path": "Makefile.windows",
-      "sha256": "1fdcec5e3abd089d010470830f2fbf6c81636c443751f6e069496016493600ab"
+      "sha256": "8828a9aa748156fe7b3839a53ff30a60eee89b3f5dbb5e3db9bf7160686da59d"
     },
     {
       "path": "README.md",
-      "sha256": "93f33b4cf9f8c862071b2b1e5f7bbde1d91e320af3581be40bb875fdcb3504cd"
+      "sha256": "1acee8dfd28a7c2b6846ff0e906141cd6b4c8f4d789ea468e9d3e654a4141594"
     },
     {
       "path": "VERSION",
@@ -49,7 +57,7 @@
     },
     {
       "path": "docs/CLI_FREEZE.md",
-      "sha256": "68e74edf40ffa9861f25c6fa2da6aad286261631ae79500adc69232bafbd41c4"
+      "sha256": "5585c0eb269f95288a7c8b8af3848ff23d32808ccac9ad69ddaafa1a8604afbe"
     },
     {
       "path": "docs/CMOTIVE_1_0_GATE.md",
@@ -57,11 +65,19 @@
     },
     {
       "path": "docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md",
-      "sha256": "734ff88ad294ffeea821c55bf28cf0331d0f0aa681c06c63fe52c00a080dc1c8"
+      "sha256": "2ae2be1942e9ed037c440a880d9b8e2f79095f6f3545c87283865f2df8fc97c4"
+    },
+    {
+      "path": "docs/COMPLETE_LANGUAGE_FEATURE_PASS.md",
+      "sha256": "f41032009e068da9808162bf085f79b7668cf02d7b6d1be7bc574925467a1de2"
+    },
+    {
+      "path": "docs/DEBUG_SYMBOLS_OPTIMIZATION.md",
+      "sha256": "e38f9a032117bc0723e90217c4dc412f9ce247a7de8726c2457cbec9d237b4e7"
     },
     {
       "path": "docs/FEATURE_STATUS.md",
-      "sha256": "2efac5fe48bb8576c73952e85f3f9c1187abd9e9caa0b6db08fc13f6e1500f18"
+      "sha256": "e0d559b2b666d632410250c275b8d9fdec1f317fc14c7080a84d9ebe478fd43e"
     },
     {
       "path": "docs/FULL_TEST_SUITE_PLAN.md",
@@ -201,7 +217,7 @@
     },
     {
       "path": "release/provenance/manifest.json",
-      "sha256": "6205dba56b36f9c3acf8ed5a545b6b0b151c349c2e06b2f193ec4b2715d3ba31"
+      "sha256": "8865442a488ae27662c4fee9ac5674089663943733b82010cd46a2fdb6d64601"
     },
     {
       "path": "release/rc/README.md",
@@ -237,35 +253,35 @@
     },
     {
       "path": "src/cmotive/__pycache__/__init__.cpython-313.pyc",
-      "sha256": "5b822ef6a7ff861248247de46395dfb0d220a1898ea9078dc9bfe4ac80703753"
+      "sha256": "b8073c6d22a606979a9576b199f4d1490fbb594d2789dd04ebf15444f03c40d0"
     },
     {
       "path": "src/cmotive/__pycache__/ast.cpython-313.pyc",
-      "sha256": "4d9511513dc812a778aec62dd66a59eab7f7378d635dd6dae1032eb73a22e71a"
+      "sha256": "dad3dd02a2e886ce20be37af9d501f6a01487f1d7a81f0405c29b59ce386d49f"
     },
     {
       "path": "src/cmotive/__pycache__/codegen.cpython-313.pyc",
-      "sha256": "42ec31d5173373de3a064ba40123a48789cc9191b014e16f5cddfcd3a59adac2"
+      "sha256": "583b4af72d96721e28ae183a1f2bca4eab59522d9e81c921c5fd326c8194e16e"
     },
     {
       "path": "src/cmotive/__pycache__/compiler.cpython-313.pyc",
-      "sha256": "1642d9e344af04705431e2d220117efbb657e375a4a40ea35b3c061de15781c5"
+      "sha256": "f667a1471c51b5fc52fa67c5613ecb08414eef4016e2d4a5c2d5b8bf12355466"
     },
     {
       "path": "src/cmotive/__pycache__/lexer.cpython-313.pyc",
-      "sha256": "fd9c428f6169499493d0408f18076206fa899ffe510b47b36a9defb2431d309b"
+      "sha256": "d8ab7d64c2d331aa1d768c72e51cbce2e39ecf06bb16b9d9dde76478dc2a5cf9"
     },
     {
       "path": "src/cmotive/__pycache__/parser.cpython-313.pyc",
-      "sha256": "52af6237aed6d53abdd8b687bd108aee0addecf33c855a001344a30859494cda"
+      "sha256": "cf31b96725957ec182f63161fdbd379653a02c6b839f555de41e27b68839eba5"
     },
     {
       "path": "src/cmotive/__pycache__/preprocessor.cpython-313.pyc",
-      "sha256": "f473d8042c4fbfbe9964ec710a31d7ea00536dabb650776898849b162d74ec5d"
+      "sha256": "bb50395194aa573b3fbf6c8ddc19902d3051dea8754e2564afa30fa7e67d4bef"
     },
     {
       "path": "src/cmotive/__pycache__/semantic.cpython-313.pyc",
-      "sha256": "9ef031598d97d68b629643e6fbce2270db287ddede275bf8943907bfcc99897d"
+      "sha256": "cc7198cef4c3ade5d322ca3c72281f8d545fbf5fa03a2a496ec318c6676a599c"
     },
     {
       "path": "src/cmotive/ast.py",
@@ -273,19 +289,19 @@
     },
     {
       "path": "src/cmotive/codegen.py",
-      "sha256": "f55c2df59a4d9224eb6e851961341702aac59b908637a84e9e0cfdd1c958b7c9"
+      "sha256": "f52c4e80ebb2037fd3e697f6f959bc6ffd7837664a2860d98fdc8289e80bf887"
     },
     {
       "path": "src/cmotive/compiler.py",
-      "sha256": "611efdbbbe5a64840795670cf4f99b20a201a37431285d85709d3bec91938f8c"
+      "sha256": "7c4819f6405b5898da255125c01dbafe2f8da20caae2431e7e410035f0c755ad"
     },
     {
       "path": "src/cmotive/lexer.py",
-      "sha256": "83bf6b334f679f303631eeaa0d29a16ec42dafb996be4dc7cb2973934ba3a14c"
+      "sha256": "e6aa263cc5ced1f9802410b8af685f0f974ab1ddda28835322d9c50e9d450d4d"
     },
     {
       "path": "src/cmotive/parser.py",
-      "sha256": "96ca15516c992f0ce2f454b2780bfb8c33ac1c5ae15b0eea46d16f0a0b47f9b7"
+      "sha256": "b19b8dab17fdf7703843d8491baf928678ab8a39ddd2f41b0985fe92e30b0d14"
     },
     {
       "path": "src/cmotive/preprocessor.py",
@@ -341,7 +357,7 @@
     },
     {
       "path": "tests/__pycache__/run_tests.cpython-313.pyc",
-      "sha256": "07737d760df191636f5d4de403d9e9cd31162135281b0b1b76f763a0f444fbd3"
+      "sha256": "c2783397d5e2ef54ab28a4cdc72c27f729baf4af65ccaa8f15fc1f6fee8e7633"
     },
     {
       "path": "tests/abi/platform.CMOT",
@@ -368,6 +384,10 @@
       "sha256": "ca6537f65e721fa8c396cb831d933d02cbe12fd8bc55c216258f30f8bf6d82c8"
     },
     {
+      "path": "tests/conformance/cmotive_auto_getset.CMOT",
+      "sha256": "4df969089a8cf0f20fa0f857ce434cfbdc837058cf305144d07bac86856bf3b5"
+    },
+    {
       "path": "tests/conformance/cmotive_class_lifecycle.CMOT",
       "sha256": "ea94922c7460560010cfc067e3133602c00debb719bbc2855251fbffaee0770a"
     },
@@ -388,6 +408,10 @@
       "sha256": "b954039a7b10422b244c045f91db499731b629a9059ec8083a87879297cce96a"
     },
     {
+      "path": "tests/conformance/cmotive_debug_symbols.CMOT",
+      "sha256": "e6a88e195bbe355e3e29437fe76a9c5edf68b56d0e3d1eb9ef92138adde6e121"
+    },
+    {
       "path": "tests/conformance/cmotive_dynamic_struct.CMOT",
       "sha256": "0e797d764bfd3c6cbb7cb1f1af9266df0e686c219963bc7754ff954566c5d03d"
     },
@@ -404,6 +428,14 @@
       "sha256": "cc9cf0fe5e84eb576723c45befaf7413b0d70e25f474fac96f51c5b537c5eb81"
     },
     {
+      "path": "tests/conformance/cmotive_fptr_function_pointer.CMOT",
+      "sha256": "f2bf48a6385da9e52aa9a78a218d897b9d66da42ec82cd7da045dcb33a3737f5"
+    },
+    {
+      "path": "tests/conformance/cmotive_global_anywhere.CMOT",
+      "sha256": "19ebc405316073150db71389d13821239b8ff0ee027588b6c6771d1dfb981b1f"
+    },
+    {
       "path": "tests/conformance/cmotive_invalid_base.CMOT",
       "sha256": "5203ea1340c805fb47231105bef3a135b1a3919e157b9bd26e4f8050473754e6"
     },
@@ -414,6 +446,14 @@
     {
       "path": "tests/conformance/cmotive_net_native_sockets.CMOT",
       "sha256": "db7599058b6ec4dd753e7a6c847e4cdffa5d73a4ba1b067d0a9b0a7acb3782a3"
+    },
+    {
+      "path": "tests/conformance/cmotive_operation_overload.CMOT",
+      "sha256": "feec0dfbf5796335c8379014713b567669d3142fccd588921551e0ec715bf0ff"
+    },
+    {
+      "path": "tests/conformance/cmotive_overridable_pure_virtual.CMOT",
+      "sha256": "90c63d682f91e0da51bfd796eeb9795e7e98e4f0c2a97e2cecbbb33aeda118ca"
     },
     {
       "path": "tests/conformance/cmotive_package_loading.CMOT",
@@ -464,6 +504,10 @@
       "sha256": "9626ca287a69597810015e2ef20379db3134e583f1848a457c29370ad0d39b22"
     },
     {
+      "path": "tests/conformance/cmotive_tstore_threadstore.CMOT",
+      "sha256": "136ba834479b0d5c4f1ea8fc04f23fdb6933e885c6e4ae61089d1d751bd69179"
+    },
+    {
       "path": "tests/conformance/cmotive_virtual_dispatch.CMOT",
       "sha256": "251f15913d0c7f35be81bb8835e2a86b6d15c4d2ab87fcec2e86948f568999ad"
     },
@@ -481,19 +525,27 @@
     },
     {
       "path": "tests/run_tests.py",
-      "sha256": "fa0dd98a1a8a3845ba52d3397c3638e708a91ce0cea30545a315c38256d5a02b"
+      "sha256": "31839f269229752792765b0b5f66458727ace64eb5f94da444a92683ac79d6fa"
+    },
+    {
+      "path": "tools/CMotiveSymsToDebugFile.py",
+      "sha256": "0d7d781109393f6c47190dda1262c3ef27c0a0802bd27910a434501c5077c4b6"
+    },
+    {
+      "path": "tools/__pycache__/CMotiveSymsToDebugFile.cpython-313.pyc",
+      "sha256": "2eb53d26282be417465edb3b6ae0485b4df0a7e0839ddf223635e9fae02c43dd"
     },
     {
       "path": "tools/__pycache__/cmotive.cpython-313.pyc",
-      "sha256": "9dc0219494d798d0e12147ce8b130fd043562ec5c875d84b1777f889031007ce"
+      "sha256": "4ee433924ee2c6a509ca958db0b8e35c5672d33fe52234f7b2f02cf37477e085"
     },
     {
       "path": "tools/__pycache__/cmotivepp.cpython-313.pyc",
-      "sha256": "4db01bc473e312b88ca3427a7bd4a36129fef654a32b2ee4ee8af828cb3ab60b"
+      "sha256": "f7311fddf8f86f6360e5bccb08f768a47c94e38cf39cb71bdccbdc05fcf9c3ed"
     },
     {
       "path": "tools/cmotive.py",
-      "sha256": "c2ccd1d20b1495477337717b754d571c7d14908e4159b5496cdd94615ddd4ae5"
+      "sha256": "dd4dda81f3da18d07f4f20e7c3f7220b88386e52250e8522dd9839212fffc28a"
     },
     {
       "path": "tools/cmotivepp.py",

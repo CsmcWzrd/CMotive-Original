@@ -22,3 +22,9 @@ Supported options:
 `-c` emits native `.o`/`.obj` files through the platform compiler.  Without `-c`,
 the driver invokes `CMOTIVE_LD` if set, otherwise the platform compiler driver, to
 produce a native executable at `-o` or `a.out`.
+
+
+## Debug symbols and optimization update
+
+- Added `CMotiveSymsToDebugFile` to emit `<OutputName>_cmot_debugsymbols.syms` with 64-bit native function offsets, mangled symbol names, CMotive prototypes, C prototypes, package/class/source fields, and fallback native-symbol rows.
+- Added compiler options `-g`, `-g2`, `-g3`, `-O1`, `-O2`, `-O3`, and `-Os`. Debug options generate CMotive metadata and `.syms` files; optimization options are forwarded to the native toolchain.

@@ -59,3 +59,9 @@ See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.m
 ## Complete feature pass update
 
 The bootstrap compiler now includes concrete paths for full-template instantiation, exception unwinding with destructor cleanup frames, real package loading, native sockets, STL helpers, auto Get/Set/Getall/Setall materialization, `Operation` overload lowering, `Tstore`/`ThreadStore`, package-scope `Global` declarations from any source location, and `Fptr` function-pointer typedef declarations. `Overridable` is the formal vtable keyword; pure virtual methods use `Overridable` and `()=0;` with no body.
+
+
+## Debug symbols and optimization update
+
+- Added `CMotiveSymsToDebugFile` to emit `<OutputName>_cmot_debugsymbols.syms` with 64-bit native function offsets, mangled symbol names, CMotive prototypes, C prototypes, package/class/source fields, and fallback native-symbol rows.
+- Added compiler options `-g`, `-g2`, `-g3`, `-O1`, `-O2`, `-O3`, and `-Os`. Debug options generate CMotive metadata and `.syms` files; optimization options are forwarded to the native toolchain.

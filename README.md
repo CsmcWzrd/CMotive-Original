@@ -37,3 +37,8 @@ Open `vs2022/CMotive.Packages.sln` to build the package-system scaffold with Vis
 ## Complete feature pass update
 
 The bootstrap compiler now includes concrete paths for full-template instantiation, exception unwinding with destructor cleanup frames, real package loading, native sockets, STL helpers, auto Get/Set/Getall/Setall materialization, `Operation` overload lowering, `Tstore`/`ThreadStore`, package-scope `Global` declarations from any source location, and `Fptr` function-pointer typedef declarations. `Overridable` is the formal vtable keyword; pure virtual methods use `Overridable` and `()=0;` with no body.
+
+## Debug symbols and optimization
+
+`cmotive` now supports `-g`, `-g2`, `-g3`, `-O1`, `-O2`, `-O3`, and `-Os`. Debug builds emit both native toolchain debug information and a human-readable CMotive symbol file via `CMotiveSymsToDebugFile`, named `<OutputName>_cmot_debugsymbols.syms`. See `docs/DEBUG_SYMBOLS_OPTIMIZATION.md`.
+

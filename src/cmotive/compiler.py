@@ -18,4 +18,9 @@ class CompilerPipeline:
         text = pp.process(src_path)
         ast = Parser(Lexer().tokenize(text)).parse()
         sema = SemanticAnalyzer().analyze(ast)
-        return NativeCodegen(self.target_arch).emit(ast, sema)
+        unit = NativeCodegen(self.target_arch).emit(ast, sema)
+        for rec in getattr(unit, 'debug_symbols', []) or []:
+            rec.setdefault('source', str(src_path))
+            if not rec.get('source'):
+                rec['source'] = str(src_path)
+        return unit
