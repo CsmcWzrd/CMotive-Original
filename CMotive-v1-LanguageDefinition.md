@@ -182,7 +182,8 @@ Members are accessed with a . or, -> if its with a pointer.
 Classnames are CamelCase, should begin with Capital Letters with or without underscores.     
 Functions/Methods' name are also CamelCase should begin with Capital Letters or without underscores.     
 Variables/members' name are like function names with or with out underscores. While a function name cannot start with a _ , variables/members' names can.     
-     
+
+```C++
 //ClassName.HMOT     
      
 Class     
@@ -623,3 +624,4 @@ main
      
      
 //End of DynamicStruct.CMOT      
+```
