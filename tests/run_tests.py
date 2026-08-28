@@ -10,6 +10,15 @@ def run(cmd, allow_stdout=True):
         if p.stderr: print(p.stderr)
     return p.returncode == 0
 
+def run_expect_failure(cmd):
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if p.returncode == 0:
+        print('FAILED:', ' '.join(map(str, cmd)), 'expected failure but got success')
+        if p.stdout: print(p.stdout)
+        if p.stderr: print(p.stderr)
+        return False
+    return True
+
 def run_expect_code(cmd, expected):
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if p.returncode != expected:
@@ -53,6 +62,9 @@ def main():
     ok &= run_expect_code(['build/package' + exe_suffix], 0)
     ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_sys_stl_template.CMOT', '-o', 'build/sys_stl_template' + exe_suffix])
     ok &= run_expect_code(['build/sys_stl_template' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_class_lifecycle.CMOT', '-o', 'build/class_lifecycle' + exe_suffix])
+    ok &= run_expect_code(['build/class_lifecycle' + exe_suffix], 0)
+    ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1
 

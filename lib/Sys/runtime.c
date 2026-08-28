@@ -35,8 +35,10 @@ int cmotive_sys_net_socket_raw(void) { return -1; }
  * choose to link lib/Sys/runtime.c instead of using the compiler's embedded
  * bootstrap helpers.  Try/Catch code still emits setjmp in the caller frame. */
 #include <setjmp.h>
-void *CMotive_RuntimeNew(size_t n) { return calloc(1, n ? n : 1); }
-void CMotive_RuntimeDelete(void *p) { free(p); }
+void *CMotive_New(size_t n) { return calloc(1, n ? n : 1); }
+void CMotive_Delete(void *p) { free(p); }
+void *CMotive_RuntimeNew(size_t n) { return CMotive_New(n); }
+void CMotive_RuntimeDelete(void *p) { CMotive_Delete(p); }
 typedef struct CMotive_RuntimeExceptionFrame {
     jmp_buf env;
     const char *message;

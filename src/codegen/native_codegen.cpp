@@ -9,6 +9,9 @@ struct NativeCodegenFeatureMatrix {
     bool uses_platform_linker_path = true;
     bool keeps_strip_compatible_symbols = true;
     bool lowers_classes_to_c_structs = true;
+    bool lowers_methods_to_mangled_symbols = true;
+    bool embeds_single_base_as_first_member = true;
+    bool emits_constructor_destructor_lifecycle = true;
     bool reserves_vtable_layout = true;
     bool lowers_new_delete_helpers = true;
     bool lowers_stdio_fluent_calls = true;

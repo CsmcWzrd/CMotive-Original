@@ -78,7 +78,7 @@ def main(argv=None):
     ap.add_argument('inputs', nargs='*')
     ns = ap.parse_args(argv)
     if ns.version:
-        print('CMotive compiler 0.2.1-rc1')
+        print('CMotive compiler 0.2.2-rc1')
         return 0
     cc = choose_cc(); ld = choose_ld(cc)
     if ns.print_linker:

@@ -318,6 +318,71 @@ class Parser:
     def out_of_class_method(self):
         self.take(value='$')
         cls = self.take().value
+        self.skip_eol()
+        decorators = []
+        while self.peek().kind in DECORATORS:
+            decorators.append(self.take().value)
+            self.skip_eol()
+        # CMotive permits out-of-class method bodies as:
+        #   $ClassName
+        #   MethodName
+        #   arg : Type
+        #   ()
+        #   { ... }
+        # where the return type is taken from the declaration in the .HMOT file.
+        # When a concrete return type is provided, fall back to normal function parsing.
+        if self.peek().kind == 'ID' and (self.peek_non_eol(1).value == '(' or self.peek_non_eol(2).value == ':'):
+            name = self.take().value
+            params = []
+            self.skip_eol()
+            while self.peek().kind != 'EOF':
+                self.skip_eol()
+                if self.peek().value == '(' and self.peek_non_eol(1).value == ')':
+                    self.take(value='('); self.skip_eol(); self.take(value=')'); break
+                if self.peek().value == '(':
+                    params = self.parse_old_paren_params(); break
+                if self.peek().value in {'{',';','='}: break
+                if not self.is_name() or self.peek_non_eol(1).value != ':':
+                    break
+                pname = self.take().value; self.take(value=':')
+                ptype = self.parse_type_until_line_or({'=',',','{',';','('})
+                default = None
+                if self.accept('='):
+                    default = self.expr_until_eol_or({',','('})
+                params.append(Param(pname, ptype or 'I32', default))
+                self.accept(',')
+            self.skip_eol()
+            body = self.block() if self.peek().value == '{' else []
+            self.accept(';')
+            return Function(name, params, body, 'Void', cls, decorators)
+        # Rewind decorators by reparsing through the normal routine is awkward,
+        # so construct the method directly when decorators were already consumed.
+        if decorators:
+            if not self.is_type_start():
+                raise SyntaxError(f'expected method return type or name at {self.peek().line}:{self.peek().col}')
+            return_type = self.parse_type_name_for_signature()
+            self.skip_eol()
+            name = self.take().value
+            self.skip_eol()
+            params = []
+            if self.peek().value == '(':
+                params = self.parse_old_paren_params()
+            else:
+                while self.peek().kind != 'EOF':
+                    self.skip_eol()
+                    if self.peek().value == '(' and self.peek_non_eol(1).value == ')':
+                        self.take(value='('); self.skip_eol(); self.take(value=')'); break
+                    if self.peek().value in {'{',';','='}: break
+                    if not self.is_name() or self.peek_non_eol(1).value != ':': break
+                    pname = self.take().value; self.take(value=':')
+                    ptype = self.parse_type_until_line_or({'=',',','{',';','('})
+                    default = self.expr_until_eol_or({',','('}) if self.accept('=') else None
+                    params.append(Param(pname, ptype or 'I32', default))
+                    self.accept(',')
+            self.skip_eol()
+            body = self.block() if self.peek().value == '{' else []
+            self.accept(';')
+            return Function(name, params, body, return_type, cls, decorators)
         fn = self.function(in_class=cls, force_method_of=cls)
         return fn
 
@@ -334,7 +399,9 @@ class Parser:
         return_type = 'I32'
         if in_class and self.peek().value == '~':
             self.take(value='~'); name = self.take().value; return_type = 'Void'; destructor = True
-        elif in_class and self.peek().value == in_class:
+            if name.lower() != str(in_class).lower():
+                raise SyntaxError(f'destructor ~{name} does not match class {in_class} at {self.peek().line}:{self.peek().col}')
+        elif in_class and self.peek().value.lower() == str(in_class).lower():
             name = self.take().value; return_type = 'Void'; constructor = True
         else:
             if not self.is_type_start():

@@ -1,7 +1,7 @@
 {
   "name": "CMotive",
-  "version": "0.2.1-rc1",
-  "created_utc": 1787918758,
+  "version": "0.2.2-rc1",
+  "created_utc": 1787919915,
   "files": [
     {
       "path": ".gitignore",
@@ -29,11 +29,15 @@
     },
     {
       "path": "VERSION",
-      "sha256": "5437423022634608cf21ddb4d5c810bccfa533918e78738d34b97babb7950799"
+      "sha256": "efb9fa72b979bbb0ee46d8939c8a57f64b4fb6b499a388bd716811a97cc0e4a4"
     },
     {
       "path": "docs/ABI_FREEZE.md",
       "sha256": "6030802d808acdaab14f59bc16f0137ecaa55445403fbb160d8767bc031d52bc"
+    },
+    {
+      "path": "docs/CLASSES_INHERITANCE_LIFECYCLE.md",
+      "sha256": "fc485303e255dc2e67161b7b352552d71f510a461c21eed9f631353e6e25a696"
     },
     {
       "path": "docs/CLI_FREEZE.md",
@@ -45,11 +49,11 @@
     },
     {
       "path": "docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md",
-      "sha256": "88cf804fde85a5dea670580848ba0a610381f84eed25ed9f554e9183a150cbcc"
+      "sha256": "c5af160fe59f7e50477a05587db9d2d983d64dd352c4f73155b95278af715a1a"
     },
     {
       "path": "docs/FEATURE_STATUS.md",
-      "sha256": "93bf98638331eca714e2ac668d7faabf93d014b7d644519824d4a84d641c0701"
+      "sha256": "68c15255f3f632200b9887e5405ae4bc04c4bfa567a405d29fdc608822bd1d2e"
     },
     {
       "path": "docs/GA_PROMOTION_POLICY.md",
@@ -129,7 +133,7 @@
     },
     {
       "path": "lib/Sys/runtime.c",
-      "sha256": "b03fcb3c75b1ce17ddbc861aae75f1e25c95d1197c658362cd206b797350f602"
+      "sha256": "460fdf7814112974325871ba524100a54295ce983912fb41237649525b9f8b2a"
     },
     {
       "path": "release/ga/README.md",
@@ -141,7 +145,7 @@
     },
     {
       "path": "release/provenance/manifest.json",
-      "sha256": "9a21378042aa9c7896f1bc39a082873e497c2522f574b6ee773eeb62fc0a723b"
+      "sha256": "ed1ae59f264d7ec3d1620a38ed2a9eb78fc2a33f7f14af9e72168655fb07b5e9"
     },
     {
       "path": "release/rc/README.md",
@@ -169,7 +173,7 @@
     },
     {
       "path": "src/ast/ast_nodes.hpp",
-      "sha256": "b98a4e008f61277254d940163f68424e7b21ddaab66f57c107ab1b5fe3845ae6"
+      "sha256": "f6e51260607d856487e9040d04e8e51d25682268e035e75d5b4ff82962f44890"
     },
     {
       "path": "src/cmotive/__init__.py",
@@ -181,7 +185,7 @@
     },
     {
       "path": "src/cmotive/codegen.py",
-      "sha256": "6640b894cd0118995ced3deaf15506e424ba78591b82dffa964d7dae92aaa9b2"
+      "sha256": "6e9e1bd219debd59c315eb724b362bd58f256a330b3de879dfe4a63d50327cd8"
     },
     {
       "path": "src/cmotive/compiler.py",
@@ -193,7 +197,7 @@
     },
     {
       "path": "src/cmotive/parser.py",
-      "sha256": "b4545c85c281a86b8bf5a463b039fc95af46035167acd793eec2cc35d006c111"
+      "sha256": "1d8e078a2d718937565b980583e8dd392a1ce4757b2b3e57c3e791f1c2bcc27d"
     },
     {
       "path": "src/cmotive/preprocessor.py",
@@ -201,7 +205,7 @@
     },
     {
       "path": "src/cmotive/semantic.py",
-      "sha256": "be3da15baf2422ef93f0919273d10202a5d7c0628fbf7b6015aca3c9a5a2f95b"
+      "sha256": "4bd61a1480fd8aeba68eb7f1c5334d682fe85e743628b9bed3798a45e6db6088"
     },
     {
       "path": "src/codegen/arm64/arm64_backend.cpp",
@@ -209,7 +213,7 @@
     },
     {
       "path": "src/codegen/native_codegen.cpp",
-      "sha256": "ec79d3b65aa5e80b4eedc4384c802aa09ed03508f157a37aa96bc4e22f1801d9"
+      "sha256": "604b9c20c73528cc73c79afa7ac2c20275607d4629ec9c4fde5688d38311a49f"
     },
     {
       "path": "src/codegen/x86_64/x86_64_backend.cpp",
@@ -237,7 +241,7 @@
     },
     {
       "path": "src/sema/semantic_analyzer.cpp",
-      "sha256": "21a097eef03a18194f2d01ca32912778a279603bbbb0a08fd247c06e27d70143"
+      "sha256": "6c2b42b98e0546f867037513aeffd8fb10b202b68601c362b10c9ad64fc61140"
     },
     {
       "path": "src/separate_compilation/object_model.cpp",
@@ -268,6 +272,10 @@
       "sha256": "2456bdbb3595174fc9479d5fdddeecb9afc75c2ce7d45aeab7a63bca239c53c1"
     },
     {
+      "path": "tests/conformance/cmotive_class_lifecycle.CMOT",
+      "sha256": "ea94922c7460560010cfc067e3133602c00debb719bbc2855251fbffaee0770a"
+    },
+    {
       "path": "tests/conformance/cmotive_classes.HMOT",
       "sha256": "a82a44e22a88839af0a532c9f78fa6fe8876c0185058e0e3d3f64cdc457533b1"
     },
@@ -286,6 +294,10 @@
     {
       "path": "tests/conformance/cmotive_formal_main.CMOT",
       "sha256": "cc9cf0fe5e84eb576723c45befaf7413b0d70e25f474fac96f51c5b537c5eb81"
+    },
+    {
+      "path": "tests/conformance/cmotive_invalid_base.CMOT",
+      "sha256": "5203ea1340c805fb47231105bef3a135b1a3919e157b9bd26e4f8050473754e6"
     },
     {
       "path": "tests/conformance/cmotive_package_loading.CMOT",
@@ -317,11 +329,11 @@
     },
     {
       "path": "tests/run_tests.py",
-      "sha256": "08425ceeace1bb0b08ad1d9fa8ef3836df619a184794ca5adbf10e9a4c1229a8"
+      "sha256": "e7bee4a3a70841ed2b7f20c8db741b1d5ed94ede509d077aef59c6967a64146b"
     },
     {
       "path": "tools/cmotive.py",
-      "sha256": "583b1deb3a6eec855e5d65bcf6db076d92e9c9ccedb20c1dd822e0f87933d56b"
+      "sha256": "a4cf4fd42de94c20ab30505f4139bdb4b74d4d93efc88a7700cad9486e8925c4"
     },
     {
       "path": "tools/cmotivepp.py",
