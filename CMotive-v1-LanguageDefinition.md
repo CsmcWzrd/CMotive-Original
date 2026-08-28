@@ -51,6 +51,7 @@ Dynamic  // Dynamic is word used to create a storage buffer for Getall function 
 Elif     // Elif equals else if      
 Else     // Final else     
 Enum     // Enumerated datatype     
+Expand   // Grow a Dynamic Struct by adding members at the end of it.    
 Extern   // Same as extern in C      
 False    // Boolean value = 0     
 Float    // Equivalent to float datatype     
