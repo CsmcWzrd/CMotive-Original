@@ -54,3 +54,8 @@ cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header
 ## STL/Algorithms/IO/Net/Dynamic Struct implementation pass
 
 See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.md` for the expanded standard-library, native sockets, native threads, formatted IO, and Dynamic Struct update.
+
+
+## Complete feature pass update
+
+The bootstrap compiler now includes concrete paths for full-template instantiation, exception unwinding with destructor cleanup frames, real package loading, native sockets, STL helpers, auto Get/Set/Getall/Setall materialization, `Operation` overload lowering, `Tstore`/`ThreadStore`, package-scope `Global` declarations from any source location, and `Fptr` function-pointer typedef declarations. `Overridable` is the formal vtable keyword; pure virtual methods use `Overridable` and `()=0;` with no body.

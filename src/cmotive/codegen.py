@@ -18,7 +18,7 @@ TYPE_MAP = {
     'I16':'int16_t','Int16':'int16_t','I32':'int32_t','Int32':'int32_t','I64':'int64_t','Int':'int64_t',
     'U16':'uint16_t','Uint16':'uint16_t','U32':'uint32_t','Uint32':'uint32_t','U64':'uint64_t','Uint':'uint64_t',
     'Float':'float','Double':'double','Ldouble':'long double',
-    'Void':'void','void':'void','Type':'void*','Dynamic':'void*',
+    'Void':'void','void':'void','Type':'void*','Dynamic':'void*','Tstore':'static _Thread_local','ThreadStore':'static _Thread_local',
 }
 
 DEFAULT_PACKAGE = 'StartPackage'
@@ -44,18 +44,20 @@ class NativeCodegen:
         self._try_id = 0
         self.hit_handlers = {}
         self.dynamic_structs = {}
+        self.operator_symbols = {'+':'Plus','-':'Minus','*':'Multiply','/':'Divide','%':'Modulo','==':'Equal','!=':'NotEqual','<':'Less','>':'Greater','<=':'LessEqual','>=':'GreaterEqual','<<':'LeftShift','>>':'RightShift','>>>':'RightRotate','<<<':'LeftRotate','&':'BitAnd','|':'BitOr','^':'BitXor'}
 
     def emit(self, program, sema):
         self.templates = {d.name: d for d in program.declarations if isinstance(d, TemplateDecl) and d.name}
         regular_classes = [d for d in program.declarations if isinstance(d, ClassDecl)]
         regular_functions = [d for d in program.declarations if isinstance(d, Function)]
-        regular_globals = [d for d in program.declarations if isinstance(d, VarDecl) and d.global_decl]
+        regular_globals = self.collect_global_vars(program.declarations)
 
         self.scan_decls(program.declarations)
         self.instantiate_all()
 
         all_classes = regular_classes + list(self.class_instances.values())
         self.ensure_lifecycle_methods(all_classes)
+        self.ensure_auto_getset_methods(all_classes)
         all_classes = self.order_classes_by_base(all_classes)
 
         all_functions = regular_functions + list(self.function_instances.values())
@@ -70,7 +72,7 @@ class NativeCodegen:
         self.known_classes = set(self.class_map.keys())
         self.functions_by_name = {}
         for d in all_functions:
-            if not d.method_of and d.name != 'main':
+            if not d.method_of and d.name != 'main' and 'Fptr' not in getattr(d, 'decorators', []):
                 self.functions_by_name.setdefault(d.name, []).append(d)
                 self.functions_by_name.setdefault(self.safe_name(d.name), []).append(d)
         self.known_functions = set(self.functions_by_name.keys())
@@ -85,7 +87,7 @@ class NativeCodegen:
             f'/* target-arch: {self.target_arch} */',
             '#include <stdio.h>', '#include <stdlib.h>', '#include <stdint.h>', '#include <stddef.h>',
             '#include <string.h>', '#include <errno.h>', '#include <setjmp.h>', '#include <math.h>', '#include <ctype.h>', '#include <wchar.h>', '#include <time.h>', '#include <sys/stat.h>', '',
-            '#if defined(_WIN32)', '#include <windows.h>', '#include <direct.h>', '#else', '#include <unistd.h>', '#include <pthread.h>', '#endif', '',
+            '#if defined(_WIN32)', '#include <windows.h>', '#include <direct.h>', '#else', '#include <unistd.h>', '#include <pthread.h>', '#include <sched.h>', '#include <sys/socket.h>', '#include <netinet/in.h>', '#include <netinet/ip.h>', '#include <netinet/ip_icmp.h>', '#include <arpa/inet.h>', '#endif', '',
             'typedef void (*CMotiveMethodSlot)(void);',
             'typedef struct CMotiveVTable { CMotiveMethodSlot *slots; size_t count; } CMotiveVTable;',
             'typedef struct CMotiveObject { CMotiveVTable *vtable; } CMotiveObject;',
@@ -142,12 +144,13 @@ class NativeCodegen:
         for d in regular_globals:
             out += self.global_var(d)
         for d in all_functions:
-            if not d.pure_virtual:
+            if not d.pure_virtual and 'Fptr' not in getattr(d, 'decorators', []):
                 out += self.function(d)
         for c in all_classes:
             for m in c.methods:
                 if not m.pure_virtual:
                     out += self.function(m)
+            out += self.auto_getset_helpers(c)
             out += self.new_delete_helpers(c)
         if not any(isinstance(d, Function) and d.name == 'main' and not d.method_of for d in regular_functions):
             out += ['int main(void) { return 0; }', '']
@@ -206,6 +209,41 @@ class NativeCodegen:
             lines.append(f'}} {name};')
             lines.append('')
         return lines
+
+    def collect_global_vars(self, decls):
+        globals_out = []
+        seen = set()
+        def add(v):
+            key = (self.package_name(getattr(v, 'package', DEFAULT_PACKAGE)), self.safe_name(v.name))
+            if key in seen:
+                return
+            seen.add(key)
+            globals_out.append(v)
+        def walk(nodes):
+            for n in nodes:
+                if isinstance(n, VarDecl) and getattr(n, 'global_decl', False):
+                    add(n)
+                elif isinstance(n, Function):
+                    walk(getattr(n, 'body', []) or [])
+                elif isinstance(n, ClassDecl):
+                    for m in getattr(n, 'methods', []) or []:
+                        walk(getattr(m, 'body', []) or [])
+                    for child in getattr(n, 'nested', []) or []:
+                        walk([child])
+                elif isinstance(n, If):
+                    walk(n.then_body); walk(n.else_body)
+                elif isinstance(n, While):
+                    walk(n.body)
+                elif isinstance(n, DoWhile):
+                    walk(n.body)
+                elif isinstance(n, For):
+                    walk(n.body)
+                elif isinstance(n, TryCatch):
+                    walk(n.try_body)
+                    for _, body in n.catches:
+                        walk(body)
+        walk(decls)
+        return globals_out
 
     def camel_to_snake(self, name):
         s = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', str(name or ''))
@@ -626,6 +664,7 @@ class NativeCodegen:
     def collect_hit_handlers(self, free_functions, classes):
         self.hit_handlers = {}
         self.dynamic_structs = {}
+        self.operator_symbols = {'+':'Plus','-':'Minus','*':'Multiply','/':'Divide','%':'Modulo','==':'Equal','!=':'NotEqual','<':'Less','>':'Greater','<=':'LessEqual','>=':'GreaterEqual','<<':'LeftShift','>>':'RightShift','>>>':'RightRotate','<<<':'LeftRotate','&':'BitAnd','|':'BitOr','^':'BitXor'}
         def add(fn):
             hid = getattr(fn, 'hit_id', None)
             if hid is None or str(hid).strip() == '':
@@ -706,6 +745,13 @@ class NativeCodegen:
         for f in c.fields:
             lines += self.field_decl(f)
         lines += [f'}} {cname};', '']
+        auto_fields = self.auto_fields(c)
+        if auto_fields:
+            data_name = self.auto_public_struct_name(c)
+            lines.append(f'typedef struct {data_name} {{')
+            for af in auto_fields:
+                lines.append('  ' + self.c_decl(af.type_name, self.safe_name(af.name)) + ';')
+            lines += [f'}} {data_name};', '']
         for n in c.nested:
             lines += self.class_decl(n)
         return lines
@@ -725,6 +771,11 @@ class NativeCodegen:
         for f in free_functions:
             if f.pure_virtual:
                 continue
+            if 'Fptr' in getattr(f, 'decorators', []):
+                for proto in self.fptr_typedefs(f):
+                    if proto not in seen:
+                        lines.append(proto); seen.add(proto)
+                continue
             proto = self.function_signature(f) + ';'
             if proto not in seen:
                 lines.append(proto); seen.add(proto)
@@ -733,6 +784,9 @@ class NativeCodegen:
                 if m.pure_virtual:
                     continue
                 proto = self.function_signature(m) + ';'
+                if proto not in seen:
+                    lines.append(proto); seen.add(proto)
+            for proto in self.auto_getset_prototypes(c):
                 if proto not in seen:
                     lines.append(proto); seen.add(proto)
             for m in [x for x in c.methods if x.constructor]:
@@ -744,11 +798,23 @@ class NativeCodegen:
                 lines.append(dproto); seen.add(dproto)
         return lines + [''] if lines else []
 
+    def global_symbol_name(self, v):
+        return f'{self.package_name(getattr(v, "package", DEFAULT_PACKAGE))}__{self.safe_name(v.name)}'
+
     def global_var(self, v):
         prev = self.current_package_context
         self.current_package_context = getattr(v, 'package', DEFAULT_PACKAGE)
         try:
-            return [self.c_decl(v.type_name, self.safe_name(v.name)) + ' = ' + self.expr(v.value, v.type_name) + ';', '']
+            sym = self.global_symbol_name(v)
+            alias = self.safe_name(v.name)
+            lines = [self.c_decl(v.type_name, sym) + ' = ' + self.expr(v.value, v.type_name) + ';']
+            # A Global variable is package-scoped but source-visible by its declared name.
+            # The macro alias keeps existing expressions simple while the emitted symbol
+            # remains package-qualified for linker/object isolation.
+            if alias != sym:
+                lines += [f'#ifndef {alias}', f'#define {alias} {sym}', '#endif']
+            lines.append('')
+            return lines
         finally:
             self.current_package_context = prev
 
@@ -849,6 +915,9 @@ class NativeCodegen:
         if not type_name:
             return 'int32_t'
         t = self.type_template_to_c(type_name)
+        thread_local = bool(re.search(r'\b(?:Tstore|ThreadStore)\b', t))
+        t = re.sub(r'\b(?:Tstore|ThreadStore)\b', '', t).strip()
+        t = re.sub(r'\bGlobal\b', '', t).strip()
         t = re.sub(r'\bConst\b', 'const', t)
         t = re.sub(r'\bVolatile\b', 'volatile', t)
         ptr = ''
@@ -862,14 +931,102 @@ class NativeCodegen:
             mapped.append(TYPE_MAP.get(p, p))
         base = ' '.join(mapped) if mapped else 'int32_t'
         if base == 'void' and ptr:
-            return 'void ' + ptr
-        return (base + (' ' + ptr if ptr else '')).strip()
+            out = 'void ' + ptr
+        else:
+            out = (base + (' ' + ptr if ptr else '')).strip()
+        if thread_local:
+            out = 'static _Thread_local ' + out
+        return out
 
     def class_type_info(self, type_name):
         t = self.normalize_type_string(type_name)
         is_ptr = '*' in t or '&' in t
         base = self.c_type(t).replace('*', '').strip()
         return base, is_ptr, base in self.known_classes
+
+
+    def auto_fields(self, c):
+        return [f for f in getattr(c, 'fields', []) if getattr(f, 'visibility', 'Public') == 'Public' and not getattr(f, 'block_getset', False) and not getattr(f, 'bit_fields', None)]
+
+    def auto_public_struct_name(self, c):
+        return self.class_symbol_prefix(self.safe_name(c.name), getattr(c, 'package', DEFAULT_PACKAGE)) + '__PublicData'
+
+    def auto_get_name(self, c, f):
+        return self.class_symbol_prefix(self.safe_name(c.name), getattr(c, 'package', DEFAULT_PACKAGE)) + '__Get__' + self.safe_name(f.name)
+
+    def auto_set_name(self, c, f):
+        return self.class_symbol_prefix(self.safe_name(c.name), getattr(c, 'package', DEFAULT_PACKAGE)) + '__Set__' + self.safe_name(f.name)
+
+    def auto_getall_name(self, c):
+        return self.class_symbol_prefix(self.safe_name(c.name), getattr(c, 'package', DEFAULT_PACKAGE)) + '__Getall'
+
+    def auto_setall_name(self, c):
+        return self.class_symbol_prefix(self.safe_name(c.name), getattr(c, 'package', DEFAULT_PACKAGE)) + '__Setall'
+
+    def auto_getset_prototypes(self, c):
+        cname = self.safe_name(c.name)
+        protos = []
+        fields = self.auto_fields(c)
+        for f in fields:
+            protos.append(f'{self.c_type(f.type_name)} {self.auto_get_name(c, f)}({cname} *this);')
+            protos.append(f'void {self.auto_set_name(c, f)}({cname} *this, {self.c_decl(f.type_name, "value")});')
+        if fields:
+            data = self.auto_public_struct_name(c)
+            protos.append(f'{data} {self.auto_getall_name(c)}({cname} *this);')
+            args = ', '.join([self.c_decl(f.type_name, self.safe_name(f.name)) for f in fields])
+            protos.append(f'void {self.auto_setall_name(c)}({cname} *this' + (', ' + args if args else '') + ');')
+        return protos
+
+    def auto_getset_helpers(self, c):
+        cname = self.safe_name(c.name)
+        fields = self.auto_fields(c)
+        lines = []
+        for f in fields:
+            fname = self.safe_name(f.name)
+            lines += [f'{self.c_type(f.type_name)} {self.auto_get_name(c, f)}({cname} *this) {{', f'  return this->{fname};', '}', '']
+            lines += [f'void {self.auto_set_name(c, f)}({cname} *this, {self.c_decl(f.type_name, "value")}) {{', f'  this->{fname} = value;', '}', '']
+        if fields:
+            data = self.auto_public_struct_name(c)
+            lines += [f'{data} {self.auto_getall_name(c)}({cname} *this) {{', f'  {data} out;']
+            for f in fields:
+                fname = self.safe_name(f.name)
+                lines.append(f'  out.{fname} = this->{fname};')
+            lines += ['  return out;', '}', '']
+            args = ', '.join([self.c_decl(f.type_name, self.safe_name(f.name)) for f in fields])
+            lines += [f'void {self.auto_setall_name(c)}({cname} *this' + (', ' + args if args else '') + ') {']
+            for f in fields:
+                fname = self.safe_name(f.name)
+                lines.append(f'  this->{fname} = {fname};')
+            lines += ['}', '']
+        return lines
+
+    def ensure_auto_getset_methods(self, classes):
+        # Auto accessors are emitted as generated C helper functions so they do not
+        # pollute the user-visible method list or virtual slot metadata.
+        return None
+
+    def operation_symbol_name(self, op):
+        return self.operator_symbols.get(op, re.sub(r'\W+', '_', str(op)).strip('_') or 'Unknown')
+
+    def operation_method_name(self, op):
+        return 'Operation__' + self.operation_symbol_name(op)
+
+    def class_has_method(self, cls, name):
+        c = self.lookup_class(cls)
+        if not c:
+            return False
+        return any(m.name == name and not m.constructor and not m.destructor for m in c.methods)
+
+    def fptr_typedefs(self, f):
+        ret = self.c_type(f.return_type)
+        params = [self.c_decl(p.type_name, self.safe_name(p.name)) for p in f.params]
+        param_text = ', '.join(params) if params else 'void'
+        pkg_name = f'{self.package_name(getattr(f, "package", DEFAULT_PACKAGE))}__{self.safe_name(f.name)}'
+        plain_name = self.safe_name(f.name)
+        out = [f'typedef {ret} (*{pkg_name})({param_text});']
+        if plain_name != pkg_name:
+            out.append(f'typedef {pkg_name} {plain_name};')
+        return out
 
     def function_signature(self, f):
         ret = 'void' if f.constructor or f.destructor else self.c_type(f.return_type)
@@ -1061,6 +1218,10 @@ class NativeCodegen:
         name = self.safe_name(s.name)
         typ = s.type_name or 'I32'
         init = (s.value or '0').strip()
+        if getattr(s, 'global_decl', False):
+            scope[name] = typ
+            scope[s.name] = typ
+            return []
         scope[name] = typ
         scope[s.name] = typ
         ctyp = self.c_type(typ)
@@ -1242,6 +1403,52 @@ class NativeCodegen:
         fn_type = ret + ' (*)(' + ', '.join(params) + ')'
         return f'(({fn_type})(((CMotiveObject*)({receiver}))->vtable->slots[{slot}]))({receiver}, '
 
+
+    def lower_auto_getset_calls(self, s, scope=None, current_class=None):
+        scope = scope or {}
+        # Add pseudo receiver for This/this.
+        work_scope = dict(scope)
+        if current_class:
+            work_scope.setdefault('this', current_class + '*')
+            work_scope.setdefault('This', current_class + '*')
+        for var, typ in sorted(work_scope.items(), key=lambda x: len(x[0]), reverse=True):
+            cls, is_ptr, is_class = self.class_type_info(typ)
+            if not is_class:
+                continue
+            c = self.lookup_class(cls)
+            if not c:
+                continue
+            recv = var if is_ptr or var in {'this','This'} else '&' + var
+            op = r'->' if is_ptr or var in {'this','This'} else r'\.'
+            for f in self.auto_fields(c):
+                fname = self.safe_name(f.name)
+                s = re.sub(r'\b' + re.escape(var) + r'\s*' + op + r'\s*Get\s*@\s*' + re.escape(fname) + r'\s*\(\s*\)', f'{self.auto_get_name(c, f)}({recv})', s)
+                s = re.sub(r'\b' + re.escape(var) + r'\s*' + op + r'\s*Set\s*@\s*' + re.escape(fname) + r'\s*\((.*)\)', lambda m, c=c, f=f, recv=recv: f'{self.auto_set_name(c, f)}({recv}, {self.expr(m.group(1), scope=scope, current_class=current_class)})', s)
+            if self.auto_fields(c):
+                s = re.sub(r'\b' + re.escape(var) + r'\s*' + op + r'\s*Getall\s*\(\s*\)', f'{self.auto_getall_name(c)}({recv})', s)
+                s = re.sub(r'\b' + re.escape(var) + r'\s*' + op + r'\s*Setall\s*\((.*)\)', lambda m, c=c, recv=recv: f'{self.auto_setall_name(c)}({recv}' + (', ' + self.expr(m.group(1), scope=scope, current_class=current_class) if m.group(1).strip() else '') + ')', s)
+        return s
+
+    def lower_operation_calls(self, s, scope=None, current_class=None):
+        scope = scope or {}
+        stripped = s.strip()
+        # Only lower clear top-level binary expressions. This keeps normal C arithmetic intact.
+        for var, typ in sorted(scope.items(), key=lambda x: len(x[0]), reverse=True):
+            cls, is_ptr, is_class = self.class_type_info(typ)
+            if not is_class:
+                continue
+            recv = var if is_ptr else '&' + var
+            for op in sorted(self.operator_symbols.keys(), key=len, reverse=True):
+                method = self.operation_method_name(op)
+                if not self.class_has_method(cls, method):
+                    continue
+                pat = r'^' + re.escape(var) + r'\s*' + re.escape(op) + r'\s*(.+)$'
+                m = re.match(pat, stripped)
+                if m:
+                    rhs = self.expr(m.group(1), scope=scope, current_class=current_class)
+                    return f'{self.method_name(cls, method)}({recv}, {rhs})'
+        return s
+
     def lower_method_calls(self, s, scope=None, current_class=None):
         scope = scope or {}
         if current_class:
@@ -1332,6 +1539,8 @@ class NativeCodegen:
             else:
                 s = re.sub(r'\bNew\s+([A-Za-z_]\w*(?:\s*<\s*[^<>]+\s*>)?)\s*\(([^)]*)\)', lambda m: f'{self.new_name_for_types(self.c_type(m.group(1)).replace("*", "").strip(), self.resolve_constructor(self.c_type(m.group(1)).replace("*", "").strip(), m.group(2), scope, current_class)[0])}({m.group(2).strip()})', s)
                 s = re.sub(r'\bNew\s*\(([^)]*)\)', 'CMotive_New(sizeof(CMotiveObject))', s)
+        s = self.lower_auto_getset_calls(s, scope, current_class)
+        s = self.lower_operation_calls(s, scope, current_class)
         s = self.lower_method_calls(s, scope, current_class)
         s = self.lower_member_names(s, scope, current_class)
         s = self.lower_known_function_calls(s)

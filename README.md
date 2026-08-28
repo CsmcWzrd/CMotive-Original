@@ -32,3 +32,8 @@ Class methods, constructors, destructors, and `New`/`Delete` helpers now use pac
 ## VS2022 package project
 
 Open `vs2022/CMotive.Packages.sln` to build the package-system scaffold with Visual Studio 2022. See `docs/VS2022_PACKAGES.md`.
+
+
+## Complete feature pass update
+
+The bootstrap compiler now includes concrete paths for full-template instantiation, exception unwinding with destructor cleanup frames, real package loading, native sockets, STL helpers, auto Get/Set/Getall/Setall materialization, `Operation` overload lowering, `Tstore`/`ThreadStore`, package-scope `Global` declarations from any source location, and `Fptr` function-pointer typedef declarations. `Overridable` is the formal vtable keyword; pure virtual methods use `Overridable` and `()=0;` with no body.

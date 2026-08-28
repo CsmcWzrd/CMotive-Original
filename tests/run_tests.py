@@ -65,6 +65,12 @@ def main():
     ok &= build_and_run(b, 'tests/conformance/cmotive_net_native_sockets.CMOT', 'net_native_sockets', exe_suffix)
     ok &= build_and_run(b, 'tests/conformance/cmotive_thread_native.CMOT', 'thread_native', exe_suffix)
     ok &= build_and_run(b, 'tests/conformance/cmotive_dynamic_struct.CMOT', 'dynamic_struct', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_auto_getset.CMOT', 'auto_getset', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_operation_overload.CMOT', 'operation_overload', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_tstore_threadstore.CMOT', 'tstore_threadstore', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_global_anywhere.CMOT', 'global_anywhere', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_fptr_function_pointer.CMOT', 'fptr_function_pointer', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_overridable_pure_virtual.CMOT', 'overridable_pure_virtual', exe_suffix)
 
     ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_dynamic_struct.CMOT', '-o', 'build/dynamic_struct.c'])
     if ok:

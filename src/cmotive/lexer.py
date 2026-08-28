@@ -20,7 +20,7 @@ KEYWORD_KIND = {
     'Plugswitch':'PLUGSWITCH','Plugend':'PLUGEND','Private':'PRIVATE','Protected':'PROTECTED',
     'Public':'PUBLIC','Register':'REGISTER','Replace':'REPLACE','Return':'RETURN','Set':'SET',
     'Setall':'SETALL','Sizeof':'SIZEOF','Static':'STATIC','Struct':'STRUCT','Switch':'SWITCH',
-    'Template':'TEMPLATE','Throw':'THROW','This':'THIS','Target':'TARGET','Hit':'HIT','Tstore':'TSTORE','True':'TRUE',
+    'Template':'TEMPLATE','Throw':'THROW','This':'THIS','Target':'TARGET','Hit':'HIT','Tstore':'TSTORE','ThreadStore':'TSTORE','True':'TRUE',
     'Try':'TRY','Type':'TYPE','Uchar':'UCHAR','U16':'U16','Uint16':'U16','U32':'U32','Uint32':'U32','U64':'U64','Uint':'U64',
     'Void':'VOID','Volatile':'VOLATILE','While':'WHILE',
     # Historical/bootstrap aliases.

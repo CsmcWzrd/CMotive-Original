@@ -1,3 +1,4 @@
+import re
 from .ast import (
     Program, Param, Function, ClassDecl, Field, PackageDecl, PluginDecl,
     TemplateDecl, BlendDecl, DynamicStructDecl, DynamicStructExpand, VarDecl, Return, ExprStmt, If, While, DoWhile,
@@ -6,7 +7,7 @@ from .ast import (
 
 TYPE_KINDS = {
     'BOOLEAN','CHAR','CHAR16','CHAR32','DOUBLE','FLOAT','I16','I32','I64','LDOUBLE',
-    'UCHAR','U16','U32','U64','VOID','STRUCT','DYNAMIC','TYPE','ID'
+    'UCHAR','U16','U32','U64','VOID','STRUCT','DYNAMIC','TYPE','TSTORE','ID'
 }
 DECORATORS = {'INLINE','EXTERN','STATIC','OVERRIDABLE','REGISTER','TSTORE','VOLATILE','CONST','GLOBAL','FPTR'}
 VISIBILITY = {'PUBLIC':'Public','PRIVATE':'Private','PROTECTED':'Protected'}
@@ -80,6 +81,8 @@ class Parser:
             if self.accept(';'):
                 continue
             k = self.peek().kind
+            if k == 'GLOBAL':
+                decls.append(self.var_decl(global_decl=True)); continue
             if k == 'PACKAGE':
                 decls.append(self.package_decl()); continue
             if k == 'PLUGIN':
@@ -121,10 +124,12 @@ class Parser:
     def apply_package(self, node, package):
         if isinstance(node, Function):
             node.package = package
+            for s in getattr(node, 'body', []) or []:
+                self.apply_package(s, package)
         elif isinstance(node, ClassDecl):
             node.package = package
             for m in node.methods:
-                m.package = package
+                self.apply_package(m, package)
             for n in node.nested:
                 self.apply_package(n, package)
         elif isinstance(node, TemplateDecl):
@@ -133,8 +138,30 @@ class Parser:
                 self.apply_package(node.body_node, package)
         elif isinstance(node, DynamicStructDecl):
             node.package = package
+        elif isinstance(node, DynamicStructExpand):
+            pass
         elif isinstance(node, VarDecl):
             node.package = package
+        elif isinstance(node, If):
+            for s in node.then_body:
+                self.apply_package(s, package)
+            for s in node.else_body:
+                self.apply_package(s, package)
+        elif isinstance(node, While):
+            for s in node.body:
+                self.apply_package(s, package)
+        elif isinstance(node, DoWhile):
+            for s in node.body:
+                self.apply_package(s, package)
+        elif isinstance(node, For):
+            for s in node.body:
+                self.apply_package(s, package)
+        elif isinstance(node, TryCatch):
+            for s in node.try_body:
+                self.apply_package(s, package)
+            for _, body in node.catches:
+                for s in body:
+                    self.apply_package(s, package)
 
     def dotted_name_until_eol_or_semicolon(self):
         parts = []
@@ -412,12 +439,28 @@ class Parser:
         self.accept(';')
 
     def looks_like_var_decl(self):
-        return self.is_name(self.peek_non_eol(0)) and self.peek_non_eol(1).value == ':'
+        first = self.peek_non_eol(0)
+        if first.kind == 'GLOBAL':
+            return self.is_name(self.peek_non_eol(1)) and self.peek_non_eol(2).value == ':'
+        return self.is_name(first) and self.peek_non_eol(1).value == ':'
+
+    def strip_storage_from_type(self, typ):
+        t = typ or 'I32'
+        is_global = bool(re.search(r'\bGlobal\b', t))
+        t = re.sub(r'\bGlobal\b', '', t).strip()
+        t = re.sub(r'\s+', ' ', t).strip()
+        return (t or 'I32'), is_global
 
     def var_decl(self, global_decl=False):
+        prefix_global = False
+        if self.peek().kind == 'GLOBAL':
+            prefix_global = True
+            self.take('GLOBAL')
+            self.skip_eol()
         name = self.take().value
         self.take(value=':')
         typ = self.parse_type_until_line_or({'=',';','{','BLOCK'})
+        typ, type_global = self.strip_storage_from_type(typ)
         bit_fields = []
         if self.peek().value == '{':
             bit_fields = self.parse_bit_fields()
@@ -432,7 +475,7 @@ class Parser:
             block = True; self.take(); self.accept(';')
         # Store bit field metadata in a side-car string for VarDecl users. Class
         # members are represented as Field and populated by caller when needed.
-        vd = VarDecl(name, val or '0', typ or 'I32', global_decl)
+        vd = VarDecl(name, val or '0', typ or 'I32', bool(global_decl or prefix_global or type_global))
         vd.bit_fields = bit_fields
         vd.block_getset = block
         return vd
@@ -500,7 +543,10 @@ class Parser:
                 raise SyntaxError(f'expected method return type or name at {self.peek().line}:{self.peek().col}')
             return_type = self.parse_type_name_for_signature()
             self.skip_eol()
-            name = self.take().value
+            if self.peek().kind == 'OPERATION':
+                name = self.parse_operation_name_after_keyword()
+            else:
+                name = self.take().value
             self.skip_eol()
             params = []
             if self.peek().value == '(':
@@ -524,6 +570,45 @@ class Parser:
         fn = self.function(in_class=cls, force_method_of=cls)
         return fn
 
+
+    def operation_symbol_name(self, op):
+        table = {
+            '+':'Plus', '-':'Minus', '*':'Multiply', '/':'Divide', '%':'Modulo',
+            '==':'Equal', '!=':'NotEqual', '<':'Less', '>':'Greater', '<=':'LessEqual', '>=':'GreaterEqual',
+            '[]':'Index', '()':'Call', '=':'Assign', '+=':'PlusAssign', '-=':'MinusAssign',
+            '*=':'MultiplyAssign', '/=':'DivideAssign', '%=':'ModuloAssign', '<<':'LeftShift', '>>':'RightShift',
+            '>>>':'RightRotate', '<<<':'LeftRotate', '&':'BitAnd', '|':'BitOr', '^':'BitXor', '!':'Not'
+        }
+        return table.get(str(op).strip(), re.sub(r'\W+', '_', str(op).strip()).strip('_') or 'Unknown')
+
+    def parse_operation_name_after_keyword(self):
+        self.take('OPERATION')
+        parts = []
+        depth = 0
+        while self.peek().kind != 'EOF':
+            t = self.peek()
+            if depth == 0 and (t.kind == 'EOL' or t.value in {';', '{'}):
+                break
+            if depth == 0 and t.value == '(':
+                # Keep Operation() distinct from the parameter-list opener only when it is written as a symbol.
+                if parts:
+                    break
+            if depth == 0 and self.is_name(t) and parts:
+                break
+            if t.value in {'(', '[', '{'}: depth += 1
+            elif t.value in {')', ']', '}'}: depth -= 1
+            parts.append(self.take().value)
+            # Operators are one logical token except [] and ().
+            if depth == 0 and parts:
+                if ''.join(parts) not in {'[', '('}:
+                    break
+        op = ''.join(parts).strip()
+        if op == '[' and self.peek().value == ']':
+            self.take(value=']'); op = '[]'
+        elif op == '(' and self.peek().value == ')':
+            self.take(value=')'); op = '()'
+        return 'Operation__' + self.operation_symbol_name(op)
+
     def function(self, in_class=None, force_method_of=None):
         self.skip_eol()
         decorators = []
@@ -546,7 +631,10 @@ class Parser:
                 raise SyntaxError(f'expected type at {self.peek().line}:{self.peek().col}')
             return_type = self.parse_type_name_for_signature()
             self.skip_eol()
-            name = self.take().value
+            if self.peek().kind == 'OPERATION':
+                name = self.parse_operation_name_after_keyword()
+            else:
+                name = self.take().value
         self.skip_eol()
         params = []
         if self.peek().value == '(':
@@ -735,6 +823,8 @@ class Parser:
             return TryCatch(tb, catches)
         if k == 'SWITCH':
             return self.raw_keyword_block_statement()
+        if k == 'GLOBAL':
+            return self.var_decl(global_decl=True)
         if k == 'VAR':
             self.take('VAR')
             name = self.take().value
