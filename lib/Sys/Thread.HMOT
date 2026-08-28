@@ -1,42 +1,29 @@
 Package Sys::Thread;
 
-Class
-Thread
+Void*
+start
+entry : Void*
+userdata : Void*
+()
 {
-    Public
-    {
-        entry : Void* = Null; Block
-        userdata : Void* = Null; Block
-        handle : Void* = Null; Block
+    Return cmotive_sys_thread_start(entry, userdata);
+}
 
-        Thread
-        ()
-        {
-        }
+I32
+join
+handle : Void*
+()
+{
+    Return cmotive_sys_thread_join(handle);
+}
 
-        I32
-        start
-        ()
-        {
-            handle = cmotive_sys_thread_start(entry, userdata);
-            Return handle != Null;
-        }
-
-        I32
-        join
-        ()
-        {
-            Return cmotive_sys_thread_join(handle);
-        }
-
-        I32
-        detach
-        ()
-        {
-            Return cmotive_sys_thread_detach(handle);
-        }
-    }
-};
+I32
+detach
+handle : Void*
+()
+{
+    Return cmotive_sys_thread_detach(handle);
+}
 
 Void*
 current
@@ -60,5 +47,3 @@ yield
 {
     Return cmotive_sys_thread_yield();
 }
-
-Tstore I32 cmotive_thread_local_errno : I32 = 0;

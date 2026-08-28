@@ -1,0 +1,48 @@
+Package Sys::Algorithms;
+
+I64
+minI64
+a : I64
+b : I64
+()
+{
+    Return cmotive_sys_algorithms_min_i64(a, b);
+}
+
+I64
+maxI64
+a : I64
+b : I64
+()
+{
+    Return cmotive_sys_algorithms_max_i64(a, b);
+}
+
+I32
+compareI32
+a : I32
+b : I32
+()
+{
+    Return cmotive_sys_algorithms_compare_i32(a, b);
+}
+
+Void
+sortQuickI64
+data : I64*
+count : U64
+()
+{
+    cmotive_sys_algorithms_sort_quick_i64(data, count);
+    Return;
+}
+
+I64
+binarySearchI64
+data : I64*
+count : U64
+needle : I64
+()
+{
+    Return cmotive_sys_algorithms_binary_search_i64(data, count, needle);
+}

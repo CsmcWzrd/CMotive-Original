@@ -1,5 +1,4 @@
-// Compatibility package. New code should use Plugin Sys::IO.
-Package Sys::Stdio;
+Package Sys::IO;
 
 I32
 print
@@ -15,4 +14,11 @@ value : Char*
 ()
 {
     Return cmotive_sys_io_println(value);
+}
+
+I32
+flush
+()
+{
+    Return cmotive_sys_stdio_flush();
 }

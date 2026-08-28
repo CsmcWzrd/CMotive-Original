@@ -57,3 +57,8 @@ The following are still intentionally not complete full-platform implementations
 real network socket operations beyond the reserved API surface, full userspace
 scheduler integration, and STL container algorithms beyond the initial template
 package shape.
+
+
+## STL/Algorithms/IO/Net/Dynamic Struct implementation pass
+
+See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.md` for the expanded standard-library, native sockets, native threads, formatted IO, and Dynamic Struct update.

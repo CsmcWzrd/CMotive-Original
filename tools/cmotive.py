@@ -82,6 +82,9 @@ def link_objects(ld, objs, out, libdirs, libs, target_arch=None):
         cmd += ['-pthread']
         if 'm' not in libs:
             cmd += ['-lm']
+    else:
+        if not compiler_is_msvc(ld) and 'ws2_32' not in libs:
+            cmd += ['-lws2_32']
     cmd += ['-l' + l for l in libs] + ['-o', str(out)]
     return cmd
 

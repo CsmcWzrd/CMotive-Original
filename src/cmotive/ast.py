@@ -39,6 +39,17 @@ class Field(Node):
     bit_fields: List[Tuple[int, str]] = field(default_factory=list)
 
 @dataclass
+class DynamicStructDecl(Node):
+    name: str
+    fields: List[Field] = field(default_factory=list)
+    package: str = 'StartPackage'
+
+@dataclass
+class DynamicStructExpand(Node):
+    name: str
+    fields: List[Field] = field(default_factory=list)
+
+@dataclass
 class ClassDecl(Node):
     name: str
     base: Optional[str] = None

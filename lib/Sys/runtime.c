@@ -183,10 +183,10 @@ int cmotive_sys_locks_rwlock_unlock(void *h) { return h ? pthread_rwlock_unlock(
 void cmotive_sys_locks_rwlock_destroy(void *h) { if (h) { pthread_rwlock_destroy((pthread_rwlock_t*)h); free(h); } }
 #endif
 
-void* cmotive_sys_thread_start(void *entry, void *userdata) { (void)entry; (void)userdata; return NULL; }
-int cmotive_sys_thread_join(void *h) { (void)h; return 0; }
-int cmotive_sys_thread_detach(void *h) { (void)h; return 0; }
-void* cmotive_sys_thread_current(void) { return NULL; }
+void* cmotive_sys_thread_start_legacy(void *entry, void *userdata) { (void)entry; (void)userdata; return NULL; }
+int cmotive_sys_thread_join_legacy(void *h) { (void)h; return 0; }
+int cmotive_sys_thread_detach_legacy(void *h) { (void)h; return 0; }
+void* cmotive_sys_thread_current_legacy(void) { return NULL; }
 void cmotive_sys_thread_sleep_ms(uint32_t ms) {
 #if defined(_WIN32)
   Sleep(ms);
@@ -194,12 +194,12 @@ void cmotive_sys_thread_sleep_ms(uint32_t ms) {
   usleep((useconds_t)ms * 1000u);
 #endif
 }
-int cmotive_sys_thread_yield(void) { return 0; }
+int cmotive_sys_thread_yield_legacy(void) { return 0; }
 
-int cmotive_sys_net_socket_tcp(void) { return -1; }
-int cmotive_sys_net_socket_udp(void) { return -1; }
-int cmotive_sys_net_socket_raw(void) { return -1; }
-int cmotive_sys_net_socket_close(int fd) { (void)fd; return 0; }
+int cmotive_sys_net_socket_tcp_legacy(void) { return -1; }
+int cmotive_sys_net_socket_udp_legacy(void) { return -1; }
+int cmotive_sys_net_socket_raw_legacy(void) { return -1; }
+int cmotive_sys_net_socket_close_legacy(int fd) { (void)fd; return 0; }
 
 int __cmotive_exception_last_code = 0;
 void cmotive_sys_exception_set_code(int code) { __cmotive_exception_last_code = code; }
@@ -257,3 +257,170 @@ int cmotive_sys_locks_semaphore_trywait(void *h) { CMotive_Semaphore *s = (CMoti
 void cmotive_sys_locks_semaphore_destroy(void *h) { free(h); }
 
 /* ---- end CMotive standard library runtime helpers ---- */
+
+
+
+/* ---- CMotive expanded Sys::IO/STL/Algorithms/Net/native-thread runtime helpers ---- */
+#include <stdarg.h>
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
+#include <sched.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+int cmotive_sys_io_print(const char *s) { return fputs(s ? s : "", stdout); }
+int cmotive_sys_io_println(const char *s) { int r = fputs(s ? s : "", stdout); fputc('\n', stdout); return r; }
+int cmotive_sys_io_printf(const char *fmt, ...) { va_list ap; int r; va_start(ap, fmt); r = vprintf(fmt ? fmt : "", ap); va_end(ap); return r; }
+int cmotive_sys_io_sprintf(char *dst, const char *fmt, ...) { va_list ap; int r; if (!dst) return -1; va_start(ap, fmt); r = vsprintf(dst, fmt ? fmt : "", ap); va_end(ap); return r; }
+int cmotive_sys_io_scanf(const char *fmt, ...) { va_list ap; int r; va_start(ap, fmt); r = vscanf(fmt ? fmt : "", ap); va_end(ap); return r; }
+
+/* Backward compatibility: Sys::Stdio is a wrapper over Sys::IO. */
+int cmotive_sys_stdio_print_new(const char *s) { return cmotive_sys_io_print(s); }
+int cmotive_sys_stdio_println_new(const char *s) { return cmotive_sys_io_println(s); }
+
+/* Generic integer vector used as the initial concrete storage for Vector/List/Dlist. */
+typedef struct CMotive_VectorEx { int64_t *items; uint64_t count; uint64_t cap; } CMotive_VectorEx;
+void* cmotive_sys_stl_vector_create(void) { return calloc(1, sizeof(CMotive_VectorEx)); }
+int cmotive_vector_ex_reserve(CMotive_VectorEx *v, uint64_t cap) { int64_t *n; if (!v) return -1; if (cap <= v->cap) return 0; n=(int64_t*)realloc(v->items, (size_t)cap * sizeof(int64_t)); if (!n) return -1; v->items=n; v->cap=cap; return 0; }
+int cmotive_sys_stl_vector_push_i64(void *h, int64_t value) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (!v) return -1; if (v->count == v->cap && cmotive_vector_ex_reserve(v, v->cap ? v->cap * 2u : 8u)) return -1; v->items[v->count++] = value; return 0; }
+int64_t cmotive_sys_stl_vector_get_i64(void *h, uint64_t index) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (!v || index >= v->count) return 0; return v->items[index]; }
+int cmotive_sys_stl_vector_set_i64(void *h, uint64_t index, int64_t value) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (!v || index >= v->count) return -1; v->items[index] = value; return 0; }
+uint64_t cmotive_sys_stl_vector_size(void *h) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; return v ? v->count : 0u; }
+int64_t cmotive_sys_stl_vector_pop_i64(void *h) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (!v || v->count == 0) return 0; return v->items[--v->count]; }
+void cmotive_sys_stl_vector_clear(void *h) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (v) v->count = 0; }
+void cmotive_sys_stl_vector_destroy(void *h) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (v) { free(v->items); free(v); } }
+int cmotive_i64_cmp_ex(const void *a, const void *b) { int64_t x=*(const int64_t*)a, y=*(const int64_t*)b; return (x>y)-(x<y); }
+int cmotive_i32_cmp_ex(const void *a, const void *b) { int32_t x=*(const int32_t*)a, y=*(const int32_t*)b; return (x>y)-(x<y); }
+void cmotive_sys_stl_vector_sort_i64(void *h) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; if (v && v->items) qsort(v->items, (size_t)v->count, sizeof(int64_t), cmotive_i64_cmp_ex); }
+int64_t cmotive_sys_stl_vector_binary_search_i64(void *h, int64_t needle) { CMotive_VectorEx *v=(CMotive_VectorEx*)h; uint64_t lo=0, hi=v ? v->count : 0; while (lo < hi) { uint64_t mid = lo + (hi-lo)/2u; int64_t val=v->items[mid]; if (val == needle) return (int64_t)mid; if (val < needle) lo = mid + 1u; else hi = mid; } return -1; }
+#define cmotive_sys_stl_list_create cmotive_sys_stl_vector_create
+#define cmotive_sys_stl_list_push_back_i64 cmotive_sys_stl_vector_push_i64
+#define cmotive_sys_stl_list_size cmotive_sys_stl_vector_size
+#define cmotive_sys_stl_list_destroy cmotive_sys_stl_vector_destroy
+#define cmotive_sys_stl_dlist_create cmotive_sys_stl_vector_create
+#define cmotive_sys_stl_dlist_push_back_i64 cmotive_sys_stl_vector_push_i64
+#define cmotive_sys_stl_dlist_size cmotive_sys_stl_vector_size
+#define cmotive_sys_stl_dlist_destroy cmotive_sys_stl_vector_destroy
+
+typedef struct CMotive_MapEntryEx { char *key; int64_t value; } CMotive_MapEntryEx;
+typedef struct CMotive_MapEx { CMotive_MapEntryEx *entries; uint64_t count; uint64_t cap; int multi; } CMotive_MapEx;
+void* cmotive_map_ex_create(int multi) { CMotive_MapEx *m=(CMotive_MapEx*)calloc(1,sizeof(CMotive_MapEx)); if (m) m->multi = multi; return m; }
+void* cmotive_sys_stl_map_create(void) { return cmotive_map_ex_create(0); }
+void* cmotive_sys_stl_dict_create(void) { return cmotive_map_ex_create(0); }
+void* cmotive_sys_stl_hash_dict_create(void) { return cmotive_map_ex_create(0); }
+void* cmotive_sys_stl_multi_dict_create(void) { return cmotive_map_ex_create(1); }
+void* cmotive_sys_stl_multi_hash_dict_create(void) { return cmotive_map_ex_create(1); }
+int cmotive_map_ex_reserve(CMotive_MapEx *m, uint64_t cap) { CMotive_MapEntryEx *n; if (!m) return -1; if (cap <= m->cap) return 0; n=(CMotive_MapEntryEx*)realloc(m->entries, (size_t)cap * sizeof(CMotive_MapEntryEx)); if (!n) return -1; m->entries=n; m->cap=cap; return 0; }
+int cmotive_sys_stl_map_put_i64(void *h, const char *key, int64_t value) { CMotive_MapEx *m=(CMotive_MapEx*)h; uint64_t i; if (!m || !key) return -1; if (!m->multi) for (i=0;i<m->count;i++) if (strcmp(m->entries[i].key, key)==0) { m->entries[i].value=value; return 0; } if (m->count == m->cap && cmotive_map_ex_reserve(m, m->cap ? m->cap * 2u : 8u)) return -1; m->entries[m->count].key=cmotive_strdup_local(key); m->entries[m->count].value=value; m->count++; return 0; }
+int64_t cmotive_sys_stl_map_get_i64(void *h, const char *key, int64_t fallback) { CMotive_MapEx *m=(CMotive_MapEx*)h; uint64_t i; if (!m || !key) return fallback; for (i=0;i<m->count;i++) if (strcmp(m->entries[i].key, key)==0) return m->entries[i].value; return fallback; }
+int cmotive_sys_stl_map_contains(void *h, const char *key) { CMotive_MapEx *m=(CMotive_MapEx*)h; uint64_t i; if (!m || !key) return 0; for (i=0;i<m->count;i++) if (strcmp(m->entries[i].key, key)==0) return 1; return 0; }
+uint64_t cmotive_sys_stl_map_size(void *h) { CMotive_MapEx *m=(CMotive_MapEx*)h; return m ? m->count : 0u; }
+void cmotive_sys_stl_map_destroy(void *h) { CMotive_MapEx *m=(CMotive_MapEx*)h; uint64_t i; if (m) { for (i=0;i<m->count;i++) free(m->entries[i].key); free(m->entries); free(m); } }
+#define cmotive_sys_stl_dict_put_i64 cmotive_sys_stl_map_put_i64
+#define cmotive_sys_stl_dict_get_i64 cmotive_sys_stl_map_get_i64
+#define cmotive_sys_stl_dict_destroy cmotive_sys_stl_map_destroy
+#define cmotive_sys_stl_hash_dict_put_i64 cmotive_sys_stl_map_put_i64
+#define cmotive_sys_stl_hash_dict_get_i64 cmotive_sys_stl_map_get_i64
+#define cmotive_sys_stl_hash_dict_destroy cmotive_sys_stl_map_destroy
+#define cmotive_sys_stl_multi_dict_put_i64 cmotive_sys_stl_map_put_i64
+#define cmotive_sys_stl_multi_dict_get_i64 cmotive_sys_stl_map_get_i64
+#define cmotive_sys_stl_multi_dict_destroy cmotive_sys_stl_map_destroy
+#define cmotive_sys_stl_multi_hash_dict_put_i64 cmotive_sys_stl_map_put_i64
+#define cmotive_sys_stl_multi_hash_dict_get_i64 cmotive_sys_stl_map_get_i64
+#define cmotive_sys_stl_multi_hash_dict_destroy cmotive_sys_stl_map_destroy
+
+typedef struct CMotive_TreeNodeEx { int64_t value; struct CMotive_TreeNodeEx *left; struct CMotive_TreeNodeEx *right; } CMotive_TreeNodeEx;
+typedef struct CMotive_TreeEx { CMotive_TreeNodeEx *root; uint64_t count; } CMotive_TreeEx;
+void* cmotive_sys_stl_binary_search_tree_create(void) { return calloc(1, sizeof(CMotive_TreeEx)); }
+CMotive_TreeNodeEx* cmotive_tree_ex_insert(CMotive_TreeNodeEx *n, int64_t v, int *added) { if (!n) { CMotive_TreeNodeEx *z=(CMotive_TreeNodeEx*)calloc(1,sizeof(CMotive_TreeNodeEx)); if (z) { z->value=v; *added=1; } return z; } if (v < n->value) n->left=cmotive_tree_ex_insert(n->left,v,added); else if (v > n->value) n->right=cmotive_tree_ex_insert(n->right,v,added); return n; }
+int cmotive_sys_stl_binary_search_tree_insert_i64(void *h, int64_t v) { CMotive_TreeEx *t=(CMotive_TreeEx*)h; int added=0; if (!t) return -1; t->root=cmotive_tree_ex_insert(t->root,v,&added); if (added) t->count++; return added ? 0 : 1; }
+int cmotive_tree_ex_contains(CMotive_TreeNodeEx *n, int64_t v) { while (n) { if (v == n->value) return 1; n = (v < n->value) ? n->left : n->right; } return 0; }
+int cmotive_sys_stl_binary_search_tree_contains_i64(void *h, int64_t v) { CMotive_TreeEx *t=(CMotive_TreeEx*)h; return t ? cmotive_tree_ex_contains(t->root, v) : 0; }
+void cmotive_tree_ex_free(CMotive_TreeNodeEx *n) { if (n) { cmotive_tree_ex_free(n->left); cmotive_tree_ex_free(n->right); free(n); } }
+void cmotive_sys_stl_binary_search_tree_destroy(void *h) { CMotive_TreeEx *t=(CMotive_TreeEx*)h; if (t) { cmotive_tree_ex_free(t->root); free(t); } }
+#define cmotive_sys_stl_binary_tree_create cmotive_sys_stl_binary_search_tree_create
+#define cmotive_sys_stl_binary_tree_insert_i64 cmotive_sys_stl_binary_search_tree_insert_i64
+#define cmotive_sys_stl_binary_tree_contains_i64 cmotive_sys_stl_binary_search_tree_contains_i64
+#define cmotive_sys_stl_binary_tree_destroy cmotive_sys_stl_binary_search_tree_destroy
+#define cmotive_sys_stl_b_tree_create cmotive_sys_stl_binary_search_tree_create
+#define cmotive_sys_stl_b_tree_insert_i64 cmotive_sys_stl_binary_search_tree_insert_i64
+#define cmotive_sys_stl_b_tree_contains_i64 cmotive_sys_stl_binary_search_tree_contains_i64
+#define cmotive_sys_stl_b_tree_destroy cmotive_sys_stl_binary_search_tree_destroy
+#define cmotive_sys_stl_b_plus_tree_create cmotive_sys_stl_binary_search_tree_create
+#define cmotive_sys_stl_b_plus_tree_insert_i64 cmotive_sys_stl_binary_search_tree_insert_i64
+#define cmotive_sys_stl_b_plus_tree_contains_i64 cmotive_sys_stl_binary_search_tree_contains_i64
+#define cmotive_sys_stl_b_plus_tree_destroy cmotive_sys_stl_binary_search_tree_destroy
+
+void cmotive_sys_algorithms_sort_quick_i32(int32_t *a, uint64_t n) { if (a) qsort(a, (size_t)n, sizeof(int32_t), cmotive_i32_cmp_ex); }
+void cmotive_sys_algorithms_sort_quick_i64(int64_t *a, uint64_t n) { if (a) qsort(a, (size_t)n, sizeof(int64_t), cmotive_i64_cmp_ex); }
+void cmotive_sys_algorithms_sort_heap_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_quick_i64(a, n); }
+void cmotive_sys_algorithms_sort_merge_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_quick_i64(a, n); }
+void cmotive_sys_algorithms_sort_insertion_i64(int64_t *a, uint64_t n) { uint64_t i,j; if (!a) return; for (i=1;i<n;i++) { int64_t key=a[i]; j=i; while (j>0 && a[j-1]>key) { a[j]=a[j-1]; j--; } a[j]=key; } }
+void cmotive_sys_algorithms_sort_selection_i64(int64_t *a, uint64_t n) { uint64_t i,j,min; if (!a) return; for (i=0;i<n;i++) { min=i; for (j=i+1;j<n;j++) if (a[j]<a[min]) min=j; if (min!=i) { int64_t t=a[i]; a[i]=a[min]; a[min]=t; } } }
+int64_t cmotive_sys_algorithms_binary_search_i64(const int64_t *a, uint64_t n, int64_t needle) { uint64_t lo=0,hi=n; if (!a) return -1; while (lo<hi) { uint64_t mid=lo+(hi-lo)/2u; if (a[mid]==needle) return (int64_t)mid; if (a[mid]<needle) lo=mid+1u; else hi=mid; } return -1; }
+int64_t cmotive_sys_algorithms_linear_search_i64(const int64_t *a, uint64_t n, int64_t needle) { uint64_t i; if (!a) return -1; for (i=0;i<n;i++) if (a[i]==needle) return (int64_t)i; return -1; }
+int64_t cmotive_sys_algorithms_min_i64(int64_t a, int64_t b) { return a < b ? a : b; }
+int64_t cmotive_sys_algorithms_max_i64(int64_t a, int64_t b) { return a > b ? a : b; }
+int cmotive_sys_algorithms_compare_i32(int32_t a, int32_t b) { return (a>b)-(a<b); }
+static void cmotive_sys_algorithms_sort_bubble_i64(int64_t *a, uint64_t n) { uint64_t i,j; if (!a) return; for (i=0;i<n;i++) for (j=1;j<n-i;j++) if (a[j-1]>a[j]) { int64_t t=a[j-1]; a[j-1]=a[j]; a[j]=t; } }
+static void cmotive_sys_algorithms_sort_shell_i64(int64_t *a, uint64_t n) { uint64_t gap,i,j; if(!a) return; for(gap=n/2; gap>0; gap/=2) { for(i=gap;i<n;i++) { int64_t tmp=a[i]; for(j=i; j>=gap && a[j-gap]>tmp; j-=gap) a[j]=a[j-gap]; a[j]=tmp; } if(gap==1) break; } }
+static void cmotive_sys_algorithms_sort_comb_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_quick_i64(a, n); }
+static void cmotive_sys_algorithms_sort_gnome_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_insertion_i64(a, n); }
+static void cmotive_sys_algorithms_sort_radix_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_quick_i64(a, n); }
+static void cmotive_sys_algorithms_sort_counting_i64(int64_t *a, uint64_t n) { cmotive_sys_algorithms_sort_quick_i64(a, n); }
+static int64_t cmotive_sys_algorithms_jump_search_i64(const int64_t *a, uint64_t n, int64_t needle) { return cmotive_sys_algorithms_binary_search_i64(a, n, needle); }
+static int64_t cmotive_sys_algorithms_exponential_search_i64(const int64_t *a, uint64_t n, int64_t needle) { return cmotive_sys_algorithms_binary_search_i64(a, n, needle); }
+static int64_t cmotive_sys_algorithms_interpolation_search_i64(const int64_t *a, uint64_t n, int64_t needle) { return cmotive_sys_algorithms_binary_search_i64(a, n, needle); }
+
+#if defined(_WIN32)
+void* cmotive_sys_thread_start(void *entry, void *userdata) { if (!entry) return NULL; return (void*)CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)entry, userdata, 0, NULL); }
+int cmotive_sys_thread_join(void *h) { if (!h) return -1; return WaitForSingleObject((HANDLE)h, INFINITE) == WAIT_OBJECT_0 ? 0 : -1; }
+int cmotive_sys_thread_detach(void *h) { return h ? (CloseHandle((HANDLE)h) ? 0 : -1) : -1; }
+void* cmotive_sys_thread_current(void) { return (void*)(uintptr_t)GetCurrentThreadId(); }
+int cmotive_sys_thread_yield(void) { Sleep(0); return 0; }
+#else
+void* cmotive_sys_thread_start(void *entry, void *userdata) { pthread_t *t; if (!entry) return NULL; t=(pthread_t*)malloc(sizeof(pthread_t)); if(!t) return NULL; if(pthread_create(t, NULL, (void*(*)(void*))entry, userdata) != 0) { free(t); return NULL; } return t; }
+int cmotive_sys_thread_join(void *h) { void *r=NULL; int rc; if(!h) return -1; rc=pthread_join(*(pthread_t*)h, &r); free(h); return rc; }
+int cmotive_sys_thread_detach(void *h) { int rc; if(!h) return -1; rc=pthread_detach(*(pthread_t*)h); free(h); return rc; }
+void* cmotive_sys_thread_current(void) { return (void*)(uintptr_t)pthread_self(); }
+int cmotive_sys_thread_yield(void) { return sched_yield(); }
+#endif
+
+#if defined(_WIN32)
+int cmotive_net_init(void) { int done=0; WSADATA w; if (!done) { if (WSAStartup(MAKEWORD(2,2), &w) != 0) return -1; done=1; } return 0; }
+int cmotive_sys_net_socket_close(int fd) { return closesocket((SOCKET)fd); }
+#else
+int cmotive_net_init(void) { return 0; }
+int cmotive_sys_net_socket_close(int fd) { return close(fd); }
+#endif
+int cmotive_sys_net_socket_family(int family, int type, int proto) { if (cmotive_net_init() != 0) return -1; return (int)socket(family, type, proto); }
+int cmotive_sys_net_socket_tcp_ipv4(void) { return cmotive_sys_net_socket_family(AF_INET, SOCK_STREAM, IPPROTO_TCP); }
+int cmotive_sys_net_socket_tcp_ipv6(void) { return cmotive_sys_net_socket_family(AF_INET6, SOCK_STREAM, IPPROTO_TCP); }
+int cmotive_sys_net_socket_udp_ipv4(void) { return cmotive_sys_net_socket_family(AF_INET, SOCK_DGRAM, IPPROTO_UDP); }
+int cmotive_sys_net_socket_udp_ipv6(void) { return cmotive_sys_net_socket_family(AF_INET6, SOCK_DGRAM, IPPROTO_UDP); }
+int cmotive_sys_net_socket_raw_ipv4(void) { return cmotive_sys_net_socket_family(AF_INET, SOCK_RAW, IPPROTO_RAW); }
+int cmotive_sys_net_socket_raw_ipv6(void) { return cmotive_sys_net_socket_family(AF_INET6, SOCK_RAW, IPPROTO_RAW); }
+int cmotive_sys_net_socket_icmp_ipv4(void) { return cmotive_sys_net_socket_family(AF_INET, SOCK_RAW, IPPROTO_ICMP); }
+#ifdef IPPROTO_ICMPV6
+int cmotive_sys_net_socket_icmp_ipv6(void) { return cmotive_sys_net_socket_family(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6); }
+#else
+int cmotive_sys_net_socket_icmp_ipv6(void) { return -1; }
+#endif
+int cmotive_sys_net_socket_tcp(void) { return cmotive_sys_net_socket_tcp_ipv4(); }
+int cmotive_sys_net_socket_udp(void) { return cmotive_sys_net_socket_udp_ipv4(); }
+int cmotive_sys_net_socket_raw(void) { return cmotive_sys_net_socket_raw_ipv4(); }
+int cmotive_sys_net_send(int fd, const void *buf, uint64_t n) { return (int)send(fd, (const char*)buf, (size_t)n, 0); }
+int cmotive_sys_net_recv(int fd, void *buf, uint64_t n) { return (int)recv(fd, (char*)buf, (size_t)n, 0); }
+int cmotive_sys_net_bind_ipv4(int fd, const char *ip, uint16_t port) { struct sockaddr_in a; memset(&a,0,sizeof(a)); a.sin_family=AF_INET; a.sin_port=htons(port); a.sin_addr.s_addr=ip ? inet_addr(ip) : INADDR_ANY; return bind(fd, (struct sockaddr*)&a, sizeof(a)); }
+int cmotive_sys_net_connect_ipv4(int fd, const char *ip, uint16_t port) { struct sockaddr_in a; memset(&a,0,sizeof(a)); a.sin_family=AF_INET; a.sin_port=htons(port); a.sin_addr.s_addr=inet_addr(ip ? ip : "127.0.0.1"); return connect(fd, (struct sockaddr*)&a, sizeof(a)); }
+int cmotive_sys_net_listen(int fd, int backlog) { return listen(fd, backlog); }
+int cmotive_sys_net_accept(int fd) { return (int)accept(fd, NULL, NULL); }
+/* ---- end expanded CMotive runtime helpers ---- */
+

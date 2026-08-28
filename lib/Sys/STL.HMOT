@@ -7,8 +7,121 @@ Vector
 {
     Public
     {
-        data : Void* = Null; Block
-        count : U64 = 0; Block
-        capacity : U64 = 0; Block
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+List
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+Dlist
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+K : Type
+V : Type
+Class
+Map
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+K : Type
+V : Type
+Class
+Dict
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+K : Type
+V : Type
+Class
+HashDict
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+K : Type
+V : Type
+Class
+MultiDict
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+K : Type
+V : Type
+Class
+MultiHashDict
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+BinaryTree
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+BinarySearchTree
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+BTree
+{
+    Public
+    {
+        handle : Void* = Null; Block
+    }
+};
+Template
+T : Type
+Class
+BPlusTree
+{
+    Public
+    {
+        handle : Void* = Null; Block
     }
 };

@@ -4,7 +4,7 @@ BUILD_DIR ?= build
 BIN_DIR := $(BUILD_DIR)/bin
 TOOLS := cmotive cmotivepp cmotive++
 
-.PHONY: all clean install test package
+.PHONY: all clean install test full-test package
 all: $(TOOLS:%=$(BIN_DIR)/%)
 
 $(BIN_DIR):
@@ -24,6 +24,9 @@ $(BIN_DIR)/cmotive++: $(BIN_DIR)/cmotive | $(BIN_DIR)
 
 test: all
 	$(PYTHON) tests/run_tests.py --bin $(BIN_DIR)
+
+full-test: all
+	$(PYTHON) tests/run_tests.py --bin $(BIN_DIR) --full
 
 package: all
 	$(PYTHON) scripts/package_release.py --root . --out dist

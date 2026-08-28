@@ -49,3 +49,8 @@ language requirements.
 
 `make -f Makefile.linux test` passed after the implementation pass.  The tests now
 cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header parsing, concrete class struct lowering, package-qualified method mangling, constructor/destructor chaining, type-based constructor overload resolution, virtual dispatch through vtable slots, destructor cleanup during exception unwinding, `New`/`Delete` runtime dispatch, keyword/type synonyms, x86_64 native target output, invalid-base diagnostics, control flow, preprocessor selection, concrete template instantiation, caught exception unwinding, real Plugin package loading, object generation, executable generation, emitted C, Target/Hit direct/object/sender dispatch, expanded Sys package compilation/execution, `str_parse`, `Sys::Locks`, `Sys::Math`, `Sys::String`, `Sys::Wide`, and preprocessing.
+
+
+## STL/Algorithms/IO/Net/Dynamic Struct implementation pass
+
+See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.md` for the expanded standard-library, native sockets, native threads, formatted IO, and Dynamic Struct update.

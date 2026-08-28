@@ -1,75 +1,53 @@
 Package Sys::Net;
 
-Enum SocketKind
-{
-    Tcp,
-    Udp,
-    IpRaw
-};
-
-Class
-Socket
-{
-    Public
-    {
-        fd : I32 = -1; Block
-
-        I32
-        openTcp
-        ()
-        {
-            fd = cmotive_sys_net_socket_tcp();
-            Return fd;
-        }
-
-        I32
-        openUdp
-        ()
-        {
-            fd = cmotive_sys_net_socket_udp();
-            Return fd;
-        }
-
-        I32
-        openRaw
-        ()
-        {
-            fd = cmotive_sys_net_socket_raw();
-            Return fd;
-        }
-
-        I32
-        close
-        ()
-        {
-            r : I32 = cmotive_sys_net_socket_close(fd);
-            fd = -1;
-            Return r;
-        }
-    }
-};
-
 I32
-socketTcp
+socketTcpIPv4
 ()
 {
-    Return cmotive_sys_net_socket_tcp();
+    Return cmotive_sys_net_socket_tcp_ipv4();
 }
-
 I32
-socketUdp
+socketTcpIPv6
 ()
 {
-    Return cmotive_sys_net_socket_udp();
+    Return cmotive_sys_net_socket_tcp_ipv6();
 }
-
 I32
-socketRaw
+socketUdpIPv4
 ()
 {
-    Return cmotive_sys_net_socket_raw();
+    Return cmotive_sys_net_socket_udp_ipv4();
 }
-
+I32
+socketUdpIPv6
+()
+{
+    Return cmotive_sys_net_socket_udp_ipv6();
+}
+I32
+socketRawIPv4
+()
+{
+    Return cmotive_sys_net_socket_raw_ipv4();
+}
+I32
+socketRawIPv6
+()
+{
+    Return cmotive_sys_net_socket_raw_ipv6();
+}
+I32
+socketIcmpIPv4
+()
+{
+    Return cmotive_sys_net_socket_icmp_ipv4();
+}
+I32
+socketIcmpIPv6
+()
+{
+    Return cmotive_sys_net_socket_icmp_ipv6();
+}
 I32
 socketClose
 fd : I32

@@ -1,6 +1,6 @@
 from .ast import (
     Program, Param, Function, ClassDecl, Field, PackageDecl, PluginDecl,
-    TemplateDecl, BlendDecl, VarDecl, Return, ExprStmt, If, While, DoWhile,
+    TemplateDecl, BlendDecl, DynamicStructDecl, DynamicStructExpand, VarDecl, Return, ExprStmt, If, While, DoWhile,
     For, Break, Continue, Throw, TryCatch, RawStmt, TargetStmt, RawDecl
 )
 
@@ -88,6 +88,8 @@ class Parser:
                 decls.append(self.skip_plugswitch()); continue
             if k == 'TEMPLATE':
                 decls.append(self.template_decl()); continue
+            if k == 'DYNAMIC' and self.peek_non_eol(1).kind == 'STRUCT':
+                decls.append(self.dynamic_struct_decl()); continue
             if k == 'BLEND' or k == 'ENUM':
                 decls.append(self.blend_decl()); continue
             if k == 'HIT':
@@ -129,6 +131,8 @@ class Parser:
             node.package = package
             if node.body_node is not None:
                 self.apply_package(node.body_node, package)
+        elif isinstance(node, DynamicStructDecl):
+            node.package = package
         elif isinstance(node, VarDecl):
             node.package = package
 
@@ -257,6 +261,58 @@ class Parser:
             body = self.collect_balanced('{','}')
             self.accept(';')
         return BlendDecl(name, self.compact_tokens(body))
+
+    def dynamic_struct_decl(self):
+        self.take('DYNAMIC')
+        self.skip_eol()
+        self.take('STRUCT')
+        self.skip_eol()
+        name = self.take().value
+        self.skip_eol()
+        fields = self.dynamic_struct_fields()
+        self.accept(';')
+        return DynamicStructDecl(name, fields)
+
+    def dynamic_struct_expand_stmt(self):
+        name = self.take().value
+        if self.peek().value != 'Expand':
+            raise SyntaxError('expected Expand after dynamic struct name')
+        self.take()
+        self.skip_eol()
+        fields = self.dynamic_struct_fields()
+        self.accept(';')
+        return DynamicStructExpand(name, fields)
+
+    def dynamic_struct_fields(self):
+        self.take(value='{')
+        fields = []
+        while self.peek().kind != 'EOF' and self.peek().value != '}':
+            self.skip_eol()
+            if self.peek().value == '}':
+                break
+            if self.looks_like_var_decl():
+                v = self.var_decl(global_decl=False)
+                fields.append(Field(v.name, v.type_name, v.value, 'Public'))
+                continue
+            parts = []
+            depth = 0
+            while self.peek().kind != 'EOF':
+                t = self.peek()
+                if depth == 0 and t.value in {';', '}'}:
+                    break
+                if t.value in {'(', '[', '{'}:
+                    depth += 1
+                elif t.value in {')', ']', '}'}:
+                    depth -= 1
+                parts.append(self.take().value)
+            self.accept(';')
+            clean = [x for x in parts if x not in {',', '\n'}]
+            if len(clean) >= 2:
+                name = clean[-1]
+                typ = self.compact_tokens(clean[:-1])
+                fields.append(Field(name, typ or 'I32', None, 'Public'))
+        self.take(value='}')
+        return fields
 
     def raw_decl_until(self, term):
         parts = []
@@ -602,6 +658,8 @@ class Parser:
         k = self.peek().kind
         if self.accept(';'):
             return None
+        if k == 'ID' and self.peek_non_eol(1).value == 'Expand':
+            return self.dynamic_struct_expand_stmt()
         if k == 'TARGET':
             return self.target_stmt()
         if k == 'RETURN':

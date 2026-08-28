@@ -37,3 +37,8 @@ See `docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md` for the detailed requirement-by-
 | Sys::Wide | Implemented runtime-backed surface | Char16/Char32 length/compare/copy/concat/find helpers. |
 
 | Target/Hit dispatch | Implemented in bootstrap compiler | `Hit Sender:Id` registers a function/method handler and `Target Sender:Object:args:Id` lowers to deterministic direct dispatch, with unresolved routes failing through `CMotive_UnresolvedTarget`. |
+
+
+## STL/Algorithms/IO/Net/Dynamic Struct implementation pass
+
+See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.md` for the expanded standard-library, native sockets, native threads, formatted IO, and Dynamic Struct update.
