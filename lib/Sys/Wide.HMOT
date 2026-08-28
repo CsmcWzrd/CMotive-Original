@@ -1,5 +1,198 @@
 Package Sys::Wide;
 
+Class
+Wide16String
+{
+    Public
+    {
+        value : Char16* = Null; Block
+
+        Wide16String
+        ()
+        {
+            value = Null;
+        }
+
+        Void
+        Set
+        text : Char16*
+        ()
+        {
+            value = text;
+            Return;
+        }
+
+        Char16*
+        Get
+        ()
+        {
+            Return value;
+        }
+
+        Uint
+        Length
+        ()
+        {
+            Return cmotive_sys_wide16_len(value);
+        }
+
+        Int32
+        Compare
+        other : Char16*
+        ()
+        {
+            Return cmotive_sys_wide16_cmp(value, other);
+        }
+
+        Int32
+        CompareN
+        other : Char16*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_wide16_ncmp(value, other, n);
+        }
+
+        Char16*
+        CopyTo
+        dst : Char16*
+        ()
+        {
+            Return cmotive_sys_wide16_cpy(dst, value);
+        }
+
+        Char16*
+        CopyNTo
+        dst : Char16*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_wide16_ncpy(dst, value, n);
+        }
+
+        Char16*
+        CatTo
+        dst : Char16*
+        ()
+        {
+            Return cmotive_sys_wide16_cat(dst, value);
+        }
+
+        Char16*
+        Find
+        c : Char16
+        ()
+        {
+            Return cmotive_sys_wide16_chr(value, c);
+        }
+
+        Char16*
+        RFind
+        c : Char16
+        ()
+        {
+            Return cmotive_sys_wide16_rchr(value, c);
+        }
+    }
+};
+
+Class
+Wide32String
+{
+    Public
+    {
+        value : Char32* = Null; Block
+
+        Wide32String
+        ()
+        {
+            value = Null;
+        }
+
+        Void
+        Set
+        text : Char32*
+        ()
+        {
+            value = text;
+            Return;
+        }
+
+        Char32*
+        Get
+        ()
+        {
+            Return value;
+        }
+
+        Uint
+        Length
+        ()
+        {
+            Return cmotive_sys_wide32_len(value);
+        }
+
+        Int32
+        Compare
+        other : Char32*
+        ()
+        {
+            Return cmotive_sys_wide32_cmp(value, other);
+        }
+
+        Int32
+        CompareN
+        other : Char32*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_wide32_ncmp(value, other, n);
+        }
+
+        Char32*
+        CopyTo
+        dst : Char32*
+        ()
+        {
+            Return cmotive_sys_wide32_cpy(dst, value);
+        }
+
+        Char32*
+        CopyNTo
+        dst : Char32*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_wide32_ncpy(dst, value, n);
+        }
+
+        Char32*
+        CatTo
+        dst : Char32*
+        ()
+        {
+            Return cmotive_sys_wide32_cat(dst, value);
+        }
+
+        Char32*
+        Find
+        c : Char32
+        ()
+        {
+            Return cmotive_sys_wide32_chr(value, c);
+        }
+
+        Char32*
+        RFind
+        c : Char32
+        ()
+        {
+            Return cmotive_sys_wide32_rchr(value, c);
+        }
+    }
+};
+
+// Backward-compatible functional wrappers follow.
 // 16-bit and 32-bit wide-string helpers.  Char16 maps to uint16_t and Char32
 // maps to uint32_t in generated C.
 

@@ -194,6 +194,27 @@ void cmotive_sys_thread_sleep_ms(uint32_t ms) {
   usleep((useconds_t)ms * 1000u);
 #endif
 }
+
+void cmotive_sys_thread_sleep_us(uint64_t us) {
+#if defined(_WIN32)
+  if (us == 0) { Sleep(0); return; }
+  Sleep((DWORD)((us + 999u) / 1000u));
+#else
+  usleep((useconds_t)us);
+#endif
+}
+void cmotive_sys_thread_sleep_ns(uint64_t ns) {
+#if defined(_WIN32)
+  if (ns == 0) { Sleep(0); return; }
+  Sleep((DWORD)((ns + 999999u) / 1000000u));
+#else
+  struct timespec ts;
+  ts.tv_sec = (time_t)(ns / 1000000000ull);
+  ts.tv_nsec = (long)(ns % 1000000000ull);
+  nanosleep(&ts, NULL);
+#endif
+}
+
 int cmotive_sys_thread_yield_legacy(void) { return 0; }
 
 int cmotive_sys_net_socket_tcp_legacy(void) { return -1; }
@@ -422,6 +443,27 @@ int cmotive_sys_net_bind_ipv4(int fd, const char *ip, uint16_t port) { struct so
 int cmotive_sys_net_connect_ipv4(int fd, const char *ip, uint16_t port) { struct sockaddr_in a; memset(&a,0,sizeof(a)); a.sin_family=AF_INET; a.sin_port=htons(port); a.sin_addr.s_addr=inet_addr(ip ? ip : "127.0.0.1"); return connect(fd, (struct sockaddr*)&a, sizeof(a)); }
 int cmotive_sys_net_listen(int fd, int backlog) { return listen(fd, backlog); }
 int cmotive_sys_net_accept(int fd) { return (int)accept(fd, NULL, NULL); }
+
+void cmotive_sys_thread_sleep_us(uint64_t us) {
+#if defined(_WIN32)
+  if (us == 0) { Sleep(0); return; }
+  Sleep((DWORD)((us + 999u) / 1000u));
+#else
+  usleep((useconds_t)us);
+#endif
+}
+void cmotive_sys_thread_sleep_ns(uint64_t ns) {
+#if defined(_WIN32)
+  if (ns == 0) { Sleep(0); return; }
+  Sleep((DWORD)((ns + 999999u) / 1000000u));
+#else
+  struct timespec ts;
+  ts.tv_sec = (time_t)(ns / 1000000000ull);
+  ts.tv_nsec = (long)(ns % 1000000000ull);
+  nanosleep(&ts, NULL);
+#endif
+}
+
 /* ---- end expanded CMotive runtime helpers ---- */
 
 

@@ -66,3 +66,8 @@ See `docs/SYS_STL_ALGORITHMS_NET_IO_DYNAMIC.md` and `docs/FULL_TEST_SUITE_PLAN.m
 
 ## Standard library object model audit
 See `docs/STDLIB_OBJECT_MODEL_AUDIT.md`. The preferred `Sys::STL`, `Sys::IO`, and `Sys::Algorithms` surfaces are now class/object-method APIs; legacy functional helper lowering is retained only for compatibility.
+
+
+## Sys object package update
+
+`Sys::Filesystem`, `Sys::Net`, `Sys::Thread`, `Sys::String`, and `Sys::Wide` now expose class/object-first APIs. Compatibility functional wrappers remain, and `Sys::Thread` now includes `MicroSleep` and `NanoSleep`. See `SYS_OBJECT_PACKAGES.md`.

@@ -90,6 +90,10 @@ def main():
     ok &= build_and_run(b, 'tests/conformance/cmotive_stl_object_methods.CMOT', 'stl_object_methods', exe_suffix)
     ok &= build_and_run(b, 'tests/conformance/cmotive_algorithms_object_methods.CMOT', 'algorithms_object_methods', exe_suffix)
     ok &= build_and_run(b, 'tests/conformance/cmotive_io_object_methods.CMOT', 'io_object_methods', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_filesystem_object_methods.CMOT', 'filesystem_object_methods', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_net_object_methods.CMOT', 'net_object_methods', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_thread_object_methods.CMOT', 'thread_object_methods', exe_suffix)
+    ok &= build_and_run(b, 'tests/conformance/cmotive_string_wide_object_methods.CMOT', 'string_wide_object_methods', exe_suffix)
 
     ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_dynamic_struct.CMOT', '-o', 'build/dynamic_struct.c'])
     if ok:

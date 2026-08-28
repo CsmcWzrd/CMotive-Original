@@ -1,6 +1,322 @@
 Package Sys::String;
 Plugin Sys::STL;
 
+Class
+CString
+{
+    Public
+    {
+        value : Char* = Null; Block
+
+        CString
+        ()
+        {
+            value = Null;
+        }
+
+        Void
+        Set
+        text : Char*
+        ()
+        {
+            value = text;
+            Return;
+        }
+
+        Char*
+        Get
+        ()
+        {
+            Return value;
+        }
+
+        Uint
+        Length
+        ()
+        {
+            Return cmotive_sys_string_strlen(value);
+        }
+
+        Int32
+        Compare
+        other : Char*
+        ()
+        {
+            Return cmotive_sys_string_strcmp(value, other);
+        }
+
+        Int32
+        CompareN
+        other : Char*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_string_strncmp(value, other, n);
+        }
+
+        Boolean
+        Equals
+        other : Char*
+        ()
+        {
+            Return cmotive_sys_string_strcmp(value, other) == 0;
+        }
+
+        Char*
+        Find
+        needle : Char*
+        ()
+        {
+            Return cmotive_sys_string_strstr(value, needle);
+        }
+
+        Boolean
+        Contains
+        needle : Char*
+        ()
+        {
+            Return cmotive_sys_string_strstr(value, needle) != Null;
+        }
+
+        Char*
+        FindChar
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_strchr(value, c);
+        }
+
+        Char*
+        RFindChar
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_strrchr(value, c);
+        }
+
+        Char*
+        Duplicate
+        ()
+        {
+            Return cmotive_sys_string_strdup(value);
+        }
+
+        Char*
+        Trim
+        ()
+        {
+            Return cmotive_sys_string_trim(value);
+        }
+
+        Char*
+        ToUpper
+        ()
+        {
+            Return cmotive_sys_string_to_upper(value);
+        }
+
+        Char*
+        ToLower
+        ()
+        {
+            Return cmotive_sys_string_to_lower(value);
+        }
+
+        Int32
+        ToInt32
+        ()
+        {
+            Return cmotive_sys_string_atoi(value);
+        }
+
+        Int
+        ToInt
+        ()
+        {
+            Return cmotive_sys_string_atoll(value);
+        }
+
+        Double
+        ToDouble
+        ()
+        {
+            Return cmotive_sys_string_strtod(value);
+        }
+    }
+};
+
+Class
+Memory
+{
+    Public
+    {
+        Void*
+        Set
+        dst : Void*
+        value : Int32
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_string_memset(dst, value, n);
+        }
+
+        Void*
+        Copy
+        dst : Void*
+        src : Void*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_string_memcpy(dst, src, n);
+        }
+
+        Void*
+        Move
+        dst : Void*
+        src : Void*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_string_memmove(dst, src, n);
+        }
+
+        Int32
+        Compare
+        a : Void*
+        b : Void*
+        n : Uint
+        ()
+        {
+            Return cmotive_sys_string_memcmp(a, b, n);
+        }
+    }
+};
+
+Class
+Character
+{
+    Public
+    {
+        Int32
+        ToUpper
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_toupper(c);
+        }
+
+        Int32
+        ToLower
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_tolower(c);
+        }
+
+        Boolean
+        IsAlpha
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_isalpha(c);
+        }
+
+        Boolean
+        IsDigit
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_isdigit(c);
+        }
+
+        Boolean
+        IsSpace
+        c : Int32
+        ()
+        {
+            Return cmotive_sys_string_isspace(c);
+        }
+    }
+};
+
+Class
+StringParser
+{
+    Public
+    {
+        table : Void* = Null; Block
+
+        StringParser
+        ()
+        {
+            table = Null;
+        }
+
+        ~StringParser
+        ()
+        {
+            If ( table != Null )
+            {
+                cmotive_sys_string_str_parse_free(table);
+                table = Null;
+            }
+        }
+
+        Void*
+        Parse
+        input : Char*
+        record_delimiters : Char*
+        field_delimiters : Char*
+        escape : Char
+        ()
+        {
+            If ( table != Null )
+            {
+                cmotive_sys_string_str_parse_free(table);
+            }
+            table = cmotive_sys_string_str_parse(input, record_delimiters, field_delimiters, escape);
+            Return table;
+        }
+
+        Uint
+        Rows
+        ()
+        {
+            Return cmotive_sys_string_str_parse_rows(table);
+        }
+
+        Uint
+        Cols
+        row : Uint
+        ()
+        {
+            Return cmotive_sys_string_str_parse_cols(table, row);
+        }
+
+        Char*
+        At
+        row : Uint
+        col : Uint
+        ()
+        {
+            Return cmotive_sys_string_str_parse_at(table, row, col);
+        }
+
+        Void
+        Clear
+        ()
+        {
+            If ( table != Null )
+            {
+                cmotive_sys_string_str_parse_free(table);
+                table = Null;
+            }
+            Return;
+        }
+    }
+};
+
+// Backward-compatible functional wrappers follow.
 // Byte string and memory package.  Strings are Char* and results that allocate
 // memory must be released with freePtr or str_parse_free as documented.
 

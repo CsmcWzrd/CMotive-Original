@@ -42,3 +42,8 @@ The bootstrap compiler now includes concrete paths for full-template instantiati
 
 `cmotive` now supports `-g`, `-g2`, `-g3`, `-O1`, `-O2`, `-O3`, and `-Os`. Debug builds emit both native toolchain debug information and a human-readable CMotive symbol file via `CMotiveSymsToDebugFile`, named `<OutputName>_cmot_debugsymbols.syms`. See `docs/DEBUG_SYMBOLS_OPTIMIZATION.md`.
 
+
+
+## Sys object standard library update
+
+`Sys::Filesystem`, `Sys::Net`, `Sys::Thread`, `Sys::String`, and `Sys::Wide` now expose class/object-first APIs, with compatibility wrappers retained. `Sys::Thread` includes `MicroSleep` and `NanoSleep`.
