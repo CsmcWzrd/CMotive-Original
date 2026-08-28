@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64"><Configuration>Debug</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64"><Configuration>Debug</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64"><Configuration>Release</Configuration><Platform>ARM64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{A7F94C2B-79F2-4D5C-9CA7-C4A7D23E6E11}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+    <RootNamespace>CMotive.LangExamples.Packages</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>CMotive.LangExamples.Packages</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"><ConfigurationType>Makefile</ConfigurationType><UseDebugLibraries>true</UseDebugLibraries><PlatformToolset>v143</PlatformToolset></PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'"><ConfigurationType>Makefile</ConfigurationType><UseDebugLibraries>false</UseDebugLibraries><PlatformToolset>v143</PlatformToolset></PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'"><ConfigurationType>Makefile</ConfigurationType><UseDebugLibraries>true</UseDebugLibraries><PlatformToolset>v143</PlatformToolset></PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'"><ConfigurationType>Makefile</ConfigurationType><UseDebugLibraries>false</UseDebugLibraries><PlatformToolset>v143</PlatformToolset></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <NMakeBuildCommandLine>py -3 "$(ProjectDir)..\tools\vs2022_build_packages.py" --mode build --examples-root "$(ProjectDir).." --cmotive-root "$(ProjectDir)..\.." --configuration "$(Configuration)" --platform "$(Platform)"</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>py -3 "$(ProjectDir)..\tools\vs2022_build_packages.py" --mode rebuild --examples-root "$(ProjectDir).." --cmotive-root "$(ProjectDir)..\.." --configuration "$(Configuration)" --platform "$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>py -3 "$(ProjectDir)..\tools\vs2022_build_packages.py" --mode clean --examples-root "$(ProjectDir).." --cmotive-root "$(ProjectDir)..\.." --configuration "$(Configuration)" --platform "$(Platform)"</NMakeCleanCommandLine>
+    <NMakeOutput>$(ProjectDir)..\build\vs2022\packages\$(Configuration)-$(Platform)\packages.stamp</NMakeOutput>
+    <OutDir>$(ProjectDir)..\build\vs2022\packages\$(Configuration)-$(Platform)\</OutDir>
+    <IntDir>$(ProjectDir)..\build\vs2022\packages\$(Configuration)-$(Platform)\int\</IntDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\packages\core\core_package.CMOT" />
+    <None Include="..\packages\plugins\example_plugin.CMOT" />
+    <None Include="..\packages\plugins\plugin.manifest.cmotpkg" />
+    <None Include="..\tools\vs2022_build_packages.py" />
+    <None Include="..\manifests\examples.jsonl" />
+    <None Include="..\MANIFEST.txt" />
+    <None Include="..\README.md" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
