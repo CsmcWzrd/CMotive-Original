@@ -132,35 +132,46 @@ class Parser:
         return RawDecl(' '.join(parts))
 
     def template_decl(self):
-        start = self.i
         self.take('TEMPLATE')
         params = []
-        # The formal grammar has parameter lines before the Class/function body.
-        while self.peek().kind not in {'EOF','CLASS','FUNC'} and self.peek().value != '{':
+        # Formal CMotive template parameter lines: Name : Type
+        while True:
             self.skip_eol()
-            if self.peek().kind in {'EOF','CLASS','FUNC'} or self.peek().value == '{':
+            if self.peek().kind in {'EOF', 'CLASS', 'FUNC'} or self.peek().value in {'{', ';'}:
                 break
-            if self.is_name() and self.peek_non_eol(1).value == ':':
-                name = self.take().value; self.take(value=':'); typ = self.parse_type_until_line_or({',','{'})
-                params.append(Param(name, typ))
-                self.accept(',')
-            else:
-                self.take()
-        # Preserve the template text as scaffold metadata; if a class follows,
-        # parse and expose it to semantic/codegen as a normal class too.
-        body = []
+            # A non-parameter line starts a function template signature.
+            if not (self.is_name() and self.peek_non_eol(1).value == ':'):
+                break
+            save = self.i
+            name = self.take().value
+            self.take(value=':')
+            typ = self.parse_type_until_line_or({',', '{', ';', '('})
+            if (typ or '').strip() != 'Type':
+                # This is likely the first function parameter, not a template parameter.
+                self.i = save
+                break
+            params.append(Param(name, typ or 'Type'))
+            self.accept(',')
+        self.skip_eol()
         if self.peek().kind == 'CLASS':
             cls = self.class_decl()
-            body.append(f'class {cls.name}')
-            return TemplateDecl(cls.name, params, ' '.join(body))
-        if self.peek().value == '{':
-            body = self.collect_balanced('{','}')
-            self.accept(';')
-        else:
-            while self.peek().kind != 'EOF' and self.peek().value != ';':
-                body.append(self.take().value)
-            self.accept(';')
-        return TemplateDecl('', params, self.compact_tokens(body))
+            return TemplateDecl(cls.name, params, f'class {cls.name}', 'class', cls)
+        # Function templates use the same line-oriented function grammar after
+        # the Template parameter block.  They are instantiated by codegen only
+        # when a concrete Foo<T...>(...) call is seen.
+        try:
+            fn = self.function()
+            return TemplateDecl(fn.name, params, f'function {fn.name}', 'function', fn)
+        except SyntaxError:
+            body = []
+            if self.peek().value == '{':
+                body = self.collect_balanced('{','}')
+                self.accept(';')
+            else:
+                while self.peek().kind != 'EOF' and self.peek().value != ';':
+                    body.append(self.take().value)
+                self.accept(';')
+            return TemplateDecl('', params, self.compact_tokens(body), 'raw', None)
 
     def blend_decl(self):
         name = self.take().value
@@ -279,6 +290,8 @@ class Parser:
         if self.peek().kind == 'BLOCK':
             block = True; self.take()
         self.accept(';')
+        if self.peek().kind == 'BLOCK':
+            block = True; self.take(); self.accept(';')
         # Store bit field metadata in a side-car string for VarDecl users. Class
         # members are represented as Field and populated by caller when needed.
         vd = VarDecl(name, val or '0', typ or 'I32', global_decl)
@@ -452,25 +465,34 @@ class Parser:
         if k == 'IF':
             self.take('IF')
             cond = self.paren_expr_or_until_block()
+            self.skip_eol()
             then = self.block()
             else_body = []
             self.skip_eol()
             if self.peek().kind == 'ELIF':
                 self.take('ELIF')
                 c2 = self.paren_expr_or_until_block()
+                self.skip_eol()
                 b2 = self.block()
                 else_body = [If(c2, b2, [])]
             self.skip_eol()
             if self.peek().kind == 'ELSE':
                 self.take('ELSE')
-                else_body = self.block()
+                self.skip_eol()
+                final_else = self.block()
+                if else_body and isinstance(else_body[0], If):
+                    else_body[0].else_body = final_else
+                else:
+                    else_body = final_else
             return If(cond, then, else_body)
         if k == 'WHILE':
             self.take('WHILE')
             cond = self.paren_expr_or_until_block()
+            self.skip_eol()
             return While(cond, self.block())
         if k == 'DO':
             self.take('DO')
+            self.skip_eol()
             body = self.block()
             self.skip_eol()
             if self.peek().kind == 'WHILE': self.take('WHILE')
@@ -480,6 +502,7 @@ class Parser:
         if k == 'FOR':
             self.take('FOR')
             header = self.paren_expr_or_until_block()
+            self.skip_eol()
             return For(header, self.block())
         if k == 'THROW':
             self.take('THROW')
@@ -488,14 +511,18 @@ class Parser:
             return Throw(val)
         if k == 'TRY':
             self.take('TRY')
+            self.skip_eol()
             tb = self.block()
+            self.skip_eol()
             catches = []
             while self.peek().kind in {'CATCH','CATCHALL'}:
                 ck = self.take().kind
                 spec = 'all'
                 if self.peek().value == '(':
                     spec = self.paren_expr_or_until_block()
+                self.skip_eol()
                 catches.append((spec, self.block()))
+                self.skip_eol()
             return TryCatch(tb, catches)
         if k == 'SWITCH':
             return self.raw_keyword_block_statement()

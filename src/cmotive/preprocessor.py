@@ -8,6 +8,8 @@ DEFINE_RE = re.compile(r'^\s*#\s*define\s+(\w+)\s*(.*)$')
 UNDEF_RE = re.compile(r'^\s*#\s*undef\s+(\w+)\s*$')
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s+["<]([^">]+)[">]\s*$')
 REPLACE_RE = re.compile(r'^\s*Replace\s+(\w+)\s*(.*?)\s*;?\s*$')
+PLUGIN_RE = re.compile(r'^\s*Plugin\s+([^;\r\n]+)\s*;?\s*$')
+PACKAGE_EXTS = ('.HMOT', '.HMTV', '.CMOT', '.CMTV', '.hmot', '.hmtv', '.cmot', '.cmtv')
 TOKEN_RE = re.compile(r'\b[A-Za-z_]\w*\b')
 
 class Preprocessor:
@@ -39,6 +41,27 @@ class Preprocessor:
             if c.exists():
                 return c.resolve()
         raise FileNotFoundError('include not found: ' + str(name))
+
+    def resolve_plugin(self, plugin_name, current):
+        # Plugin Abc::Def resolves to Abc/Def.<CMotive ext>. A bare Plugin X
+        # resolves to X.<CMotive ext>.  Directory packages may provide package.HMOT
+        # or package.CMOT.  This makes packages real translation-unit inputs rather
+        # than inert parser declarations.
+        logical = plugin_name.strip().rstrip(';')
+        logical = re.sub(r'\s+', '', logical)
+        rel = Path(*[p for p in logical.split('::') if p])
+        bases = [current.parent] + self.include_dirs
+        candidates = []
+        for base in bases:
+            for ext in PACKAGE_EXTS:
+                candidates.append(base / (str(rel) + ext))
+            for ext in PACKAGE_EXTS:
+                candidates.append(base / rel / ('package' + ext))
+                candidates.append(base / rel / ('Package' + ext))
+        for c in candidates:
+            if c.exists():
+                return c.resolve()
+        raise FileNotFoundError('plugin/package not found: ' + plugin_name)
 
     def expand(self, line):
         return TOKEN_RE.sub(lambda m: self.macros.get(m.group(0), m.group(0)), line)
@@ -73,6 +96,19 @@ class Preprocessor:
             m = INCLUDE_RE.match(raw)
             if m:
                 out.append(self.process(self.resolve(m.group(1), current_path)))
+                i += 1; continue
+            m = PLUGIN_RE.match(raw)
+            if m:
+                plugin_name = m.group(1).strip()
+                try:
+                    loaded = self.process(self.resolve_plugin(plugin_name, current_path))
+                    out.append('\n/* Plugin ' + plugin_name + ' loaded. */\n')
+                    out.append(loaded)
+                    out.append('\n/* End Plugin ' + plugin_name + '. */\n')
+                except FileNotFoundError:
+                    # Preserve unresolved Plugin lines as AST metadata so front-end
+                    # diagnostics and future external package managers can still see it.
+                    out.append(raw)
                 i += 1; continue
             m = DEFINE_RE.match(raw)
             if m:

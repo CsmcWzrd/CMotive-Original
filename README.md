@@ -1,35 +1,30 @@
-# CMotive Language Examples
+# CMotive Programming Language Source Archive
 
-This archive contains 137 runnable CMotive examples plus header and package/VS2022 scaffolds.
+CMotive is a production-oriented native language source tree scaffold. It includes `cmotivepp`, `cmotive`, and `cmotive++`, root-only platform Makefiles, native object/executable generation via `-c` and `-o`, platform linker routing, strip-compatible native artifacts, docs, tests, release packaging, and provenance metadata.
 
-Expected layout after extraction:
+## Extensions
 
-```text
-CMotive/
-  tools/cmotive.py
-  tools/cmotivepp.py
-  Lang-Examples/
-    Makefile
-    examples/
-    headers/
-    packages/
-    vs2022/
-```
+- Source: `.CMOT`, `.CMTV`
+- Header: `.HMOT`, `.HMTV`
 
-Build and verify from `CMotive/Lang-Examples`:
+## Build
 
 ```sh
-make check
+make -f Makefile.linux all
+make -f Makefile.linux test
+./build/bin/cmotive -c examples/hello.CMOT -o build/hello.o
+./build/bin/cmotive examples/hello.CMOT -o build/hello
 ```
 
-Useful targets:
+Use `Makefile.mac` on macOS and `Makefile.windows` for a Windows-oriented POSIX/MinGW or clang shell. No `build.sh` is included.
 
-```sh
-make compile     # compile every manifest example into build/bin
-make objects     # compile every manifest example with -c into build/obj
-make run         # compile and execute every manifest example
-make preprocess  # preprocess every manifest example into build/pp
-make clean
-```
+## Status
 
-The examples are aligned with the formal CMotive requirements: capitalized keywords, `.CMOT/.CMTV/.HMOT/.HMTV` extensions, line-oriented functions, classes, inheritance, constructors/destructors, `New`/`Delete`, control flow, templates/blend/enum scaffolds, exceptions scaffolds, Package/Plugin syntax, standard-library package usage, and platform/ABI-oriented source shapes.
+This is a production-oriented compiler source scaffold with a working Python bootstrap compiler driver. The native backend currently lowers CMotive to C and invokes the platform toolchain; the repository also contains C/C++ implementation scaffolds for lexer, parser, AST, semantic analysis, native codegen, ARM64, x86_64, ABI/platform work, templates, exceptions, package/plugin loading, and separate compilation.
+
+See `docs/FEATURE_STATUS.md` for the full matrix.
+
+
+## VS2022 package project
+
+Open `vs2022/CMotive.Packages.sln` to build the package-system scaffold with Visual Studio 2022. See `docs/VS2022_PACKAGES.md`.

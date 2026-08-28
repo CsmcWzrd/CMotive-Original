@@ -20,9 +20,10 @@ See `docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md` for the detailed requirement-by-
 | New/Delete | Runtime scaffold | `CMotive_New`/`CMotive_Delete`. |
 | Control flow | Implemented scaffold | `if`, `else`, `while`, `return`. |
 | Virtual dispatch | Scaffold | VTable ABI placeholders. |
-| Templates | Scaffold | Reserved frontend/package area. |
-| Exceptions | Scaffold | `CMotive_Throw` boundary. |
-| Package/Plugin system | Scaffold | Loader/manager source placeholder. |
+| Templates | Implemented in bootstrap compiler | Concrete class/function templates instantiate on use, with `Template__Arg` native symbols. |
+| Exceptions | Implemented in bootstrap compiler | `Try`/`Catch`/`Catchall`/`Throw` lower to `setjmp`/`longjmp` frames with unhandled-exception exit code 70. |
+| Package/Plugin system | Implemented in preprocessor | `Plugin Foo::Bar` resolves and materializes `.HMOT/.HMTV/.CMOT/.CMTV` package files before parsing. |
 | Separate compilation | Implemented scaffold | `-c`, object input link path. |
 | Sys::Stdio/File/Filesystem/Logging/Thread | API scaffold | Headers under `lib/Sys`. |
 | Sys::Net | Placeholder | Reserved network namespace. |
+| Sys::Exception | API scaffold | Exception class and throwText package surface. |

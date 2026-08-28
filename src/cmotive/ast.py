@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 @dataclass
 class Node: pass
@@ -50,7 +50,12 @@ class PackageDecl(Node): name: str
 @dataclass
 class PluginDecl(Node): name: str
 @dataclass
-class TemplateDecl(Node): name: str = ''; params: List[Param] = field(default_factory=list); body: str = ''
+class TemplateDecl(Node):
+    name: str = ''
+    params: List[Param] = field(default_factory=list)
+    body: str = ''
+    kind: str = 'raw'
+    body_node: Optional[Any] = None
 @dataclass
 class BlendDecl(Node): name: str = ''; body: str = ''
 @dataclass

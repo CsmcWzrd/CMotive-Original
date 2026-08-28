@@ -30,3 +30,33 @@ int cmotive_sys_thread_join(void *thread) { (void)thread; return 0; }
 int cmotive_sys_net_socket_tcp(void) { return -1; }
 int cmotive_sys_net_socket_udp(void) { return -1; }
 int cmotive_sys_net_socket_raw(void) { return -1; }
+
+/* CMotive core allocation/exception helpers mirrored for runtime builds that
+ * choose to link lib/Sys/runtime.c instead of using the compiler's embedded
+ * bootstrap helpers.  Try/Catch code still emits setjmp in the caller frame. */
+#include <setjmp.h>
+void *CMotive_RuntimeNew(size_t n) { return calloc(1, n ? n : 1); }
+void CMotive_RuntimeDelete(void *p) { free(p); }
+typedef struct CMotive_RuntimeExceptionFrame {
+    jmp_buf env;
+    const char *message;
+    struct CMotive_RuntimeExceptionFrame *prev;
+} CMotive_RuntimeExceptionFrame;
+static CMotive_RuntimeExceptionFrame *cmotive_runtime_exception_stack = NULL;
+void CMotive_RuntimeExceptionPush(CMotive_RuntimeExceptionFrame *frame) {
+    frame->message = NULL;
+    frame->prev = cmotive_runtime_exception_stack;
+    cmotive_runtime_exception_stack = frame;
+}
+void CMotive_RuntimeExceptionPop(CMotive_RuntimeExceptionFrame *frame) {
+    if (cmotive_runtime_exception_stack == frame) cmotive_runtime_exception_stack = frame->prev;
+}
+void CMotive_RuntimeThrow(const char *message) {
+    CMotive_RuntimeExceptionFrame *frame = cmotive_runtime_exception_stack;
+    if (!frame) {
+        fprintf(stderr, "CMotive unhandled exception: %s\n", message ? message : "<null>");
+        exit(70);
+    }
+    frame->message = message ? message : "CMotive exception";
+    longjmp(frame->env, 1);
+}

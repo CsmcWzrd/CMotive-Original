@@ -44,6 +44,15 @@ def main():
     ok &= run_expect_code(['build/classes' + exe_suffix], 0)
     ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_preprocessor.CMOT', '-o', 'build/preprocessor' + exe_suffix])
     ok &= run_expect_code(['build/preprocessor' + exe_suffix], 0)
+
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_template_instantiation.CMOT', '-o', 'build/template' + exe_suffix])
+    ok &= run_expect_code(['build/template' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_exception_unwinding.CMOT', '-o', 'build/exception' + exe_suffix])
+    ok &= run_expect_code(['build/exception' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_package_loading.CMOT', '-I', 'tests/conformance', '-o', 'build/package' + exe_suffix])
+    ok &= run_expect_code(['build/package' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_sys_stl_template.CMOT', '-o', 'build/sys_stl_template' + exe_suffix])
+    ok &= run_expect_code(['build/sys_stl_template' + exe_suffix], 0)
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1
 

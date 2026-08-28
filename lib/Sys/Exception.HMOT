@@ -1,0 +1,23 @@
+Package Sys::Exception;
+
+Class
+Exception
+{
+    Public
+    {
+        message : Char* = ""; Block
+
+        Exception
+        ()
+        {
+        }
+    }
+};
+
+Void
+throwText
+message : Char*
+()
+{
+    Throw message;
+}
