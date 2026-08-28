@@ -45,3 +45,6 @@ Updated count: 153 examples. Examples 146-149 cover package-scope Global, Fptr f
 
 
 Latest update: examples 151-153 verify object-oriented `Sys::STL`, `Sys::Algorithms`, and `Sys::IO` usage instead of functional-only standard-library calls.
+
+
+Added examples 154-158 for Sys::Filesystem, Sys::Net, Sys::Thread MicroSleep/NanoSleep, Sys::String, and Sys::Wide object/class standard library APIs. Manifest now includes 158 examples.

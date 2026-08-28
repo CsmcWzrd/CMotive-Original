@@ -17,3 +17,6 @@ Object standard library refresh: added examples 151-153 and verified object-meth
 Examples 151-153 compile/link/run successfully against the refreshed object-oriented `Sys::STL`, `Sys::Algorithms`, and `Sys::IO` APIs.
 
 Result: PASS.
+
+
+Added examples 154-158 for Sys::Filesystem, Sys::Net, Sys::Thread MicroSleep/NanoSleep, Sys::String, and Sys::Wide object/class standard library APIs. Manifest now includes 158 examples.
