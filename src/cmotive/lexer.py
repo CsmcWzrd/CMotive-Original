@@ -20,14 +20,14 @@ KEYWORD_KIND = {
     'Plugswitch':'PLUGSWITCH','Plugend':'PLUGEND','Private':'PRIVATE','Protected':'PROTECTED',
     'Public':'PUBLIC','Register':'REGISTER','Replace':'REPLACE','Return':'RETURN','Set':'SET',
     'Setall':'SETALL','Sizeof':'SIZEOF','Static':'STATIC','Struct':'STRUCT','Switch':'SWITCH',
-    'Template':'TEMPLATE','Throw':'THROW','This':'THIS','Tstore':'TSTORE','True':'TRUE',
+    'Template':'TEMPLATE','Throw':'THROW','This':'THIS','Target':'TARGET','Hit':'HIT','Tstore':'TSTORE','True':'TRUE',
     'Try':'TRY','Type':'TYPE','Uchar':'UCHAR','U16':'U16','Uint16':'U16','U32':'U32','Uint32':'U32','U64':'U64','Uint':'U64',
     'Void':'VOID','Volatile':'VOLATILE','While':'WHILE',
     # Historical/bootstrap aliases.
     'class':'CLASS','extends':'INHERITS','func':'FUNC','return':'RETURN','var':'VAR',
     'if':'IF','else':'ELSE','while':'WHILE','new':'NEW','delete':'DELETE','virtual':'OVERRIDABLE',
     'package':'PACKAGE','plugin':'PLUGIN','template':'TEMPLATE','try':'TRY','catch':'CATCH',
-    'throw':'THROW','void':'VOID','int':'I32','float':'FLOAT','double':'DOUBLE','const':'CONST',
+    'throw':'THROW','target':'TARGET','hit':'HIT','void':'VOID','int':'I32','float':'FLOAT','double':'DOUBLE','const':'CONST',
     'break':'BREAK','continue':'CONTINUE','for':'FOR','switch':'SWITCH','case':'CASE','default':'DEFAULT',
 }
 

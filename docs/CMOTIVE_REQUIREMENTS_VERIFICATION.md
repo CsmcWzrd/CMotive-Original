@@ -30,6 +30,7 @@ language requirements.
 | Strip-compatible symbols | Implemented scaffold | Native object/executable generation uses normal platform toolchain/debug symbol format. |
 | Sys::Stdio | Implemented scaffold | Fluent `cout.expect(...).write(...)` and `cin.expect(...).read(...)` lower to C stdio. |
 | Sys::File, Filesystem, Logging, Thread, Net, STL, Exception | Package surfaces updated | Headers and runtime placeholders added/updated under `lib/Sys`; `Sys::STL` template headers now exercise real template instantiation. |
+| `Target`/`Hit` dispatch | Implemented in bootstrap compiler | Parser records `Target` statements and `Hit` function/method prefixes; codegen registers handlers by `(sender, id)` and lowers targets to direct static calls or guarded unresolved-route diagnostics. |
 
 ## Known limitations after this iteration
 
@@ -46,4 +47,4 @@ language requirements.
 ## Verification performed
 
 `make -f Makefile.linux test` passed after the implementation pass.  The tests now
-cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header parsing, concrete class struct lowering, package-qualified method mangling, constructor/destructor chaining, type-based constructor overload resolution, virtual dispatch through vtable slots, destructor cleanup during exception unwinding, `New`/`Delete` runtime dispatch, keyword/type synonyms, x86_64 native target output, invalid-base diagnostics, control flow, preprocessor selection, concrete template instantiation, caught exception unwinding, real Plugin package loading, object generation, executable generation, emitted C, and preprocessing.
+cover legacy bootstrap syntax, formal CMotive line-oriented syntax, class/header parsing, concrete class struct lowering, package-qualified method mangling, constructor/destructor chaining, type-based constructor overload resolution, virtual dispatch through vtable slots, destructor cleanup during exception unwinding, `New`/`Delete` runtime dispatch, keyword/type synonyms, x86_64 native target output, invalid-base diagnostics, control flow, preprocessor selection, concrete template instantiation, caught exception unwinding, real Plugin package loading, object generation, executable generation, emitted C, Target/Hit direct/object/sender dispatch, and preprocessing.

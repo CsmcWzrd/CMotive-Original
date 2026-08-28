@@ -26,6 +26,8 @@ class Function(Node):
     destructor: bool = False
     pure_virtual: bool = False
     package: str = 'StartPackage'
+    hit_sender: Optional[str] = None
+    hit_id: Optional[str] = None
 
 @dataclass
 class Field(Node):
@@ -67,6 +69,12 @@ class VarDecl(Node): name: str; value: str = '0'; type_name: str = 'I32'; global
 class Return(Node): value: str = ''
 @dataclass
 class ExprStmt(Node): value: str
+@dataclass
+class TargetStmt(Node):
+    sender: str = ''
+    object_expr: str = ''
+    args: str = ''
+    hit_id: str = ''
 @dataclass
 class If(Node): condition: str; then_body: List[Node]; else_body: List[Node] = field(default_factory=list)
 @dataclass

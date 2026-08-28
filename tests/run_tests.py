@@ -88,6 +88,33 @@ def main():
         print('FAILED: x86_64 target marker missing from generated C')
         ok = False
 
+
+    ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_target_hit_direct.CMOT', '-o', 'build/target_hit_direct.c'])
+    if ok:
+        ctext = Path('build/target_hit_direct.c').read_text(encoding='utf-8')
+        if 'StartPackage__PrintTarget(1, 2);' not in ctext:
+            print('FAILED: Target/Hit direct dispatch call missing from generated C')
+            ok = False
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_target_hit_direct.CMOT', '-o', 'build/target_hit_direct' + exe_suffix])
+    ok &= run_expect_code(['build/target_hit_direct' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_target_hit_object.CMOT', '-o', 'build/target_hit_object.c'])
+    if ok:
+        ctext = Path('build/target_hit_object.c').read_text(encoding='utf-8')
+        needed_target = ['StartPackage__TargetReceiver__Add(&obj1, 3, 4);', 'StartPackage__TargetReceiver__AddSender(&obj1, 5, 6);']
+        if not all(x in ctext for x in needed_target):
+            print('FAILED: Target/Hit object dispatch calls missing from generated C')
+            ok = False
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_target_hit_object.CMOT', '-o', 'build/target_hit_object' + exe_suffix])
+    ok &= run_expect_code(['build/target_hit_object' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_target_hit_sender.CMOT', '-o', 'build/target_hit_sender.c'])
+    if ok:
+        ctext = Path('build/target_hit_sender.c').read_text(encoding='utf-8')
+        if 'StartPackage__SenderTarget(8);' not in ctext:
+            print('FAILED: Target/Hit sender-qualified dispatch call missing from generated C')
+            ok = False
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_target_hit_sender.CMOT', '-o', 'build/target_hit_sender' + exe_suffix])
+    ok &= run_expect_code(['build/target_hit_sender' + exe_suffix], 0)
+
     ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1

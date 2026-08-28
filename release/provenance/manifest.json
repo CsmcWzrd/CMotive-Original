@@ -1,11 +1,15 @@
 {
   "name": "CMotive",
   "version": "0.2.2-rc1",
-  "created_utc": 1787920610,
+  "created_utc": 1787923085,
   "files": [
     {
       "path": ".gitignore",
       "sha256": "9c36661bfb9163294d8d400ff83a7fffed54ddbd071a5ec0857eb0c2e9fff487"
+    },
+    {
+      "path": "CMotive_target_hit_update.txt",
+      "sha256": "55ad5de098f645c9436d07a62f04cd96ae55a95e545a67f73103b977fe139381"
     },
     {
       "path": "LICENSE",
@@ -37,7 +41,7 @@
     },
     {
       "path": "docs/CLASSES_INHERITANCE_LIFECYCLE.md",
-      "sha256": "8ef5b0f3f9d3f334462390e46cd5c7df5e0a1433585546455fd82f1814d077ba"
+      "sha256": "f432b7a52bdf9b0dfe1bb977cadffc26c0c7123631aae55dc112423bdf0e6209"
     },
     {
       "path": "docs/CLI_FREEZE.md",
@@ -49,11 +53,11 @@
     },
     {
       "path": "docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md",
-      "sha256": "7a2a79ed6a6f3dbe5c13f3f43d879fe3ebc9c1aa5baa6381a7a7386377b56f54"
+      "sha256": "b7c30374c2ac553e43556a70d00cad588b5f9ae3fda756e15470581af6379de5"
     },
     {
       "path": "docs/FEATURE_STATUS.md",
-      "sha256": "517e21fd641dadb6a2ee1e3ed2a116fe4ff9607b573c2aa8e97d1fe24b75aaf5"
+      "sha256": "212c1a2cc21f852d55a4a74cf3149229120008c6241e81d55ef923a1b7d519b1"
     },
     {
       "path": "docs/GA_PROMOTION_POLICY.md",
@@ -80,12 +84,24 @@
       "sha256": "a79bb52e02000ac12e59242c0b9f7bc281eeb8bfe4cd40b355780c19f8db37aa"
     },
     {
+      "path": "docs/TARGET_HIT_DISPATCH.md",
+      "sha256": "a3ee6c505ee3f88c29055ad0cd74acabba05aec57ec6957ac06278de4c84a4e3"
+    },
+    {
       "path": "docs/TEMPLATES_EXCEPTIONS_PACKAGES.md",
       "sha256": "372af1faabf789c9b6281e4c5bfc2499599941f9d66ed9c3af91f733f323f825"
     },
     {
+      "path": "docs/UPDATE_VIRTUAL_CTOR_X86_64.txt",
+      "sha256": "2151f63616836a5339017554c52b7ccf4891dfb5dd8a5659b9d7c6fc13472340"
+    },
+    {
       "path": "docs/VS2022_PACKAGES.md",
       "sha256": "d3f4128b696fe4e3e966c878b3bda02bcd2d5de5f0bb7c9caffa4b98642ebdb7"
+    },
+    {
+      "path": "docs/X86_64_NATIVE_TOOLCHAIN.md",
+      "sha256": "117047542dfce3f834a818a432fe5f7d2bfd236bd38c77df34713afdd7af98a0"
     },
     {
       "path": "examples/classes.CMOT",
@@ -145,7 +161,7 @@
     },
     {
       "path": "release/provenance/manifest.json",
-      "sha256": "8e2767ef35ea862508c50fab2e66a1ba0167581163482207950e701eb214e084"
+      "sha256": "0a3a840ef893cf252093799a5c1fb6722ac9f6c4eb5b6d9601a8ce6e7bb3e84b"
     },
     {
       "path": "release/rc/README.md",
@@ -185,11 +201,11 @@
     },
     {
       "path": "src/cmotive/__pycache__/ast.cpython-313.pyc",
-      "sha256": "8aa40db9ff53301aa5ef5b15940de8436fb728d515accce9abf37ee9bd86800b"
+      "sha256": "1cdcb5e90a39135a59f83bf9c8da0dabb5f7fe9399b9ef795eb430cdb774ec1a"
     },
     {
       "path": "src/cmotive/__pycache__/codegen.cpython-313.pyc",
-      "sha256": "0ef726057f01786a68e520a377993fc634a33a35e62dd472080562bc8387acf9"
+      "sha256": "8bbd0acf03f928165a69525f9c9c20aa8a6fac65ebac24e16f1cb6cc08a38375"
     },
     {
       "path": "src/cmotive/__pycache__/compiler.cpython-313.pyc",
@@ -197,27 +213,27 @@
     },
     {
       "path": "src/cmotive/__pycache__/lexer.cpython-313.pyc",
-      "sha256": "e23310726903396b771bbfa9dbfd7b23b7f9a17e97dfce24e5985c1aff7fb272"
+      "sha256": "d6b7f3aaabc6cec50b6da9d6c7de7fdd7712fc30035974cfc0a69a22b8dab2e5"
     },
     {
       "path": "src/cmotive/__pycache__/parser.cpython-313.pyc",
-      "sha256": "a23ff99662daa1c0f5cb8b2d09b9cbce28f8e1f4715d8db955dffb932f6ef843"
+      "sha256": "2bf78f632f4b0e16fc9390a0d7bd38e66b5215c3977a20c8ae89f93d84ff2c90"
     },
     {
       "path": "src/cmotive/__pycache__/preprocessor.cpython-313.pyc",
-      "sha256": "b5dbb5dd6884739031fd1760a424782cb2d32cb7a6510a205207c553584b3ec9"
+      "sha256": "f473d8042c4fbfbe9964ec710a31d7ea00536dabb650776898849b162d74ec5d"
     },
     {
       "path": "src/cmotive/__pycache__/semantic.cpython-313.pyc",
-      "sha256": "74b96336cb2be0312ffd7e76e77503bd867610316a473a4f9fef113934ccf753"
+      "sha256": "9ef031598d97d68b629643e6fbce2270db287ddede275bf8943907bfcc99897d"
     },
     {
       "path": "src/cmotive/ast.py",
-      "sha256": "094c858ef4fb7048dcb02192695c16ad12a7b79ad0202ccf67792d6601e53a12"
+      "sha256": "0e35d3d41b052402925358800aa9577999af4d5facc411c421a3c39eca674d99"
     },
     {
       "path": "src/cmotive/codegen.py",
-      "sha256": "eb2a7e7000cf1be36b2ab92cfab0d5425b7878c36a5f4d7fde90a9e0d5669a38"
+      "sha256": "1be3c7a54204ca5f3abf882db4fde652696164c6130b3bf48b6967080dd1594b"
     },
     {
       "path": "src/cmotive/compiler.py",
@@ -225,11 +241,11 @@
     },
     {
       "path": "src/cmotive/lexer.py",
-      "sha256": "9af1f39ad7d6b17528549acf16e0b41ff1cdf55c21d79efbfefabf6ae090fab5"
+      "sha256": "83bf6b334f679f303631eeaa0d29a16ec42dafb996be4dc7cb2973934ba3a14c"
     },
     {
       "path": "src/cmotive/parser.py",
-      "sha256": "7d0ec1732958866e1493612ee1bcbbb95bdd1a15c0a4c6adfd07c9ebf81598ff"
+      "sha256": "64a3fdf75cb64ba26f744cf572ef4589b0482ef08cad6f696d3f713b8575f840"
     },
     {
       "path": "src/cmotive/preprocessor.py",
@@ -245,11 +261,11 @@
     },
     {
       "path": "src/codegen/native_codegen.cpp",
-      "sha256": "604b9c20c73528cc73c79afa7ac2c20275607d4629ec9c4fde5688d38311a49f"
+      "sha256": "735d9c8a51adc7377bbf20fe483bc4d417ad631b0ad58d61e65379057098faad"
     },
     {
       "path": "src/codegen/x86_64/x86_64_backend.cpp",
-      "sha256": "0036dbdc271579d8814380c17860562de0b7c057900736252a06f72daf129a3c"
+      "sha256": "e919720c837352757f003cab0bf34a0ba090c1cb24b7053c5b01593381a9a5ff"
     },
     {
       "path": "src/exceptions/exception_runtime.cpp",
@@ -284,6 +300,10 @@
       "sha256": "1567e5207b46859cfe110c5d57616c70b0d3278213d952a7d55f8db3a6a074e0"
     },
     {
+      "path": "tests/__pycache__/run_tests.cpython-313.pyc",
+      "sha256": "28bad77ba94a9b8ae034b4095c7b6f2f0e7fd88f90aea10a5ee1d9d2f7f22ad2"
+    },
+    {
       "path": "tests/abi/platform.CMOT",
       "sha256": "7cd51e317eda9073a5c5ee30833c5b3469814dfbb571d024132ba6afae530ce4"
     },
@@ -316,8 +336,16 @@
       "sha256": "ff790c4d5d6af5ab29816a0139b3d0739777bbddaf274c7f91d940adace4b8d6"
     },
     {
+      "path": "tests/conformance/cmotive_constructor_type_overload.CMOT",
+      "sha256": "d8f3e1c7c510781bc05d3401882aba9fc2d1a598af64c9a155dddd71b54422a5"
+    },
+    {
       "path": "tests/conformance/cmotive_control_flow.CMTV",
       "sha256": "b954039a7b10422b244c045f91db499731b629a9059ec8083a87879297cce96a"
+    },
+    {
+      "path": "tests/conformance/cmotive_exception_destructor_unwind.CMOT",
+      "sha256": "970b0d0185e79862015b3a4b3e266667e5b9e86d04aa80e6d69cd751fb81afb2"
     },
     {
       "path": "tests/conformance/cmotive_exception_unwinding.CMOT",
@@ -330,6 +358,10 @@
     {
       "path": "tests/conformance/cmotive_invalid_base.CMOT",
       "sha256": "5203ea1340c805fb47231105bef3a135b1a3919e157b9bd26e4f8050473754e6"
+    },
+    {
+      "path": "tests/conformance/cmotive_keyword_synonyms.CMOT",
+      "sha256": "b727c7c0e0170ad703a7068cd1c57c3333e9d93890b73ffd4cbfdf63477389d1"
     },
     {
       "path": "tests/conformance/cmotive_package_loading.CMOT",
@@ -348,8 +380,24 @@
       "sha256": "136d42c4652522feab985aeff30a3dad9dbfb3b450c67bdb9edec80285205711"
     },
     {
+      "path": "tests/conformance/cmotive_target_hit_direct.CMOT",
+      "sha256": "6cffd828fc27917ce5fe9b38ff003c6147bc4c818f6670acfe0b8c8d1869919d"
+    },
+    {
+      "path": "tests/conformance/cmotive_target_hit_object.CMOT",
+      "sha256": "9915373752e22b064aa46924019e64a1bdb0e8e23a476b1ca44a0b95d0a259c1"
+    },
+    {
+      "path": "tests/conformance/cmotive_target_hit_sender.CMOT",
+      "sha256": "5356b073af8abbdaaa56410b007fb0f17bed2ddb091fe93e3c9dedc05df98952"
+    },
+    {
       "path": "tests/conformance/cmotive_template_instantiation.CMOT",
       "sha256": "d42a939ae802e341c5b416c66b802bf5a2034a6ac4a7e5dd1055d252086fb127"
+    },
+    {
+      "path": "tests/conformance/cmotive_virtual_dispatch.CMOT",
+      "sha256": "251f15913d0c7f35be81bb8835e2a86b6d15c4d2ab87fcec2e86948f568999ad"
     },
     {
       "path": "tests/conformance/control_flow.CMOT",
@@ -365,11 +413,11 @@
     },
     {
       "path": "tests/run_tests.py",
-      "sha256": "29c67eb303cfaf172f036480e4cf173756a0f5eda62570138a421328cfbef035"
+      "sha256": "09b36e14a5ab02d8289637693304f982b1d75a3e81040dedf4960d56b101e5bf"
     },
     {
       "path": "tools/__pycache__/cmotive.cpython-313.pyc",
-      "sha256": "004d0cf6a2c2d5323087748fcfc1a8fee21a07dbc5dee6c2ddf3f7bcf424f3d7"
+      "sha256": "4edeb797537e363c986e5b9a5a13df94b21964de8c16a6fa35f387fe5fbbdfa4"
     },
     {
       "path": "tools/__pycache__/cmotivepp.cpython-313.pyc",
@@ -377,7 +425,7 @@
     },
     {
       "path": "tools/cmotive.py",
-      "sha256": "a4cf4fd42de94c20ab30505f4139bdb4b74d4d93efc88a7700cad9486e8925c4"
+      "sha256": "3dadf3563ab71d27ac236571733564d1d1d91547d4f60b7623cf0e1e7791e950"
     },
     {
       "path": "tools/cmotivepp.py",

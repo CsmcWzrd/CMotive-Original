@@ -29,3 +29,5 @@ See `docs/CMOTIVE_REQUIREMENTS_VERIFICATION.md` for the detailed requirement-by-
 | Sys::Exception | API scaffold | Exception class and throwText package surface. |
 
 | Keyword/type synonyms | Implemented | `Int16`, `Int32`, `Int`, `Uint16`, `Uint32`, and `Uint` are accepted as aliases for `I16`, `I32`, `I64`, `U16`, `U32`, and `U64`. |
+
+| Target/Hit dispatch | Implemented in bootstrap compiler | `Hit Sender:Id` registers a function/method handler and `Target Sender:Object:args:Id` lowers to deterministic direct dispatch, with unresolved routes failing through `CMotive_UnresolvedTarget`. |

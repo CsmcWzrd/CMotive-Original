@@ -1,7 +1,7 @@
 from .ast import (
     Program, Param, Function, ClassDecl, Field, PackageDecl, PluginDecl,
     TemplateDecl, BlendDecl, VarDecl, Return, ExprStmt, If, While, DoWhile,
-    For, Break, Continue, Throw, TryCatch, RawStmt, RawDecl
+    For, Break, Continue, Throw, TryCatch, RawStmt, TargetStmt, RawDecl
 )
 
 TYPE_KINDS = {
@@ -90,6 +90,8 @@ class Parser:
                 decls.append(self.template_decl()); continue
             if k == 'BLEND' or k == 'ENUM':
                 decls.append(self.blend_decl()); continue
+            if k == 'HIT':
+                decls.append(self.hit_decorated_declaration()); continue
             if k == 'CLASS':
                 decls.append(self.class_decl()); continue
             if self.peek().value == '$':
@@ -144,6 +146,53 @@ class Parser:
     def plugin_decl(self):
         self.take('PLUGIN')
         return PluginDecl(self.dotted_name_until_eol_or_semicolon())
+
+    def split_top_level_colons(self, text):
+        parts, cur, depth, in_str, esc = [], [], 0, False, False
+        for ch in str(text or ''):
+            if in_str:
+                cur.append(ch)
+                if esc:
+                    esc = False
+                elif ch == '\\':
+                    esc = True
+                elif ch == '"':
+                    in_str = False
+                continue
+            if ch == '"':
+                in_str = True; cur.append(ch); continue
+            if ch in '([{<': depth += 1
+            elif ch in ')]}>': depth -= 1
+            if ch == ':' and depth == 0:
+                parts.append(''.join(cur).strip()); cur = []
+            else:
+                cur.append(ch)
+        parts.append(''.join(cur).strip())
+        return parts
+
+    def parse_hit_prefix(self):
+        self.take('HIT')
+        spec = self.expr_until_eol_or({';'})
+        self.accept(';')
+        parts = self.split_top_level_colons(spec)
+        if len(parts) == 1:
+            sender, hit_id = '', parts[0]
+        else:
+            sender, hit_id = parts[0], parts[-1]
+        return sender.strip(), hit_id.strip()
+
+    def hit_decorated_declaration(self):
+        sender, hit_id = self.parse_hit_prefix()
+        self.skip_eol()
+        if self.peek().value == '$':
+            fn = self.out_of_class_method()
+        else:
+            fn = self.function()
+        if not isinstance(fn, Function):
+            raise SyntaxError('Hit must prefix a function or method declaration')
+        fn.hit_sender = sender
+        fn.hit_id = hit_id
+        return fn
 
     def skip_plugswitch(self):
         parts = []
@@ -265,6 +314,14 @@ class Parser:
     def parse_class_item(self, class_name, visibility, fields, methods, nested):
         self.skip_eol()
         if self.peek().kind == 'EOF' or self.peek().value == '}':
+            return
+        if self.peek().kind == 'HIT':
+            sender, hit_id = self.parse_hit_prefix()
+            self.skip_eol()
+            fn = self.function(in_class=class_name)
+            fn.hit_sender = sender
+            fn.hit_id = hit_id
+            methods.append(fn)
             return
         if self.peek().kind == 'CLASS':
             nested.append(self.class_decl()); return
@@ -545,6 +602,8 @@ class Parser:
         k = self.peek().kind
         if self.accept(';'):
             return None
+        if k == 'TARGET':
+            return self.target_stmt()
         if k == 'RETURN':
             self.take('RETURN')
             val = '' if self.peek().value == ';' else self.expr_until(';')
@@ -636,6 +695,19 @@ class Parser:
         expr = self.expr_until(';')
         self.accept(';')
         return ExprStmt(expr)
+
+    def target_stmt(self):
+        self.take('TARGET')
+        spec = self.expr_until_eol_or({';'})
+        self.accept(';')
+        parts = self.split_top_level_colons(spec)
+        while len(parts) < 4:
+            parts.append('')
+        sender = parts[0]
+        object_expr = parts[1]
+        args = ':'.join(parts[2:-1]).strip() if len(parts) > 3 else ''
+        hit_id = parts[-1]
+        return TargetStmt(sender.strip(), object_expr.strip(), args.strip(), hit_id.strip())
 
     def raw_keyword_block_statement(self):
         parts = [self.take().value]
