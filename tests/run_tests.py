@@ -74,6 +74,20 @@ def main():
             ok = False
     ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_package_method_mangling.CMOT', '-o', 'build/package_method_mangling' + exe_suffix])
     ok &= run_expect_code(['build/package_method_mangling' + exe_suffix], 0)
+
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_keyword_synonyms.CMOT', '-o', 'build/keyword_synonyms' + exe_suffix])
+    ok &= run_expect_code(['build/keyword_synonyms' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_virtual_dispatch.CMOT', '-o', 'build/virtual_dispatch' + exe_suffix])
+    ok &= run_expect_code(['build/virtual_dispatch' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_exception_destructor_unwind.CMOT', '-o', 'build/exception_destructor_unwind' + exe_suffix])
+    ok &= run_expect_code(['build/exception_destructor_unwind' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_constructor_type_overload.CMOT', '-o', 'build/constructor_type_overload' + exe_suffix])
+    ok &= run_expect_code(['build/constructor_type_overload' + exe_suffix], 0)
+    ok &= run([str(b/'cmotive'), '--target-arch', 'x86_64', '--emit-c', 'tests/abi/platform.CMOT', '-o', 'build/platform_x86_64.c'])
+    if ok and 'target-arch: x86_64' not in Path('build/platform_x86_64.c').read_text(encoding='utf-8'):
+        print('FAILED: x86_64 target marker missing from generated C')
+        ok = False
+
     ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1

@@ -34,6 +34,23 @@ def choose_ld(cc):
 def compiler_is_msvc(cc):
     return Path(str(cc).split()[0]).name.lower() in {'cl','cl.exe'}
 
+def canonical_arch(value):
+    v = (value or '').lower()
+    return ARCH_ALIASES.get(v, v or 'native')
+
+def arch_flags(target_arch, for_link=False):
+    arch = canonical_arch(target_arch)
+    sysname = platform.system()
+    if compiler_is_msvc(choose_cc()):
+        return []
+    if sysname == 'Darwin' and arch in {'x86_64','arm64'}:
+        return ['-arch', arch]
+    if arch == 'x86_64' and sysname != 'Windows':
+        return ['-m64']
+    if arch == 'x86' and sysname != 'Windows':
+        return ['-m32']
+    return []
+
 def run_cmd(cmd):
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if p.returncode:
@@ -45,8 +62,7 @@ def compile_c(cc, c_path, obj_path, target_arch=None):
     if compiler_is_msvc(cc):
         return [cc, '/nologo', '/c', str(c_path), '/Fo' + str(obj_path)]
     cmd = [cc]
-    if platform.system() == 'Darwin' and target_arch:
-        cmd += ['-arch', target_arch]
+    cmd += arch_flags(target_arch)
     # Strip-compatible native object output.  Debug info is intentionally kept in
     # a normal toolchain format so strip/llvm-strip can operate on the result.
     cmd += ['-g', '-c', str(c_path), '-o', str(obj_path)]
@@ -57,8 +73,7 @@ def link_objects(ld, objs, out, libdirs, libs, target_arch=None):
     if compiler_is_msvc(ld):
         return [ld, '/nologo'] + [str(o) for o in objs] + ['/Fe:' + str(out)]
     cmd = [ld]
-    if platform.system() == 'Darwin' and target_arch:
-        cmd += ['-arch', target_arch]
+    cmd += arch_flags(target_arch)
     cmd += [str(p) for p in objs]
     cmd += ['-L' + d for d in libdirs] + ['-l' + l for l in libs] + ['-o', str(out)]
     return cmd
@@ -75,6 +90,8 @@ def main(argv=None):
     ap.add_argument('--emit-c', action='store_true')
     ap.add_argument('--keep-c', action='store_true')
     ap.add_argument('--print-linker', action='store_true')
+    ap.add_argument('--print-toolchain', action='store_true')
+    ap.add_argument('--print-target-arch', action='store_true')
     ap.add_argument('inputs', nargs='*')
     ns = ap.parse_args(argv)
     if ns.version:
@@ -84,13 +101,20 @@ def main(argv=None):
     if ns.print_linker:
         print(ld)
         return 0
+    if ns.print_toolchain:
+        print('cc=' + str(cc))
+        print('ld=' + str(ld))
+        return 0
+    target_arch = canonical_arch(ns.target_arch or platform.machine())
+    if ns.print_target_arch:
+        print(target_arch)
+        return 0
     if not ns.inputs:
         ap.error('no input files')
     srcs = [Path(p) for p in ns.inputs if Path(p).suffix in VALID_SRC]
     objs = [Path(p) for p in ns.inputs if Path(p).suffix.lower() in OBJ_EXTS]
     if not srcs and not objs:
         ap.error('no CMotive source/header or object input files')
-    target_arch = ARCH_ALIASES.get(ns.target_arch or '', ns.target_arch) or platform.machine()
     out = Path(ns.output) if ns.output else Path('a.out' if not ns.compile_only else (srcs[0].stem + ('.obj' if platform.system() == 'Windows' else '.o')))
     out.parent.mkdir(parents=True, exist_ok=True)
     pipe = CompilerPipeline(ns.includes, target_arch)

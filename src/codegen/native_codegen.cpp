@@ -12,7 +12,9 @@ struct NativeCodegenFeatureMatrix {
     bool lowers_methods_to_mangled_symbols = true;
     bool embeds_single_base_as_first_member = true;
     bool emits_constructor_destructor_lifecycle = true;
-    bool reserves_vtable_layout = true;
+    bool resolves_constructor_overloads_by_type = true;
+    bool emits_exception_cleanup_frames = true;
+    bool emits_vtable_dispatch = true;
     bool lowers_new_delete_helpers = true;
     bool lowers_stdio_fluent_calls = true;
     bool lowers_rotate_shift_operators = true;
