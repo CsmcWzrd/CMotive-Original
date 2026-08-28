@@ -17,3 +17,9 @@ Verification scope:
 - Separate-compilation and target-architecture source examples
 
 Runnable example count: 137.
+
+
+Additional completed-feature examples added: 146 Global anywhere, 147 Fptr function pointer, 148 Overridable pure virtual, 149 ThreadStore/Tstore.
+
+
+Updated count: 149 examples. Examples 146-149 cover package-scope Global, Fptr function pointers, Overridable pure virtual declarations, and ThreadStore/Tstore.

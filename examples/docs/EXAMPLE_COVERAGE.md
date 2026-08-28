@@ -167,3 +167,9 @@ Some CMotive requirements are currently represented as compile-safe scaffolds be
 
 
 Added examples 138-145 for Sys::IO rename, STL containers, Sys::Algorithms, native sockets, native threading, and Dynamic Struct Expand.
+
+
+Additional completed-feature examples added: 146 Global anywhere, 147 Fptr function pointer, 148 Overridable pure virtual, 149 ThreadStore/Tstore.
+
+
+Updated count: 149 examples. Examples 146-149 cover package-scope Global, Fptr function pointers, Overridable pure virtual declarations, and ThreadStore/Tstore.

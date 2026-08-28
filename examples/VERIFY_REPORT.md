@@ -1,19 +1,18 @@
-# CMotive language examples verification report
+# CMotive examples verification report
 
-PASS: 137 manifest examples were verified against the updated CMotive compiler/tooling.
+PASS: manifest validation found 149 examples.
 
-Verification performed:
+Verification performed in this iteration:
 
-- Manifest validation: 137 examples present.
-- Compile/link/run verification in chunks: every manifest example compiled to an executable, executed, exited with code 0, produced no stderr, and printed its per-example verification marker.
-- Object generation verification in chunks: every manifest example compiled with `-c` and produced an object file.
-- VS2022 package project validation: package project inputs validated, package `.CMOT` files compiled to objects, and `packages.stamp` / `BUILD_OUTPUTS.txt` were generated.
-- CMotive source regression check after parser/codegen fixes: `make -f Makefile.linux all test` passed.
+- Source regression suite: `make -f Makefile.linux clean all test` passed.
+- Source full conformance suite: `python3 tests/run_tests.py --bin build/bin --full` passed.
+- New examples 146-149 compiled, linked, executed, exited with code 0, and produced no stderr:
+  - 146 Global anywhere
+  - 147 Fptr function pointer
+  - 148 Overridable pure virtual
+  - 149 ThreadStore/Tstore
+- `tools/check_manifest.py` reports `manifest ok: 149 examples`.
 
-Notes:
+The previous examples 138-145 remain in the manifest for Sys::IO, STL containers, Sys::Algorithms, native sockets, native threading, and Dynamic Struct Expand.
 
-- The runner checks stdout markers so a source file cannot falsely pass by accidentally lowering to the default empty `main`.
-- Some requirements remain represented as compile-safe scaffolds where the current compiler/runtime still marks them as scaffolded: full template instantiation, full exception unwinding, real package loading, userspace scheduler implementation, real sockets, STL containers, auto Get/Set/Getall/Setall materialization, and Operation operator overloading.
-
-
-Added examples 138-145 for Sys::IO rename, STL containers, Sys::Algorithms, native sockets, native threading, and Dynamic Struct Expand.
+Note: the full 149-example archive-wide runner is available as `tools/run_all_examples.py`. The verification above used the CMotive source conformance suite plus targeted execution of the newly added examples for this pass.

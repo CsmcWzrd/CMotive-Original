@@ -143,3 +143,7 @@ examples/142_algorithms_sort_search.CMOT
 examples/143_native_sockets_safe.CMOT
 examples/144_native_thread_current.CMOT
 examples/145_dynamic_struct_expand.CMOT
+examples/146_global_anywhere.CMOT
+examples/147_fptr_function_pointer.CMOT
+examples/148_overridable_pure_virtual.CMOT
+examples/149_threadstore_global.CMOT

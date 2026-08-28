@@ -36,3 +36,6 @@ The examples are aligned with the formal CMotive requirements: capitalized keywo
 
 
 Added examples 138-145 for Sys::IO rename, STL containers, Sys::Algorithms, native sockets, native threading, and Dynamic Struct Expand.
+
+
+Updated count: 149 examples. Examples 146-149 cover package-scope Global, Fptr function pointers, Overridable pure virtual declarations, and ThreadStore/Tstore.
