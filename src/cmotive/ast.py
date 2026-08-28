@@ -25,6 +25,7 @@ class Function(Node):
     constructor: bool = False
     destructor: bool = False
     pure_virtual: bool = False
+    package: str = 'StartPackage'
 
 @dataclass
 class Field(Node):
@@ -44,6 +45,7 @@ class ClassDecl(Node):
     has_virtuals: bool = False
     bases: List[Tuple[str, str]] = field(default_factory=list)
     nested: List['ClassDecl'] = field(default_factory=list)
+    package: str = 'StartPackage'
 
 @dataclass
 class PackageDecl(Node): name: str
@@ -56,10 +58,11 @@ class TemplateDecl(Node):
     body: str = ''
     kind: str = 'raw'
     body_node: Optional[Any] = None
+    package: str = 'StartPackage'
 @dataclass
 class BlendDecl(Node): name: str = ''; body: str = ''
 @dataclass
-class VarDecl(Node): name: str; value: str = '0'; type_name: str = 'I32'; global_decl: bool = False
+class VarDecl(Node): name: str; value: str = '0'; type_name: str = 'I32'; global_decl: bool = False; package: str = 'StartPackage'
 @dataclass
 class Return(Node): value: str = ''
 @dataclass

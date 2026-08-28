@@ -21,6 +21,8 @@ TYPE_MAP = {
     'Void':'void','void':'void','Type':'void*','Dynamic':'void*',
 }
 
+DEFAULT_PACKAGE = 'StartPackage'
+
 class NativeCodegen:
     def __init__(self, target_arch='native'):
         self.target_arch = target_arch
@@ -32,6 +34,8 @@ class NativeCodegen:
         self.template_use_queue = []
         self.template_use_seen = set()
         self.class_map = {}
+        self.functions_by_name = {}
+        self.current_package_context = DEFAULT_PACKAGE
         self.ctor_arg_counts = {}
         self._try_id = 0
 
@@ -58,7 +62,12 @@ class NativeCodegen:
             self.class_map[c.name] = c
             self.class_map[self.safe_name(c.name)] = c
         self.known_classes = set(self.class_map.keys())
-        self.known_functions = {d.name for d in all_functions if not d.method_of and d.name != 'main'}
+        self.functions_by_name = {}
+        for d in all_functions:
+            if not d.method_of and d.name != 'main':
+                self.functions_by_name.setdefault(d.name, []).append(d)
+                self.functions_by_name.setdefault(self.safe_name(d.name), []).append(d)
+        self.known_functions = set(self.functions_by_name.keys())
         self.ctor_arg_counts = self.collect_ctor_arg_counts(all_classes)
 
         out = [
@@ -235,12 +244,12 @@ class NativeCodegen:
         nested = [self.clone_class_template(n, inst_name + '__' + n.name, mapping) for n in cls.nested]
         bases = [(self.substitute_type(b, mapping), v) for b, v in cls.bases]
         base = self.substitute_type(cls.base, mapping) if cls.base else None
-        return ClassDecl(inst_name, base, methods, fields, cls.has_virtuals, bases, nested)
+        return ClassDecl(inst_name, base, methods, fields, cls.has_virtuals, bases, nested, getattr(cls, 'package', DEFAULT_PACKAGE))
 
     def clone_function_template(self, fn, inst_name, mapping):
         params = [Param(p.name, self.substitute_type(p.type_name, mapping), self.substitute_expr(p.default, mapping) if p.default else None) for p in fn.params]
         body = [self.clone_stmt(s, mapping) for s in fn.body]
-        return Function(inst_name, params, body, self.substitute_type(fn.return_type, mapping), fn.method_of, list(fn.decorators), fn.constructor, fn.destructor, fn.pure_virtual)
+        return Function(inst_name, params, body, self.substitute_type(fn.return_type, mapping), fn.method_of, list(fn.decorators), fn.constructor, fn.destructor, fn.pure_virtual, getattr(fn, 'package', DEFAULT_PACKAGE))
 
     def clone_stmt(self, s, mapping):
         if isinstance(s, VarDecl):
@@ -261,9 +270,12 @@ class NativeCodegen:
         for c in classes:
             has_zero_ctor = any(m.constructor and len(m.params) == 0 for m in c.methods)
             if not has_zero_ctor:
-                c.methods.insert(0, Function(c.name, [], [], 'Void', c.name, constructor=True))
+                c.methods.insert(0, Function(c.name, [], [], 'Void', c.name, constructor=True, package=getattr(c, 'package', DEFAULT_PACKAGE)))
             if not any(m.destructor for m in c.methods):
-                c.methods.append(Function('~' + c.name, [], [], 'Void', c.name, destructor=True))
+                c.methods.append(Function('~' + c.name, [], [], 'Void', c.name, destructor=True, package=getattr(c, 'package', DEFAULT_PACKAGE)))
+            for m in c.methods:
+                if not getattr(m, 'package', None):
+                    m.package = getattr(c, 'package', DEFAULT_PACKAGE)
             for n in c.nested:
                 self.ensure_lifecycle_methods([n])
 
@@ -351,7 +363,12 @@ class NativeCodegen:
         return lines + [''] if lines else []
 
     def global_var(self, v):
-        return [self.c_decl(v.type_name, self.safe_name(v.name)) + ' = ' + self.expr(v.value, v.type_name) + ';', '']
+        prev = self.current_package_context
+        self.current_package_context = getattr(v, 'package', DEFAULT_PACKAGE)
+        try:
+            return [self.c_decl(v.type_name, self.safe_name(v.name)) + ' = ' + self.expr(v.value, v.type_name) + ';', '']
+        finally:
+            self.current_package_context = prev
 
     def safe_name(self, name):
         if not name:
@@ -364,28 +381,49 @@ class NativeCodegen:
             return 'cmotive_' + name
         return name
 
-    def constructor_name(self, class_name, argc):
-        base = f'{self.safe_name(class_name)}__ctor'
+    def package_name(self, package=None):
+        return self.safe_name(package or DEFAULT_PACKAGE)
+
+    def lookup_class(self, class_name):
+        if not class_name:
+            return None
+        return self.class_map.get(class_name) or self.class_map.get(self.safe_name(class_name))
+
+    def class_package(self, class_name, fallback=None):
+        cls = self.lookup_class(class_name)
+        return getattr(cls, 'package', None) or fallback or DEFAULT_PACKAGE
+
+    def class_symbol_prefix(self, class_name, package=None):
+        return f'{self.package_name(package or self.class_package(class_name))}__{self.safe_name(class_name)}'
+
+    def method_name(self, class_name, method_name, package=None):
+        return f'{self.class_symbol_prefix(class_name, package)}__{self.safe_name(method_name)}'
+
+    def constructor_name(self, class_name, argc, package=None):
+        base = f'{self.class_symbol_prefix(class_name, package)}__ctor'
         return base if argc == 0 else f'{base}__{argc}'
 
-    def new_name(self, class_name, argc):
-        base = f'{self.safe_name(class_name)}__new'
+    def new_name(self, class_name, argc, package=None):
+        base = f'{self.class_symbol_prefix(class_name, package)}__new'
         return base if argc == 0 else f'{base}__{argc}'
 
-    def destructor_name(self, class_name):
-        return f'{self.safe_name(class_name)}__dtor'
+    def destructor_name(self, class_name, package=None):
+        return f'{self.class_symbol_prefix(class_name, package)}__dtor'
 
-    def delete_name(self, class_name):
-        return f'{self.safe_name(class_name)}__delete'
+    def delete_name(self, class_name, package=None):
+        return f'{self.class_symbol_prefix(class_name, package)}__delete'
 
     def c_name(self, f):
         if f.name == 'main' and not f.method_of:
             return 'main'
+        pkg = getattr(f, 'package', DEFAULT_PACKAGE)
         if f.constructor:
-            return self.constructor_name(f.method_of or f.name, len(f.params))
+            return self.constructor_name(f.method_of or f.name, len(f.params), pkg)
         if f.destructor:
-            return self.destructor_name(f.method_of or f.name)
-        return ((self.safe_name(f.method_of) + '__') if f.method_of else 'cmotive__') + self.safe_name(f.name)
+            return self.destructor_name(f.method_of or f.name, pkg)
+        if f.method_of:
+            return self.method_name(f.method_of, f.name, pkg)
+        return f'{self.package_name(pkg)}__{self.safe_name(f.name)}'
 
     def c_decl(self, type_name, name):
         base, suffix = self.split_array_type(type_name)
@@ -460,27 +498,32 @@ class NativeCodegen:
         return f'{ret} {self.c_name(f)}({param_text})'
 
     def function(self, f):
-        sig = self.function_signature(f)
-        ret = sig.split(' ', 1)[0]
-        lines = [sig + ' {']
-        scope = {}
-        current_class = self.safe_name(f.method_of) if f.method_of else None
-        if f.method_of:
-            scope['this'] = self.safe_name(f.method_of) + '*'
-        for p in f.params:
-            scope[self.safe_name(p.name)] = p.type_name
-            scope[p.name] = p.type_name
-        if f.constructor:
-            lines += ['  ' + x for x in self.constructor_prelude(f, scope)]
-        for s in f.body:
-            lines += ['  ' + x for x in self.stmt(s, [], scope, current_class)]
-        if f.destructor:
-            lines += ['  ' + x for x in self.destructor_postlude(f)]
-        if not any(isinstance(s, Return) for s in f.body):
-            if ret == 'void': lines.append('  return;')
-            else: lines.append('  return 0;')
-        lines += ['}', '']
-        return lines
+        prev_pkg = self.current_package_context
+        self.current_package_context = getattr(f, 'package', DEFAULT_PACKAGE)
+        try:
+            sig = self.function_signature(f)
+            ret = sig.split(' ', 1)[0]
+            lines = [sig + ' {']
+            scope = {}
+            current_class = self.safe_name(f.method_of) if f.method_of else None
+            if f.method_of:
+                scope['this'] = self.safe_name(f.method_of) + '*'
+            for p in f.params:
+                scope[self.safe_name(p.name)] = p.type_name
+                scope[p.name] = p.type_name
+            if f.constructor:
+                lines += ['  ' + x for x in self.constructor_prelude(f, scope)]
+            for s in f.body:
+                lines += ['  ' + x for x in self.stmt(s, [], scope, current_class)]
+            if f.destructor:
+                lines += ['  ' + x for x in self.destructor_postlude(f)]
+            if not any(isinstance(s, Return) for s in f.body):
+                if ret == 'void': lines.append('  return;')
+                else: lines.append('  return 0;')
+            lines += ['}', '']
+            return lines
+        finally:
+            self.current_package_context = prev_pkg
 
     def constructor_prelude(self, f, scope):
         cls = self.class_map.get(self.safe_name(f.method_of or f.name))
@@ -732,18 +775,41 @@ class NativeCodegen:
         for name, args in self.find_template_uses(s):
             if name in self.templates:
                 inst = self.template_instance_name(name, args)
-                s = re.sub(r'\b' + re.escape(name) + r'\s*<\s*' + re.escape(','.join(args)).replace(',', r'\s*,\s*') + r'\s*>\s*\(', 'cmotive__' + inst + '(', s)
+                fn = self.function_instances.get(inst)
+                sym = self.c_name(fn) if fn is not None else f'{self.package_name(self.current_package_context)}__{inst}'
+                s = re.sub(r'\b' + re.escape(name) + r'\s*<\s*' + re.escape(','.join(args)).replace(',', r'\s*,\s*') + r'\s*>\s*\(', sym + '(', s)
         for (name, args) in list(self.template_use_seen):
             inst = self.template_instance_name(name, list(args))
+            fn = self.function_instances.get(inst)
+            sym = self.c_name(fn) if fn is not None else f'{self.package_name(self.current_package_context)}__{inst}'
             arg_pat = r'\s*,\s*'.join(re.escape(a).replace('\\ ', r'\s*') for a in args)
-            s = re.sub(r'\b' + re.escape(name) + r'\s*<\s*' + arg_pat + r'\s*>\s*\(', 'cmotive__' + inst + '(', s)
+            s = re.sub(r'\b' + re.escape(name) + r'\s*<\s*' + arg_pat + r'\s*>\s*\(', sym + '(', s)
         return s
+
+    def resolve_function_symbol(self, name):
+        candidates = self.functions_by_name.get(name) or self.functions_by_name.get(self.safe_name(name)) or []
+        if not candidates:
+            return None
+        current_pkg = self.package_name(self.current_package_context)
+        for f in candidates:
+            if self.package_name(getattr(f, 'package', DEFAULT_PACKAGE)) == current_pkg:
+                return self.c_name(f)
+        if len(candidates) == 1:
+            return self.c_name(candidates[0])
+        for f in candidates:
+            if self.package_name(getattr(f, 'package', DEFAULT_PACKAGE)) == self.package_name(DEFAULT_PACKAGE):
+                return self.c_name(f)
+        return self.c_name(candidates[0])
 
     def lower_known_function_calls(self, s):
         for name in sorted(self.known_functions, key=len, reverse=True):
             safe = self.safe_name(name)
-            if not safe or safe == 'main': continue
-            s = re.sub(r'(?<![\w:.>-])\b' + re.escape(name) + r'\s*\(', 'cmotive__' + safe + '(', s)
+            if not safe or safe == 'main':
+                continue
+            sym = self.resolve_function_symbol(name)
+            if not sym:
+                continue
+            s = re.sub(r'(?<![\w:.>-])\b' + re.escape(name) + r'\s*\(', sym + '(', s)
         return s
 
     def lower_method_calls(self, s, scope=None, current_class=None):
@@ -752,7 +818,7 @@ class NativeCodegen:
             for m in self.class_map.get(current_class, ClassDecl(current_class)).methods:
                 if m.constructor or m.destructor or m.pure_virtual:
                     continue
-                s = re.sub(r'\bthis\s*->\s*' + re.escape(m.name) + r'\s*\(', f'{current_class}__{self.safe_name(m.name)}(this, ', s)
+                s = re.sub(r'\bthis\s*->\s*' + re.escape(m.name) + r'\s*\(', f'{self.method_name(current_class, m.name)}(this, ', s)
         for var, typ in sorted(scope.items(), key=lambda x: len(x[0]), reverse=True):
             if var == 'this':
                 continue
@@ -760,9 +826,9 @@ class NativeCodegen:
             if not is_class:
                 continue
             if is_ptr:
-                s = re.sub(r'\b' + re.escape(var) + r'\s*->\s*([A-Za-z_]\w*)\s*\(', lambda m: f'{cls}__{self.safe_name(m.group(1))}({var}, ', s)
+                s = re.sub(r'\b' + re.escape(var) + r'\s*->\s*([A-Za-z_]\w*)\s*\(', lambda m: f'{self.method_name(cls, m.group(1))}({var}, ', s)
             else:
-                s = re.sub(r'\b' + re.escape(var) + r'\s*\.\s*([A-Za-z_]\w*)\s*\(', lambda m: f'{cls}__{self.safe_name(m.group(1))}(&{var}, ', s)
+                s = re.sub(r'\b' + re.escape(var) + r'\s*\.\s*([A-Za-z_]\w*)\s*\(', lambda m: f'{self.method_name(cls, m.group(1))}(&{var}, ', s)
         s = re.sub(r',\s*\)', ')', s)
         return s
 

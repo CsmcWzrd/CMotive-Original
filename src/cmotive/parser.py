@@ -103,7 +103,32 @@ class Parser:
                     decls.append(self.raw_decl_until(';'))
                 continue
             decls.append(self.raw_decl_until(';'))
+        self.assign_packages(decls)
         return Program(decls)
+
+    def assign_packages(self, decls):
+        current = 'StartPackage'
+        for d in decls:
+            if isinstance(d, PackageDecl):
+                current = d.name or 'StartPackage'
+                continue
+            self.apply_package(d, current)
+
+    def apply_package(self, node, package):
+        if isinstance(node, Function):
+            node.package = package
+        elif isinstance(node, ClassDecl):
+            node.package = package
+            for m in node.methods:
+                m.package = package
+            for n in node.nested:
+                self.apply_package(n, package)
+        elif isinstance(node, TemplateDecl):
+            node.package = package
+            if node.body_node is not None:
+                self.apply_package(node.body_node, package)
+        elif isinstance(node, VarDecl):
+            node.package = package
 
     def dotted_name_until_eol_or_semicolon(self):
         parts = []

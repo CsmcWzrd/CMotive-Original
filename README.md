@@ -24,6 +24,10 @@ This is a production-oriented compiler source scaffold with a working Python boo
 
 See `docs/FEATURE_STATUS.md` for the full matrix.
 
+## Current object-symbol ABI note
+
+Class methods, constructors, destructors, and `New`/`Delete` helpers now use package-qualified C symbols. If no `Package` declaration is active, the default package prefix is `StartPackage`, for example `StartPackage__ClassName__MethodName`.
+
 
 ## VS2022 package project
 

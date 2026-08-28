@@ -64,6 +64,16 @@ def main():
     ok &= run_expect_code(['build/sys_stl_template' + exe_suffix], 0)
     ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_class_lifecycle.CMOT', '-o', 'build/class_lifecycle' + exe_suffix])
     ok &= run_expect_code(['build/class_lifecycle' + exe_suffix], 0)
+
+    ok &= run([str(b/'cmotive'), '--emit-c', 'tests/conformance/cmotive_package_method_mangling.CMOT', '-o', 'build/package_method_mangling.c'])
+    if ok:
+        sym_c = Path('build/package_method_mangling.c').read_text(encoding='utf-8')
+        needed = ['StartPackage__DefaultMangle__Ping', 'CustomPkg__CustomMangle__Ping']
+        if not all(x in sym_c for x in needed):
+            print('FAILED: package-qualified method symbols missing from generated C')
+            ok = False
+    ok &= run([str(b/'cmotive'), 'tests/conformance/cmotive_package_method_mangling.CMOT', '-o', 'build/package_method_mangling' + exe_suffix])
+    ok &= run_expect_code(['build/package_method_mangling' + exe_suffix], 0)
     ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
     print('CMotive tests:', 'PASS' if ok else 'FAIL')
     return 0 if ok else 1

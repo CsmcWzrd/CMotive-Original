@@ -74,12 +74,15 @@ class Preprocessor:
         text = path.read_text(encoding='utf-8')
         return self.process_text(text, path)
 
-    def process_text(self, text, current_path):
+    def process_text(self, text, current_path, current_package='StartPackage'):
         lines = text.splitlines(True)
         out = []
         i = 0
         while i < len(lines):
             raw = lines[i]
+            pkg_match = re.match(r'^\s*Package\s+([^;\r\n]+)\s*;?\s*$', raw)
+            if pkg_match:
+                current_package = re.sub(r'\s+', '', pkg_match.group(1).strip()) or 'StartPackage'
             if re.match(r'^\s*Plugswitch\b', raw):
                 block = []
                 depth = 1; i += 1
@@ -105,6 +108,10 @@ class Preprocessor:
                     out.append('\n/* Plugin ' + plugin_name + ' loaded. */\n')
                     out.append(loaded)
                     out.append('\n/* End Plugin ' + plugin_name + '. */\n')
+                    # Plugin/package files may declare their own Package. Restore
+                    # the importing translation unit's package so imported code
+                    # does not accidentally retag following declarations.
+                    out.append('Package ' + current_package + ';\n')
                 except FileNotFoundError:
                     # Preserve unresolved Plugin lines as AST metadata so front-end
                     # diagnostics and future external package managers can still see it.

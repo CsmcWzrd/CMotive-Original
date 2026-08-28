@@ -7,7 +7,7 @@ class SemanticAnalyzer:
         funcs = set(); classes = {}; globals_ = set()
         for d in program.declarations:
             if isinstance(d, Function):
-                key = (d.method_of or '', d.name, tuple(p.type_name for p in d.params), d.constructor, d.destructor)
+                key = (getattr(d, 'package', 'StartPackage'), d.method_of or '', d.name, tuple(p.type_name for p in d.params), d.constructor, d.destructor)
                 if key in funcs and not d.constructor:
                     raise SemanticError('duplicate function: ' + ('%s::%s' % (d.method_of or '', d.name)))
                 funcs.add(key)
@@ -17,14 +17,21 @@ class SemanticAnalyzer:
                 if d.name in globals_:
                     raise SemanticError('duplicate global variable: ' + d.name)
                 globals_.add(d.name)
-        for c in classes.values():
-            self.validate_class(c, classes)
+        for k, c in list(classes.items()):
+            if isinstance(k, tuple):
+                self.validate_class(c, classes)
         self.detect_inheritance_cycles(classes)
         return {'functions': funcs, 'classes': classes, 'globals': globals_}
 
     def collect_class(self, cls, classes):
+        key = (getattr(cls, 'package', 'StartPackage'), cls.name)
+        if key in classes:
+            raise SemanticError('duplicate class: ' + getattr(cls, 'package', 'StartPackage') + '::' + cls.name)
+        # The current implementation still resolves type names by bare class name,
+        # but records package-qualified duplicates for diagnostics and ABI metadata.
         if cls.name in classes:
-            raise SemanticError('duplicate class: ' + cls.name)
+            raise SemanticError('duplicate class name across packages is not yet supported: ' + cls.name)
+        classes[key] = cls
         classes[cls.name] = cls
         for nested in cls.nested:
             self.collect_class(nested, classes)
@@ -64,5 +71,5 @@ class SemanticAnalyzer:
                 visit(base, chain + [name])
             visiting.remove(name)
             visited.add(name)
-        for name in list(classes):
+        for name in [k for k in classes.keys() if isinstance(k, str)]:
             visit(name, [])

@@ -13,22 +13,27 @@ core object model.
 - Methods lower to mangled C functions in the form:
 
   ```c
-  ReturnType ClassName__MethodName(ClassName *this, ...);
+  ReturnType PackageName__ClassName__MethodName(ClassName *this, ...);
   ```
 
-- Constructors named as the class lower to `ClassName__ctor` for zero
-  parameters and `ClassName__ctor__N` for N parameters.
-- Destructors declared as `~ClassName` lower to `ClassName__dtor`.
+- Constructors named as the class lower to `PackageName__ClassName__ctor` for zero
+  parameters and `PackageName__ClassName__ctor__N` for N parameters.
+- Destructors declared as `~ClassName` lower to `PackageName__ClassName__dtor`.
 - Derived constructors call the zero-argument base constructor before field
   initializers and the derived body.
 - Derived destructors run the derived body and then call the base destructor.
-- `New ClassName(...)` lowers to a generated `ClassName__new[_N](...)` helper.
+- `New ClassName(...)` lowers to a generated `PackageName__ClassName__new[_N](...)` helper.
   That helper calls `CMotive_New(sizeof(ClassName))`, then dispatches the
   matching constructor.
-- `Delete objectPointer` lowers to `ClassName__delete(objectPointer)`, which
-  dispatches `ClassName__dtor` and then calls `CMotive_Delete`.
+- `Delete objectPointer` lowers to `PackageName__ClassName__delete(objectPointer)`, which
+  dispatches `PackageName__ClassName__dtor` and then calls `CMotive_Delete`.
 - Object method calls such as `obj.Method()` and pointer method calls such as
-  `ptr->Method()` lower to their mangled method functions.
+  `ptr->Method()` lower to their package-qualified mangled method functions.
+- If no `Package` declaration has appeared for a declaration, codegen uses
+  `StartPackage` as the default package prefix.
+- `Plugin`-loaded packages restore the importing translation unit's package
+  context after the imported file is materialized, so imported `Package`
+  declarations do not accidentally retag following user code.
 
 ## Validation
 
