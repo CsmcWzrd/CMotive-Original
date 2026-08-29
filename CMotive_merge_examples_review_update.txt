@@ -1,0 +1,29 @@
+CMotive merged examples and frontend review update
+
+Completed:
+- Merged language examples into the main source package under CMotive/examples.
+- Kept example headers and package examples under CMotive/examples/headers and CMotive/examples/packages.
+- Added merged example manifest: CMotive/examples/manifests/examples.jsonl.
+- Added root makefiles:
+  - makefile.examples.linux
+  - makefile.examples.mac
+  - makefile.examples.windows
+- Removed stale var-prefixed declarations from every CMotive source/header file included in the package.
+- Replaced stale source-level virtual/operator keyword use with the CMotive keywords Overridable/Operation where present.
+- Reworked the stale multiple-inheritance example into a single-inheritance metadata example so every CMotive source/header file compiles cleanly.
+- Converted the stale Fptr example to the current function-pointer typedef form.
+- Moved the intentional invalid-base negative test out of the .CMOT file set and updated the test runner to generate it transiently.
+
+Verification:
+- python3 -m py_compile src/cmotive/*.py tools/*.py tests/run_tests.py: PASS
+- make -f Makefile.linux clean all test: PASS
+- python3 tests/run_tests.py --bin build/bin --full: PASS
+- python3 tools/verify_cmotive_files.py --jobs 4 --timeout 80: PASS, 228 files
+- make -f makefile.examples.linux check TIMEOUT=10: PASS, 161 examples
+- make -f makefile.examples.linux debug-symbols: PASS
+
+Generated reports:
+- VERIFY_ALL_CMOTIVE_FILES.md
+- VERIFY_ALL_CMOTIVE_FRONTEND.md
+- examples/VERIFY_REPORT.md
+- docs/MERGED_EXAMPLES_AND_FRONTEND_REVIEW.md

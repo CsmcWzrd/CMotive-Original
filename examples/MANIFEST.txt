@@ -151,3 +151,11 @@ examples/150_debug_symbols_options.CMOT
 examples/151_object_stl_vector_map_tree.CMOT
 examples/152_object_algorithms.CMOT
 examples/153_object_io_streams.CMOT
+examples/154_object_filesystem.CMOT
+examples/155_object_net_socket.CMOT
+examples/156_object_thread_sleep.CMOT
+examples/157_object_string_parser.CMOT
+examples/158_object_wide_strings.CMOT
+examples/frontend_hello.CMOT
+examples/frontend_classes.CMOT
+examples/frontend_control_flow.CMTV

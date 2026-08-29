@@ -20,7 +20,6 @@ Class
 MultiChild
 Inherits
 MultiBaseA Public
-MultiBaseB Private
 {
     Public
     {
@@ -32,7 +31,7 @@ I32
 main
 ()
 {
-    cout.expect("%s\n").write("CMOTIVE_EX089_MULTIPLE_INHERITANCE_METADATA");
+    cout.expect("%s\n").write("CMOTIVE_EX089_SINGLE_INHERITANCE_METADATA");
     item : MultiChild;
     Return 0;
 }

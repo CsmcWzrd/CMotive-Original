@@ -47,3 +47,8 @@ The bootstrap compiler now includes concrete paths for full-template instantiati
 ## Sys object standard library update
 
 `Sys::Filesystem`, `Sys::Net`, `Sys::Thread`, `Sys::String`, and `Sys::Wide` now expose class/object-first APIs, with compatibility wrappers retained. `Sys::Thread` includes `MicroSleep` and `NanoSleep`.
+
+
+## Merged language examples
+
+The language examples are now merged into the main source package under `examples/`. Use `make -f makefile.examples.linux check` on Linux, `make -f makefile.examples.mac check` on macOS, or `make -f makefile.examples.windows check` on Windows-compatible GNU make environments. See `docs/MERGED_EXAMPLES_AND_FRONTEND_REVIEW.md` for verification details.

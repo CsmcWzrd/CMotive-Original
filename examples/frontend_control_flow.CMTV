@@ -1,0 +1,19 @@
+I32
+main
+()
+{
+    x : I32 = 0;
+    While ( x < 3 )
+    {
+        y : I32 = x + 1;
+        Return 0;
+    }
+    If ( x == 0 )
+    {
+        Return 0;
+    }
+    Else
+    {
+        Return 1;
+    }
+}

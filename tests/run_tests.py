@@ -104,7 +104,15 @@ def main():
                 ok = False
                 break
 
-    ok &= run_expect_failure([str(b/'cmotive'), 'tests/conformance/cmotive_invalid_base.CMOT', '-o', 'build/invalid_base' + exe_suffix])
+    
+    neg_src = Path('build/negative_invalid_base.CMOT')
+    neg_src.parent.mkdir(parents=True, exist_ok=True)
+    template = Path('tests/negative/cmot_invalid_base.expected_fail.txt')
+    if template.exists():
+        neg_src.write_text(template.read_text(encoding='utf-8'), encoding='utf-8')
+    else:
+        neg_src.write_text('Class\nBad\nInherits\nMissingBase Public\n{\n    Public { }\n};\nI32\nmain\n()\n{\n    Return 0;\n}\n', encoding='utf-8')
+    ok &= run_expect_failure([str(b/'cmotive'), str(neg_src), '-o', 'build/invalid_base' + exe_suffix])
 
     if ns.full:
         # Optional local expansion: compile/run representative remaining tests.

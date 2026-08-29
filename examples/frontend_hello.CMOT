@@ -1,0 +1,10 @@
+Plugin Sys::IO
+
+I32
+main
+()
+{
+    cout.expect("%s\n").write("CMOTIVE_FRONTEND_HELLO");
+    result : I32 = 0;
+    Return result;
+}

@@ -1,0 +1,37 @@
+PYTHON ?= python3
+TIMEOUT ?= 10
+
+.PHONY: all test check manifest preprocess compile objects run debug-symbols verify-all list clean
+all: test
+
+test: check
+
+check:
+	$(PYTHON) tools/example_build.py check --timeout $(TIMEOUT)
+
+manifest:
+	$(PYTHON) tools/example_build.py manifest
+
+preprocess:
+	$(PYTHON) tools/example_build.py preprocess
+
+compile:
+	$(PYTHON) tools/example_build.py compile
+
+objects:
+	$(PYTHON) tools/example_build.py objects
+
+run:
+	$(PYTHON) tools/example_build.py run --timeout $(TIMEOUT)
+
+debug-symbols:
+	$(PYTHON) tools/example_build.py debug-symbols
+
+verify-all:
+	$(PYTHON) tools/verify_cmotive_files.py
+
+list:
+	$(PYTHON) tools/example_build.py list
+
+clean:
+	$(PYTHON) tools/example_build.py clean

@@ -1,0 +1,62 @@
+Class
+Animal
+{
+    Public
+    {
+        id : I32 = 0;
+
+        Animal
+        ()
+        {
+        }
+
+        ~Animal
+        ()
+        {
+        }
+
+        Overridable
+        I32
+        Speak
+        ()
+        {
+            Return 1;
+        }
+    }
+};
+
+Class
+Dog
+Inherits
+Animal Public
+{
+    Public
+    {
+        Dog
+        ()
+        {
+        }
+
+        ~Dog
+        ()
+        {
+        }
+
+        Overridable
+        I32
+        Speak
+        ()
+        {
+            Return 2;
+        }
+    }
+};
+
+I32
+main
+()
+{
+    dog : Dog;
+    value : I32 = dog.Speak();
+    Return 0;
+}
